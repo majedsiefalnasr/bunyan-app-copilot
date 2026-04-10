@@ -18,14 +18,17 @@
     "nuxt": "^3.12.0"
   },
   "devDependencies": {
-    "@nuxt/eslint": "latest",
-    "@nuxt/test-utils": "latest",
-    "@playwright/test": "latest",
-    "@vitest/ui": "latest",
-    "@vue/test-utils": "latest",
-    "typescript": "latest",
-    "vitest": "latest",
-    "vitest-canvas-mock": "latest",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@nuxt/eslint": "^0.3.0",
+    "@nuxt/test-utils": "^3.10.0",
+    "@playwright/test": "^1.43.0",
+    "@vitest/ui": "^1.1.0",
+    "@vue/test-utils": "^2.4.4",
+    "typescript": "^5.3.0",
+    "vitest": "^1.1.0",
+    "vitest-canvas-mock": "^0.3.1",
     "vue": "^3.4.0"
   }
 }
