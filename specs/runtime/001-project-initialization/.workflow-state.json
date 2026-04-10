@@ -6,7 +6,7 @@
   "branch": "spec/001-project-initialization",
   "base_branch": "develop",
   "pkg_manager": "npm",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "clarifications_resolved": false,
   "drift_passed": false,
