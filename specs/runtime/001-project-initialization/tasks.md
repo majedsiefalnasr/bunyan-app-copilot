@@ -201,7 +201,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### User Model & RBAC Foundation
 
-- [ ] **T010** [US1] [US3] Create User model with $role enum
+- [X] **T010** [US1] [US3] Create User model with $role enum
   - **File:** `backend/app/Models/User.php`
   - **Acceptance Criteria:**
     - [ ] `User` extends Authenticatable (Larvel default)
@@ -216,7 +216,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 20 min
   - **Dependencies:** T001
 
-- [ ] **T011** [US1] [US3] Create users table migration
+- [X] **T011** [US1] [US3] Create users table migration
   - **File:** `backend/database/migrations/{timestamp}_create_users_table.php`
   - **Acceptance Criteria:**
     - [ ] Migration creates `users` table with all columns per `data-model.md`
@@ -229,7 +229,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 15 min
   - **Dependencies:** T001, T003
 
-- [ ] **T012** [P] [US3] Create base exception handler with error contract
+- [X] **T012** [P] [US3] Create base exception handler with error contract
   - **File:** `backend/app/Exceptions/Handler.php`
   - **Acceptance Criteria:**
     - [ ] Handler catches all exceptions and formats as standard JSON (see `error-contract.md`)
@@ -243,7 +243,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 20 min
   - **Dependencies:** T001
 
-- [ ] **T013** [P] [US3] Create base API controller with response methods
+- [X] **T013** [P] [US3] Create base API controller with response methods
   - **File:** `backend/app/Http/Controllers/Api/BaseController.php`
   - **Acceptance Criteria:**
     - [ ] `BaseController` extends Controller
@@ -257,7 +257,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Layering Infrastructure
 
-- [ ] **T014** [P] [US3] Create Form Request base class
+- [X] **T014** [P] [US3] Create Form Request base class
   - **File:** `backend/app/Http/Requests/BaseFormRequest.php`
   - **Acceptance Criteria:**
     - [ ] `BaseFormRequest` extends `FormRequest`
@@ -268,7 +268,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 12 min
   - **Dependencies:** T001
 
-- [ ] **T015** [P] [US3] Create API Resource base class
+- [X] **T015** [P] [US3] Create API Resource base class
   - **File:** `backend/app/Http/Resources/BaseResource.php`
   - **Acceptance Criteria:**
     - [ ] `BaseResource` extends `JsonResource`
@@ -277,7 +277,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 10 min
   - **Dependencies:** T001
 
-- [ ] **T016** [P] [US3] Create base Service class
+- [X] **T016** [P] [US3] Create base Service class
   - **File:** `backend/app/Services/BaseService.php`
   - **Acceptance Criteria:**
     - [ ] `BaseService` provides common methods: `getById()`, `all()`, `create()`, `update()`, `delete()`
@@ -287,7 +287,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 12 min
   - **Dependencies:** T001
 
-- [ ] **T017** [P] [US3] Create repository pattern starter
+- [X] **T017** [P] [US3] Create repository pattern starter
   - **File:** `backend/app/Repositories/BaseRepository.php` + `backend/app/Repositories/UserRepository.php`
   - **Acceptance Criteria:**
     - [ ] `BaseRepository` provides: `find()`, `all()`, `create()`, `update()`, `delete()`, `findBy()`
@@ -300,7 +300,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### RBAC & Auth Scaffolding
 
-- [ ] **T018** [P] [US1] [US3] Create RBAC Policies structure
+- [X] **T018** [P] [US1] [US3] Create RBAC Policies structure
   - **Files:**
     - `backend/app/Policies/BasePolicy.php`
     - `backend/app/Policies/UserPolicy.php`
@@ -314,7 +314,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 18 min
   - **Dependencies:** T001, T010, T012
 
-- [ ] **T019** [P] [US1] Create Auth controller with seed endpoints
+- [X] **T019** [P] [US1] Create Auth controller with seed endpoints
   - **File:** `backend/app/Http/Controllers/Api/AuthController.php`
   - **Acceptance Criteria:**
     - [ ] `AuthController` extends `BaseController`
@@ -329,7 +329,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 25 min
   - **Dependencies:** T001, T010, T013, T014, T018
 
-- [ ] **T020** [P] [US1] Register auth routes
+- [X] **T020** [P] [US1] Register auth routes
   - **File:** `backend/routes/api.php`
   - **Acceptance Criteria:**
     - [ ] Routes under `/api/v1/auth/`
@@ -344,7 +344,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Testing Setup (Backend)
 
-- [ ] **T021** [US1] Configure PHPUnit + feature test example
+- [X] **T021** [US1] Configure PHPUnit + feature test example
   - **Files:**
     - `backend/phpunit.xml`
     - `backend/tests/Feature/Auth/RegisterTest.php`
@@ -367,7 +367,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### State & Composables
 
-- [ ] **T022** [US2] [US3] Create Pinia stores (user + theme)
+- [X] **T022** [US2] [US3] Create Pinia stores (user + theme)
   - **Files:**
     - `frontend/stores/user.ts`
     - `frontend/stores/theme.ts`
@@ -383,7 +383,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 18 min
   - **Dependencies:** T002
 
-- [ ] **T023** [P] [US2] [US3] Create API composable for Laravel communication
+- [X] **T023** [P] [US2] [US3] Create API composable for Laravel communication
   - **File:** `frontend/composables/useApi.ts`
   - **Acceptance Criteria:**
     - [ ] Composable wraps `axios` or native `fetch`
@@ -396,7 +396,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 15 min
   - **Dependencies:** T002, T022
 
-- [ ] **T024** [P] [US2] [US3] Create i18n composable helper
+- [X] **T024** [P] [US2] [US3] Create i18n composable helper
   - **File:** `frontend/composables/useI18n.ts`
   - **Acceptance Criteria:**
     - [ ] Wrapper around `@nuxtjs/i18n` `useI18n()` hook
@@ -408,7 +408,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Layouts & Base Components
 
-- [ ] **T025** [P] [US2] Create base layouts (default, auth, admin)
+- [X] **T025** [P] [US2] Create base layouts (default, auth, admin)
   - **Files:**
     - `frontend/layouts/default.vue`
     - `frontend/layouts/auth.vue`
@@ -423,7 +423,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 20 min
   - **Dependencies:** T002, T006, T008, T022, T023
 
-- [ ] **T026** [P] [US2] Create login page with Nuxt UI UForm
+- [X] **T026** [P] [US2] Create login page with Nuxt UI UForm
   - **File:** `frontend/pages/auth/login.vue`
   - **Acceptance Criteria:**
     - [ ] Page uses `auth` layout
@@ -439,7 +439,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Testing Setup (Frontend)
 
-- [ ] **T027** [P] [US2] Configure Vitest + Vue Test Utils
+- [X] **T027** [P] [US2] Configure Vitest + Vue Test Utils
   - **Files:**
     - `frontend/vitest.config.ts` (already created in T009, now finalized)
     - `frontend/tests/unit/composables/useApi.test.ts`
@@ -454,7 +454,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 15 min
   - **Dependencies:** T002, T009
 
-- [ ] **T028** [P] [US2] Configure Playwright E2E testing
+- [X] **T028** [P] [US2] Configure Playwright E2E testing
   - **Files:**
     - `frontend/playwright.config.ts`
     - `frontend/tests/e2e/smoke.spec.ts`
@@ -474,7 +474,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Docker & Local Development
 
-- [ ] **T029** [P] [US4] Create docker-compose.yml
+- [X] **T029** [P] [US4] Create docker-compose.yml
   - **File:** `docker-compose.yml` (repo root)
   - **Acceptance Criteria:**
     - [ ] Services: MySQL 8.0, Redis 7.0
@@ -487,7 +487,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 15 min
   - **Dependencies:** None
 
-- [ ] **T030** [P] [US4] Create backend/Dockerfile + .dockerignore
+- [X] **T030** [P] [US4] Create backend/Dockerfile + .dockerignore
   - **Files:**
     - `backend/Dockerfile`
     - `backend/.dockerignore`
@@ -502,7 +502,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 12 min
   - **Dependencies:** T001
 
-- [ ] **T031** [P] [US4] Create frontend/Dockerfile + .dockerignore
+- [X] **T031** [P] [US4] Create frontend/Dockerfile + .dockerignore
   - **Files:**
     - `frontend/Dockerfile`
     - `frontend/.dockerignore`
@@ -517,7 +517,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Git Automation & Pre-Commit
 
-- [ ] **T032** [P] [US4] Install Husky + pre-commit hooks
+- [X] **T032** [P] [US4] Install Husky + pre-commit hooks
   - **Files:**
     - `.husky/pre-commit`
     - `package.json` (`husky` + `lint-staged` in devDependencies)
@@ -539,7 +539,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 15 min
   - **Dependencies:** T001, T002
 
-- [ ] **T033** [P] [US4] Configure GitHub Actions CI workflow
+- [X] **T033** [P] [US4] Configure GitHub Actions CI workflow
   - **File:** `.github/workflows/ci.yml`
   - **Acceptance Criteria:**
     - [ ] Workflow triggers on: `push` (all branches) and `pull_request`
@@ -556,7 +556,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Environment Templates
 
-- [ ] **T034** [P] [US4] Create .env templates + config README
+- [X] **T034** [P] [US4] Create .env templates + config README
   - **Files:**
     - `backend/.env.example`
     - `frontend/.env.example`
@@ -583,7 +583,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Cross-Stack Integration Tests
 
-- [ ] **T035** [US1] [US2] Backend/Frontend integration smoke test
+- [X] **T035** [US1] [US2] Backend/Frontend integration smoke test
   - **Test Scenario:**
     1. Start backend: `php artisan serve`
     2. Start frontend dev server: `npm run dev`
@@ -609,7 +609,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Final Verification
 
-- [ ] **T036** Final pre-commit validation
+- [X] **T036** Final pre-commit validation
   - **Commands:**
     ```bash
     # Backend

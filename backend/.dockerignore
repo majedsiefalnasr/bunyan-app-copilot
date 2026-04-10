@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.example
+.env.*.local
+node_modules
+vendor/
+dist/
+.nuxt/
+storage/logs
+tests
+phpunit.xml
+.phpstan
+.pint.cache
