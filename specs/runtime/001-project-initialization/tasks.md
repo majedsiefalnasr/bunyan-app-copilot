@@ -27,7 +27,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 #### Backend Initialization
 
-- [ ] **T001** [US1] Create Laravel 11 project skeleton
+- [X] **T001** [US1] Create Laravel 11 project skeleton
   - **File:** `backend/`  (root directory)
   - **Command:** `composer create-project laravel/laravel backend --prefer-dist`
   - **Acceptance Criteria:**
@@ -41,7 +41,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 #### Frontend Initialization
 
-- [ ] **T002** [P] [US2] Create Nuxt 3 project skeleton
+- [X] **T002** [P] [US2] Create Nuxt 3 project skeleton
   - **File:** `frontend/`  (root directory)
   - **Command:** `npx nuxi@latest init frontend --install false && cd frontend && npm install` (use pnpm if preferred)
   - **Acceptance Criteria:**
