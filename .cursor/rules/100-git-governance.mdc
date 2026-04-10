@@ -1,0 +1,37 @@
+---
+description: Git governance and branch strategy for Bunyan. Use when committing, branching, or managing git workflow.
+alwaysApply: false
+---
+
+# Git Governance — Bunyan
+
+## Branch Strategy
+
+```
+main ← develop ← feature/* | fix/* | hotfix/*
+```
+
+### Branch Naming
+
+- Features: `feature/NNN-short-description`
+- Fixes: `fix/NNN-short-description`
+- Hotfixes: `hotfix/NNN-short-description`
+- Spec workflow: `spec/<STAGE_DIR_NAME>`
+
+## Commit Hygiene
+
+- Descriptive commit messages
+- Scope commits to single logical change
+- Never commit `.env` files
+- Never force push to `main` or `develop`
+
+## Safety
+
+- Never `git reset --hard` without confirmation
+- Never `git push --force` to shared branches
+- Always verify staged files before committing
+
+## Skills Reference
+
+- `.agents/skills/git-governance/SKILL.md`
+- `.agents/skills/terminal-safety/SKILL.md`

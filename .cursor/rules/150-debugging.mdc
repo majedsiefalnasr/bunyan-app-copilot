@@ -1,0 +1,44 @@
+---
+description: Debugging and diagnostics rules for Bunyan. Use when diagnosing errors, tracing bugs, or analyzing failures.
+alwaysApply: false
+---
+
+# Debugging & Diagnostics — Bunyan
+
+## Root Cause Analysis Protocol
+
+1. Reproduce the error reliably
+2. Read the full stack trace — identify the originating file/line
+3. Check recent changes (git log, git diff)
+4. Isolate: is it backend (Laravel), frontend (Nuxt), or API contract?
+5. Never guess — trace the execution path
+
+## Backend Debugging
+
+- Check `storage/logs/laravel.log` for stack traces
+- Use `dd()` / `dump()` temporarily (remove before commit)
+- `php artisan tinker` for interactive testing
+- Check middleware chain for auth/RBAC issues
+- Validate database state against expected schema
+
+## Frontend Debugging
+
+- Check browser console for errors
+- Check Nuxt dev server output
+- Verify API responses match expected contract
+- Check Pinia store state
+- Test with Vue DevTools
+
+## Common Patterns
+
+- **403 Forbidden**: Check RBAC middleware, policies, role assignment
+- **422 Validation**: Check Form Request rules, translation keys
+- **500 Server**: Check service layer, null safety, missing relations
+- **CORS errors**: Check Laravel CORS config
+- **RTL rendering**: Check dir attribute, logical properties
+
+## Regression Bisection
+
+- Use `git bisect` to find the breaking commit
+- Write a failing test for the bug FIRST (TDD Red)
+- Fix, then verify test passes (TDD Green)

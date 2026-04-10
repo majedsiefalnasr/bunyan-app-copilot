@@ -1,0 +1,61 @@
+name: Architecture Governance
+
+on:
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  governance:
+    name: Architecture Governance
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: pdo, pdo_mysql, mbstring
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate layer boundaries
+        run: |
+          echo "Checking controller layer boundaries..."
+          # Controllers should not contain Eloquent queries directly
+          VIOLATIONS=$(grep -rn "DB::\|::query()\|->where(" app/Http/Controllers/ --include="*.php" 2>/dev/null | grep -v "// @allow-query" || true)
+          if [[ -n "$VIOLATIONS" ]]; then
+            echo "⚠ Warning: Direct DB queries found in controllers:"
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Move queries to Repository classes."
+          else
+            echo "✓ Controller layer clean"
+          fi
+
+      - name: Validate RBAC middleware
+        run: |
+          echo "Checking route RBAC middleware..."
+          # Check that API routes have auth/RBAC middleware
+          UNPROTECTED=$(grep -n "Route::" routes/api.php 2>/dev/null | grep -v "middleware\|auth\|// public" || true)
+          if [[ -n "$UNPROTECTED" ]]; then
+            echo "⚠ Warning: Potentially unprotected API routes:"
+            echo "$UNPROTECTED"
+          else
+            echo "✓ All API routes appear protected"
+          fi
+
+      - name: Check migration safety
+        run: |
+          echo "Checking migration safety..."
+          # Check for destructive operations in migrations
+          DESTRUCTIVE=$(grep -rn "dropColumn\|dropTable\|drop(" database/migrations/ --include="*.php" 2>/dev/null || true)
+          if [[ -n "$DESTRUCTIVE" ]]; then
+            echo "⚠ Warning: Destructive operations in migrations:"
+            echo "$DESTRUCTIVE"
+            echo "Ensure these are intentional and have a rollback plan."
+          else
+            echo "✓ No destructive migration operations"
+          fi

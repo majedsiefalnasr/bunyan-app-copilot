@@ -1,0 +1,61 @@
+---
+description: Security hardening rules for Bunyan. Use when implementing authentication, authorization, file uploads, payment handling, input validation, or reviewing security concerns.
+alwaysApply: false
+---
+
+# Security Auditor — Bunyan
+
+## Authentication
+
+- Laravel Sanctum for API authentication
+- Token expiration: 24 hours for web, configurable for API
+- Rate limit login attempts: 5 per minute per IP
+- Password requirements: min 8 chars, mixed case, number, symbol
+
+## Authorization (RBAC)
+
+- Every endpoint must document allowed roles
+- Authorization via Laravel Policies and Gates
+- Never trust role info from client request body
+- All routes use appropriate middleware (`auth:sanctum`, role middleware)
+
+### Role Matrix
+
+| Role                  | Arabic           | Access Level                              |
+| --------------------- | ---------------- | ----------------------------------------- |
+| admin                 | الإدارة          | Full platform access                      |
+| customer              | العميل           | Own projects, orders, payments            |
+| contractor            | المقاول          | Assigned projects, materials, withdrawals |
+| supervising_architect | المهندس المشرف   | Supervised projects, field engineers      |
+| field_engineer        | المهندس الميداني | Assigned tasks, field reports             |
+
+## Input Validation
+
+- All inputs validated via Form Request classes
+- Never use raw user input in SQL queries
+- XSS prevention in all responses
+- CSRF protection on state-changing endpoints
+
+## File Upload Security
+
+- Validate MIME type server-side
+- Validate file size server-side
+- Store via Laravel filesystem (disk: local/s3)
+- Never execute uploaded files
+
+## Payment Security
+
+- All payment operations server-side only
+- Idempotent payment endpoints
+- Transaction logging for all financial operations
+- Withdrawal verification workflow
+
+## Workflow Security
+
+- Status transitions validated server-side against workflow configuration
+- Approval rules checked before status changes
+- Audit trail for all workflow mutations
+
+## Skills Reference
+
+- `.agents/skills/security-hardening/SKILL.md`

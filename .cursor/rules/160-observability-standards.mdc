@@ -1,0 +1,122 @@
+---
+description: Structured logging, correlation IDs, and monitoring standards for Bunyan. Use when writing controllers, services, middleware, or any backend code that handles requests, state transitions, or errors.
+globs: backend/**
+alwaysApply: false
+---
+
+# Observability Standards — Bunyan
+
+## Structured Logging
+
+Always use structured context arrays — never plain string messages.
+
+### Backend (Laravel)
+
+```php
+use Illuminate\Support\Facades\Log;
+
+// Correct — structured context
+Log::info('Project created', [
+    'project_id' => $project->id,
+    'user_id'    => $user->id,
+    'action'     => 'project.created',
+]);
+
+Log::error('Payment failed', [
+    'order_id' => $order->id,
+    'user_id'  => $user->id,
+    'error'    => $exception->getMessage(),
+    'action'   => 'payment.failed',
+]);
+
+// Wrong — no context
+Log::info('Project was created');
+```
+
+### Required Context Fields
+
+| Situation                      | Required Fields                                                    |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Entity created/updated/deleted | `action`, `<entity>_id`, `user_id`                                 |
+| API request/response           | `method`, `url`, `status`, `user_id`, `ip`, `duration_ms`          |
+| Workflow state transition      | `action`, `entity_id`, `from_status`, `to_status`, `user_id`       |
+| Authentication event           | `action`, `user_id`, `ip`                                          |
+| Payment/financial              | `action`, `order_id`, `user_id`, `amount` — log to `audit` channel |
+| Queue job failure              | `action`, `job_class`, `attempt`, `error`                          |
+| Error/exception                | `action`, `error`, all relevant IDs                                |
+
+## Log Channels
+
+```php
+// config/logging.php
+'channels' => [
+    'daily' => [
+        'driver' => 'daily',
+        'path'   => storage_path('logs/laravel.log'),
+        'days'   => 14,
+    ],
+    'audit' => [
+        'driver' => 'daily',
+        'path'   => storage_path('logs/audit.log'),
+        'days'   => 90,
+    ],
+],
+```
+
+- **`daily`**: General application events (info, warnings, errors)
+- **`audit`**: Financial and sensitive operations (payments, role changes, withdrawals)
+
+## Request Logging Middleware
+
+```php
+class RequestLogger
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+
+        Log::channel('requests')->info('API Request', [
+            'method'      => $request->method(),
+            'url'         => $request->fullUrl(),
+            'status'      => $response->status(),
+            'user_id'     => $request->user()?->id,
+            'ip'          => $request->ip(),
+            'duration_ms' => round((microtime(true) - LARAVEL_START) * 1000),
+        ]);
+
+        return $response;
+    }
+}
+```
+
+## Workflow State Transitions
+
+Log every status change through the workflow engine:
+
+```php
+Log::info('Workflow transition', [
+    'action'      => 'workflow.transition',
+    'entity_type' => 'project',
+    'entity_id'   => $project->id,
+    'from_status' => $oldStatus,
+    'to_status'   => $newStatus,
+    'user_id'     => $user->id,
+]);
+```
+
+## Hard Rules
+
+- **NEVER** log passwords, tokens, secrets, or payment card details
+- **ALWAYS** use `Log::audit()` (or `Log::channel('audit')`) for financial operations
+- **ALWAYS** log authentication failures (failed logins, unauthorized access)
+- **NEVER** swallow exceptions silently — log with full context before re-throwing
+- Log levels: `debug` (dev only), `info` (state changes), `warning` (recoverable), `error` (failures), `critical` (data integrity)
+
+## Monitoring Checklist
+
+- [ ] All API endpoints log request/response status
+- [ ] Authentication events logged (login, logout, failed attempts)
+- [ ] Workflow state transitions logged with before/after status
+- [ ] Payment/financial operations logged to `audit` channel
+- [ ] Queue job failures logged with full context and attempt count
+- [ ] Error responses include enough context for root cause analysis

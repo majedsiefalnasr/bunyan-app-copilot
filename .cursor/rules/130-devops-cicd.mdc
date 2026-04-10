@@ -1,0 +1,49 @@
+---
+description: DevOps, CI/CD, Docker, GitHub Actions rules for Bunyan. Use when working with deployment, pipelines, or infrastructure.
+alwaysApply: false
+---
+
+# DevOps & CI/CD — Bunyan
+
+## CI Pipeline (Required)
+
+All changes must pass:
+
+```bash
+composer run lint && composer run test && npm run lint && npm run typecheck && npm run test
+```
+
+## GitHub Actions
+
+- Pin all actions to SHA, not tags
+- Use `permissions:` block (least-privilege)
+- Never store secrets in code — use GitHub Secrets
+- Separate workflows for: lint, test, deploy
+- Matrix testing for PHP versions if applicable
+
+## Docker
+
+- Multi-stage builds for production images
+- Non-root user in containers
+- `.dockerignore` must exclude: `.git`, `node_modules`, `vendor`, `.env`
+- Health checks on all services
+
+## Deployment Strategy
+
+- Zero-downtime deployments
+- Run migrations before code switch
+- Rollback plan for every deployment
+- Environment parity: dev ≈ staging ≈ production
+
+## Environment
+
+- `.env` files never committed
+- `.env.example` always up to date
+- Secrets rotated regularly
+
+## Pre-commit Hooks
+
+- PHP CS Fixer (formatting)
+- PHPStan (static analysis)
+- ESLint + TypeScript check
+- `--no-verify` is FORBIDDEN

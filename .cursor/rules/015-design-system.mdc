@@ -1,0 +1,90 @@
+---
+description: Bunyan design system (Vercel-inspired). Use when building UI components, styling pages, choosing colors, typography, or shadows. MUST be followed for all frontend work.
+globs: frontend/**/*.vue,frontend/**/*.css,frontend/**/*.scss,frontend/**/*.ts
+alwaysApply: false
+---
+
+# Design System — Bunyan (Vercel-Inspired)
+
+**Source of truth**: `DESIGN.md` (project root)
+
+Always read `DESIGN.md` before generating any frontend UI code.
+
+## Core Principles
+
+- Geist Sans with aggressive negative letter-spacing at display sizes
+- Shadow-as-border: `box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.08)` replaces CSS borders
+- Achromatic palette: grays from `#171717` to `#ffffff`
+- Three weights only: 400 (body), 500 (UI), 600 (headings)
+- Ligatures (`"liga"`) enabled on all Geist text
+
+## Color Palette
+
+### Primary
+
+- Vercel Black: `#171717` (text, headings — NOT pure black)
+- Pure White: `#ffffff` (backgrounds, card surfaces)
+
+### Workflow Accents (functional only)
+
+- Ship Red: `#ff5b4f`
+- Preview Pink: `#de1d8d`
+- Develop Blue: `#0a72ef`
+
+### Interactive
+
+- Link Blue: `#0072f5`
+- Focus Blue: `hsla(212, 100%, 48%, 1)`
+
+### Neutral Scale
+
+- Gray 900: `#171717` | Gray 600: `#4d4d4d` | Gray 500: `#666666`
+- Gray 400: `#808080` | Gray 100: `#ebebeb` | Gray 50: `#fafafa`
+
+## Typography Hierarchy
+
+| Role            | Size | Weight  | Letter Spacing    |
+| --------------- | ---- | ------- | ----------------- |
+| Display Hero    | 48px | 600     | -2.4px to -2.88px |
+| Section Heading | 40px | 600     | -2.4px            |
+| Sub-heading     | 32px | 600     | -1.28px           |
+| Card Title      | 24px | 600     | -0.96px           |
+| Body Large      | 20px | 400     | normal            |
+| Body            | 16px | 400     | normal            |
+| Button          | 14px | 500     | normal            |
+| Caption         | 12px | 400-500 | normal            |
+
+## Shadow System
+
+| Level            | Shadow                                                                | Use                |
+| ---------------- | --------------------------------------------------------------------- | ------------------ |
+| Ring (L1)        | `rgba(0,0,0,0.08) 0px 0px 0px 1px`                                    | Border replacement |
+| Light Ring (L1b) | `rgb(235,235,235) 0px 0px 0px 1px`                                    | Tabs, images       |
+| Subtle Card (L2) | Ring + `rgba(0,0,0,0.04) 0px 2px 2px`                                 | Standard cards     |
+| Full Card (L3)   | Ring + Subtle + `rgba(0,0,0,0.04) 0px 8px 8px -8px` + `#fafafa` inner | Featured cards     |
+
+## Component Patterns
+
+### Buttons
+
+- Primary: `#171717` bg, `#ffffff` text, 6px radius, 8px 16px padding
+- Secondary: `#ffffff` bg, shadow-border, 6px radius
+- Pill Badge: `#ebf5ff` bg, `#0068d6` text, 9999px radius
+
+### Cards
+
+- White bg, NO CSS border, shadow stack, 8px radius
+- Inner `#fafafa` ring creates subtle glow
+
+### Border Radius Scale
+
+- 2px (inline code) → 6px (buttons) → 8px (cards) → 12px (images) → 9999px (pills)
+
+## Do's and Don'ts
+
+- DO use shadow-as-border instead of CSS `border`
+- DO use `#171717` not `#000000` for primary text
+- DO scale letter-spacing with font size
+- DON'T use weight 700 on body text
+- DON'T use warm colors in UI chrome
+- DON'T skip the inner `#fafafa` ring in card shadows

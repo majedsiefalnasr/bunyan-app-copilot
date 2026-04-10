@@ -1,0 +1,35 @@
+---
+description: Workflow engine rules for Bunyan construction projects. Use when implementing status transitions, approval chains, project lifecycle, or configuring workflow behavior.
+alwaysApply: false
+---
+
+# Workflow Engine — Bunyan
+
+## Overview
+
+The workflow engine manages construction project lifecycle:
+Project → Phases → Tasks → Reports
+
+## Status Flow
+
+Pending → In Progress → Complete → Paid
+
+## Configuration
+
+- Global config stored in database
+- Per-project overrides as JSON or separate rows
+- Resolution: per-project override > global default
+- Config changes audited
+
+## Rules
+
+- Status transitions validated server-side against workflow configuration
+- Approval workflows with role-based approval gates
+- Field engineer reporting frequency rules (daily, every X days, weekly)
+- Configuration snapshots at project creation
+- Per-project overrides loaded before global defaults
+
+## Skills Reference
+
+- `.agents/skills/workflow-engine-patterns/SKILL.md`
+- `.agents/skills/stage-workflow-governance/SKILL.md`

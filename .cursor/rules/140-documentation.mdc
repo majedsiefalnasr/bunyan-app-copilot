@@ -1,0 +1,43 @@
+---
+description: Documentation and technical writing rules for Bunyan. Use when generating docs, ADRs, API docs, or README files.
+globs: docs/**,*.md
+alwaysApply: false
+---
+
+# Technical Writer — Bunyan
+
+## ADR Format (Architecture Decision Record)
+
+```markdown
+# ADR-NNN: Title
+
+## Status: Proposed | Accepted | Deprecated | Superseded
+
+## Context: What is the issue?
+
+## Decision: What was decided?
+
+## Consequences: Positive and negative results
+
+## Alternatives Considered
+```
+
+- ADRs are immutable once accepted — new ADRs supersede old ones
+- Location: `docs/architecture/ADR/`
+
+## API Documentation
+
+- Include: endpoint, method, authorization roles, request body, response, error codes
+- Auto-generate from OpenAPI spec when possible
+
+## README Standards
+
+- README.md at root of each major directory
+- Include: purpose, setup, usage, dependencies
+
+## General Rules
+
+- Documentation in both Arabic and English where applicable
+- Code comments for complex business logic only (not obvious code)
+- Keep docs close to the code they describe
+- Update docs when changing related code

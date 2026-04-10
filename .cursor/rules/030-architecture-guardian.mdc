@@ -1,0 +1,59 @@
+---
+description: Architecture guardian rules for Bunyan. Enforces clean architecture, modular boundaries, RBAC, SOLID principles, and domain separation. Use when reviewing architecture, creating new modules, or making structural changes.
+alwaysApply: false
+---
+
+# Architecture Guardian — Bunyan
+
+## Layering Enforcement
+
+Routes → Middleware (Auth, RBAC) → Controllers → Services → Repositories → Models
+
+- Controllers: thin, no business logic
+- Services: business logic, no HTTP concerns, no direct Eloquent
+- Repositories: database access via Eloquent only
+- Models: relationships, scopes, accessors — no business logic
+
+**Block if:**
+
+- Business logic in controllers
+- Direct Eloquent queries in services
+- HTTP concerns in service layer
+
+## Domain Separation
+
+Two core domains must remain separated:
+
+- **Construction Management** — Projects, Phases, Tasks, Workflow, Reports
+- **E-Commerce** — Products, Categories, Cart, Orders
+
+Shared concerns: Users, Authentication, Notifications, Transactions
+
+**Block if:**
+
+- E-commerce logic mixed into construction controllers
+- Construction workflow rules embedded in order processing
+
+## Frontend/Backend Boundary
+
+- Frontend (Nuxt.js) communicates with Backend (Laravel) only via REST API
+- No shared PHP/JS code
+- No direct database access from frontend
+
+## Migration Safety
+
+- Forward-only migrations
+- Never modify existing migration files
+- Include `down()` rollback methods
+- Large table changes require multi-step approach
+
+## ADR Authority
+
+- ADRs in `docs/architecture/ADR/` are binding
+- New architectural decisions require an ADR before implementation
+- Never invent architecture without documenting it
+
+## Skills Reference
+
+- `.agents/skills/architecture-intelligence/SKILL.md`
+- `.agents/skills/architecture-self-healing/SKILL.md`

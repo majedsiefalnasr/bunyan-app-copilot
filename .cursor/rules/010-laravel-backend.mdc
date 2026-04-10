@@ -1,0 +1,147 @@
+---
+description: Laravel backend development rules for Bunyan. Use when working with PHP, controllers, services, repositories, migrations, or any backend code.
+globs: backend/**
+alwaysApply: false
+---
+
+# Laravel Backend Rules — Bunyan
+
+## Directory Structure
+
+```
+backend/
+├── app/
+│   ├── Enums/              # PHP enums (UserRole, ProjectStatus)
+│   ├── Http/
+│   │   ├── Controllers/    # Thin — delegate to services
+│   │   ├── Middleware/      # Auth, RBAC
+│   │   ├── Requests/       # Form Request validation
+│   │   └── Resources/      # API Resources
+│   ├── Models/             # Eloquent models
+│   ├── Services/           # Business logic layer
+│   ├── Repositories/       # Database access layer
+│   ├── Policies/           # Authorization policies
+│   ├── Events/
+│   ├── Listeners/
+│   ├── Jobs/
+│   ├── Notifications/
+│   └── Enums/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+├── routes/api.php
+├── config/
+├── resources/lang/ (ar/, en/)
+└── tests/ (Unit/, Feature/)
+```
+
+## Patterns
+
+### Controller Pattern (Thin)
+
+```php
+class ProjectController extends Controller
+{
+    public function __construct(private ProjectService $service) {}
+
+    public function store(StoreProjectRequest $request)
+    {
+        $project = $this->service->create($request->validated());
+        return new ProjectResource($project);
+    }
+}
+```
+
+### Service Pattern (Business Logic)
+
+```php
+class ProjectService
+{
+    public function __construct(private ProjectRepository $repository) {}
+
+    public function create(array $data): Project
+    {
+        // Business logic here — no HTTP, no direct Eloquent
+        return $this->repository->create($data);
+    }
+}
+```
+
+### Repository Pattern (Data Access)
+
+```php
+class ProjectRepository
+{
+    public function create(array $data): Project
+    {
+        return Project::create($data);
+    }
+}
+```
+
+### Form Request Validation
+
+```php
+class StoreProjectRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return $this->user()->can('create', Project::class);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+        ];
+    }
+}
+```
+
+## Eloquent Rules
+
+- Always eager load relationships to prevent N+1
+- Use `select()` to limit columns
+- Use query scopes for reusable conditions
+- Use chunking for large datasets
+- Index columns used in WHERE, ORDER BY, JOIN
+- Use `utf8mb4` charset for Arabic text
+
+## Migration Rules
+
+- File naming: `YYYY_MM_DD_HHMMSS_verb_noun_table.php`
+- Verbs: `create`, `add`, `modify`, `drop`, `rename`
+- Always include `down()` method
+- Never modify existing migrations
+- Soft deletes on: users, projects, phases, tasks, products, orders
+- Audit columns: `created_at`, `updated_at`, `created_by`, `updated_by`
+
+## API Rules
+
+- Prefix: `/api/v1/`
+- Use plural nouns: `/api/v1/projects`
+- Nested for ownership: `/api/v1/projects/{project}/phases`
+- Laravel API Resources for response formatting
+- Pagination: `?per_page=`, `?page=`, `?sort=`, `?filter[field]=`
+
+## Security
+
+- Authentication: Laravel Sanctum
+- Authorization: Policies and Gates
+- Input validation: Form Request classes
+- File uploads: validate MIME type, size server-side
+- No raw queries with user input
+
+## Skills Reference
+
+Read these before working in corresponding areas:
+
+- `.agents/skills/laravel-patterns/SKILL.md`
+- `.agents/skills/eloquent-orm-patterns/SKILL.md`
+- `.agents/skills/db-migration-governance/SKILL.md`
+- `.agents/skills/error-handling-patterns/SKILL.md`
+- `.agents/skills/security-hardening/SKILL.md`
+- `.agents/skills/api-testing-patterns/SKILL.md`
+- `.agents/skills/observability-standards/SKILL.md`

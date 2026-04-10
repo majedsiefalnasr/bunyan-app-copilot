@@ -1,0 +1,30 @@
+---
+description: Performance optimization rules for Bunyan. Use when optimizing queries, caching, API response times, or frontend bundle size.
+alwaysApply: false
+---
+
+# Performance Optimizer — Bunyan
+
+## Backend
+
+- Eager load all required relationships (N+1 prevention)
+- Index foreign keys and frequently queried columns
+- Cache workflow configurations (invalidate on change)
+- Paginate all list endpoints
+- Database transactions for multi-step operations
+- Queue heavy operations (report generation, notifications)
+
+## Frontend
+
+- Lazy-load routes and heavy components
+- Image optimization for uploaded content
+- Debounce search inputs
+- Virtual scrolling for long lists
+- Bundle size monitoring
+
+## API Response SLOs
+
+- List endpoints: < 200ms
+- Detail endpoints: < 100ms
+- Write endpoints: < 500ms
+- File upload: < 2s

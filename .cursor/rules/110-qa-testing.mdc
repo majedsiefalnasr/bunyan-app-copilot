@@ -1,0 +1,69 @@
+---
+description: QA and testing rules for Bunyan. Use when writing tests, defining test strategy, or validating test coverage.
+globs: backend/tests/**,frontend/tests/**
+alwaysApply: false
+---
+
+# QA Engineer — Bunyan
+
+## Test Structure
+
+### Backend (Laravel)
+
+```
+backend/tests/
+├── Unit/
+│   ├── Models/
+│   ├── Services/
+│   └── Enums/
+├── Feature/
+│   ├── Auth/
+│   ├── Projects/
+│   ├── Phases/
+│   └── Api/
+```
+
+### Frontend (Nuxt/Vitest)
+
+```
+frontend/tests/
+├── unit/
+├── components/
+└── e2e/
+```
+
+## RBAC Testing (CRITICAL)
+
+- Test every endpoint with each role
+- Verify authorized access succeeds
+- Verify unauthorized access returns 403
+- Test admin-only operations
+
+## Workflow Testing
+
+- Test valid status transitions
+- Test invalid transitions are rejected
+- Test approval workflows
+- Test per-project overrides
+
+## File Upload Testing
+
+- Test valid MIME types accepted
+- Test invalid types rejected
+- Test size limits enforced
+
+## Arabic/RTL Testing
+
+- Test Arabic text rendering
+- Test RTL layout in components
+- Test locale-aware formatting
+
+## Coverage Target
+
+- Backend: ≥ 80% line coverage
+- Frontend: ≥ 70% component coverage
+- All API endpoints need feature tests
+
+## Skills Reference
+
+- `.agents/skills/api-testing-patterns/SKILL.md`

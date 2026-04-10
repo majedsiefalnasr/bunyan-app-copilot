@@ -1,0 +1,84 @@
+name: Hard Mode Guard
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - "specs/**"
+      - ".workflow-state.json"
+
+jobs:
+  spec-branch-guard:
+    name: Spec Branch Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate spec branch naming
+        run: |
+          BRANCH="${GITHUB_HEAD_REF}"
+          echo "Branch: ${BRANCH}"
+
+          if [[ "$BRANCH" =~ ^spec/STAGE_[0-9]+_ ]]; then
+            echo "✓ Branch follows spec/* naming convention"
+          else
+            echo "⚠ Warning: Branch does not follow spec/* naming"
+            echo "Expected format: spec/STAGE_XX_NAME"
+          fi
+
+      - name: Check workflow state exists
+        run: |
+          BRANCH="${GITHUB_HEAD_REF}"
+          STAGE_NAME=$(echo "$BRANCH" | grep -oP 'STAGE_\d+_[A-Z_]+' || echo "")
+
+          if [[ -n "$STAGE_NAME" ]]; then
+            WORKFLOW_FILE="specs/runtime/${STAGE_NAME}/.workflow-state.json"
+            if [[ -f "$WORKFLOW_FILE" ]]; then
+              echo "✓ Workflow state found: ${WORKFLOW_FILE}"
+
+              # Validate workflow state
+              CURRENT_STEP=$(grep -oP '"currentStep":\s*"\K[^"]+' "$WORKFLOW_FILE" || echo "unknown")
+              STATUS=$(grep -oP '"status":\s*"\K[^"]+' "$WORKFLOW_FILE" || echo "unknown")
+              echo "  Current Step: ${CURRENT_STEP}"
+              echo "  Status: ${STATUS}"
+
+              if [[ "$CURRENT_STEP" != "closure" ]]; then
+                echo "⚠ Warning: Workflow is not at closure step (current: ${CURRENT_STEP})"
+                echo "Ensure all steps are completed before merging."
+              fi
+            else
+              echo "✗ Error: No workflow state found for ${STAGE_NAME}"
+              echo "Expected: ${WORKFLOW_FILE}"
+              exit 1
+            fi
+          fi
+
+      - name: Validate spec artifacts
+        run: |
+          BRANCH="${GITHUB_HEAD_REF}"
+          STAGE_NAME=$(echo "$BRANCH" | grep -oP 'STAGE_\d+_[A-Z_]+' || echo "")
+
+          if [[ -n "$STAGE_NAME" ]]; then
+            RUNTIME_DIR="specs/runtime/${STAGE_NAME}"
+            REQUIRED_FILES=("spec.md" "plan.md" "tasks.md" "checklist.md")
+            MISSING=0
+
+            for file in "${REQUIRED_FILES[@]}"; do
+              if [[ -f "${RUNTIME_DIR}/${file}" ]]; then
+                echo "✓ Found: ${file}"
+              else
+                echo "✗ Missing: ${file}"
+                MISSING=$((MISSING + 1))
+              fi
+            done
+
+            if [[ $MISSING -gt 0 ]]; then
+              echo ""
+              echo "✗ ${MISSING} required artifact(s) missing."
+              echo "Run the full SpecKit workflow before creating a PR."
+              exit 1
+            fi
+          fi

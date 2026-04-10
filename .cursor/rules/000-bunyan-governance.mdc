@@ -1,0 +1,112 @@
+---
+description: Core governance and platform identity for Bunyan (بنيان) construction marketplace. Applied to all conversations.
+alwaysApply: true
+---
+
+# Bunyan (بنيان) — AI Behavioral Contract
+
+## Platform Identity
+
+Bunyan (بنيان): A full-stack Arabic construction services and building materials marketplace.
+
+- **Backend**: Laravel (PHP) + MySQL
+- **Frontend**: Nuxt.js 3 (Vue 3) + Nuxt UI (`@nuxt/ui`) + Tailwind CSS v4
+- **State**: Pinia
+- **Auth**: Laravel Sanctum
+- **Language**: Arabic-first (full RTL), multi-language ready
+
+## AI Context Loading Order
+
+Before reasoning, planning, or code generation, load these in order:
+
+1. `docs/ai/AI_BOOTSTRAP.md` — Architecture-first reasoning model
+2. `docs/ai/AI_CONTEXT_INDEX.md` — AI governance pipeline entry point
+3. `docs/PROJECT_CONTEXT_PRIMER.md` — Platform identity, domain rules
+4. `docs/ai/AI_ENGINEERING_RULES.md` — Detailed engineering constraints
+5. `docs/architecture/ADR/` — Binding architectural decisions
+6. `DESIGN.md` — Design system (Vercel-inspired visual language, Geist fonts, shadow-as-border, color palette)
+
+**Conflict resolution:** ADR > Specs > AI_CONTEXT_INDEX > AI_ENGINEERING_RULES > AGENTS.md > Implementation
+
+## Domain Model
+
+### Core Entities
+
+- **Users** — Multi-role (Customer, Contractor, Supervising Architect, Field Engineer, Admin)
+- **Projects** — Construction projects with phases and optional tasks
+- **Phases** — Budget + status tracking, linked to projects
+- **Tasks** — Optional sub-units within phases
+- **Workflow Configurations** — Global + per-project overridable rules
+- **Approval Rules** — Status-based approval chains
+- **Reports** — Field reports with text, images, videos
+- **Transactions** — Customer payments, contractor withdrawals
+- **Products** — Building materials e-commerce catalog
+- **Orders** — E-commerce orders linked to customers or projects
+
+### User Roles
+
+| Role                  | Arabic           | Dashboard                                    |
+| --------------------- | ---------------- | -------------------------------------------- |
+| Customer              | العميل           | Project tracking, payments                   |
+| Contractor            | المقاول          | Project execution, earnings, withdrawals     |
+| Supervising Architect | المهندس المشرف   | Project oversight, field engineer management |
+| Field Engineer        | المهندس الميداني | Field reporting, status updates              |
+| Admin                 | الإدارة          | Full platform control, configurations        |
+
+## Non-Negotiable Rules
+
+### RBAC (Hard Rule)
+
+- Role-based access control on ALL routes via Laravel middleware
+- Each role has dedicated dashboard and permission set
+- Permission checks enforced server-side (never client-only)
+- **Forbidden:** Unprotected admin routes, client-side-only authorization, role bypass
+
+### Import Boundaries
+
+- `backend/` → Laravel app (Models, Controllers, Services, Repositories)
+- `frontend/` → Nuxt.js app (Pages, Components, Composables, Stores)
+- Communication via REST API only
+- **Forbidden:** Direct DB access from frontend, shared PHP/JS code
+
+### Layering
+
+- Routes → Middleware (auth, RBAC) → Controllers → Services → Repositories → Models
+- Controllers: thin, no business logic
+- Services: business logic, no HTTP concerns, no direct Eloquent
+- Repositories: database access via Eloquent only
+- Models: relationships, scopes, accessors — no business logic
+
+### Error Contract
+
+```json
+{"success": true, "data": {}, "message": "string", "errors": {}}
+```
+
+### Migration Discipline
+
+- Forward-only migrations in `backend/database/migrations/`
+- Never modify existing migration files
+- Always include `down()` rollback methods
+
+### Testing
+
+No feature is complete without: unit tests (PHPUnit) + feature tests (Laravel) + frontend tests (Vitest) + migration validated + lint passes.
+
+Validation pipeline:
+
+```
+composer run lint && composer run test && npm run lint && npm run typecheck && npm run test
+```
+
+## Skills Reference
+
+All skills are in `.agents/skills/<name>/SKILL.md`. Read the relevant SKILL.md before working in that domain.
+
+## Architecture Authority
+
+ADRs in `docs/architecture/ADR/` are binding. Never invent architecture.
+
+## Escalation
+
+If you detect ambiguous spec, conflicting ADR, migration risk, or RBAC violation → STOP and request clarification. Guessing is forbidden.

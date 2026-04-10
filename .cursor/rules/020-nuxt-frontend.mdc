@@ -1,0 +1,129 @@
+---
+description: Nuxt.js frontend development rules for Bunyan. Use when working with Vue components, pages, composables, stores, or any frontend code.
+globs: frontend/**
+alwaysApply: false
+---
+
+# Nuxt.js Frontend Rules — Bunyan
+
+## Directory Structure
+
+```
+frontend/
+├── app.vue
+├── nuxt.config.ts
+├── app.config.ts           # Nuxt UI color config
+├── assets/css/
+├── components/             # common/, project/, workflow/, ecommerce/, dashboard/
+├── composables/            # useApi.ts, useAuth.ts, useWorkflow.ts, useDirection.ts
+├── layouts/                # default.vue, auth.vue, admin.vue
+├── middleware/             # auth.ts, role.ts
+├── pages/                  # index.vue, auth/, dashboard/, projects/, shop/, admin/
+├── stores/                 # auth.ts, projects.ts, cart.ts, notifications.ts
+├── i18n/                   # ar.json, en.json
+├── tests/                  # unit/, components/, e2e/
+└── nuxt.config.ts
+```
+
+## Component Template
+
+```vue
+<script setup lang="ts">
+  interface Props {
+    title: string
+    status: string
+  }
+
+  const props = defineProps<Props>()
+  const emit = defineEmits<{
+    update: [value: string]
+  }>()
+</script>
+
+<template>
+  <UCard>
+    <template #header>
+      <h3>{{ props.title }}</h3>
+    </template>
+    <!-- content -->
+  </UCard>
+</template>
+```
+
+## Design System (MANDATORY)
+
+- **Follow `DESIGN.md`** for visual language: Geist fonts, shadow-as-border, achromatic palette, negative letter-spacing
+- See `.cursor/rules/015-design-system.mdc` for quick reference
+
+## Nuxt UI Rules (MANDATORY)
+
+- Always use Nuxt UI components before writing custom HTML
+- Use `UDashboardLayout` / `UDashboardSidebar` for app shell
+- Use `USteppers` for multi-step flows
+- Use `UButton`, `UCard`, `UForm`, `UTable`, `UModal`, etc.
+- Configure colors via `app.config.ts` → `ui.colors`
+- **Never use Bootstrap classes** — Nuxt UI + Tailwind CSS v4 only
+- Install: `npx nuxi@latest module add ui`
+- Docs: https://ui.nuxt.com | MCP: https://mcp.nuxt.com
+
+## RTL & Arabic Design (CRITICAL)
+
+- Set `dir="rtl"` on `<html>` element
+- Nuxt UI RTL: Tailwind logical properties auto-mirror layout
+- Configure in `nuxt.config.ts` → `app.head.htmlAttrs.dir`
+- Numbers and dates formatted for Arabic locale
+- Nuxt UI icons mirror automatically in RTL context
+- All UI strings via `@nuxtjs/i18n` translation files
+
+## API Layer (MANDATORY)
+
+- All API calls via centralized API composable
+- Auto-inject Sanctum token
+- Handle errors consistently
+- Never trust client-supplied authorization data
+
+## RBAC UI Enforcement (MANDATORY)
+
+- Protect routes via Nuxt middleware based on role
+- Hide forbidden actions in UI
+- Match backend RBAC matrix
+- Show role-appropriate dashboards
+
+## State Management
+
+- Pinia stores for: auth, projects, workflow, cart, notifications
+- Composables for reusable logic
+- No direct API calls in components — use stores/composables
+
+## Form Validation
+
+- VeeValidate for form state management
+- Zod schemas for validation rules
+- Arabic error messages
+- File upload components for reports
+
+## Performance
+
+- Lazy-load routes and heavy components
+- Image optimization
+- Paginate lists
+- Debounce search inputs
+
+## Dashboard Layout by Role
+
+| Role                  | Features                                        |
+| --------------------- | ----------------------------------------------- |
+| Customer              | Projects, payments, orders                      |
+| Contractor            | Assigned projects, earnings, withdrawals        |
+| Supervising Architect | Supervised projects, field engineer assignments |
+| Field Engineer        | Assigned tasks, report submission               |
+| Admin                 | Full platform, configurations, approvals        |
+
+## Skills Reference
+
+Read these before working in corresponding areas:
+
+- `.agents/skills/nuxt-frontend-engineering/SKILL.md`
+- `.agents/skills/vue/SKILL.md`
+- `.agents/skills/bootstrap-ui-system/SKILL.md`
+- `.agents/skills/i18n-governance/SKILL.md`

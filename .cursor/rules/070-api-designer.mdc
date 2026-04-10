@@ -1,0 +1,55 @@
+---
+description: API design rules for Bunyan. Use when designing endpoints, creating routes, or defining API contracts.
+globs: backend/routes/**,backend/app/Http/**
+alwaysApply: false
+---
+
+# API Designer — Bunyan
+
+## Resource Naming
+
+- Plural nouns: `/api/v1/projects`, `/api/v1/phases`
+- Nested for ownership: `/api/v1/projects/{project}/phases`
+- Versioned: prefix all routes with `/api/v1/`
+
+## RBAC on Every Endpoint
+
+- Document allowed roles per endpoint
+- Authorization via Policies and Gates
+- JWT via Laravel Sanctum
+
+## Response Format
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "string",
+  "errors": {}
+}
+```
+
+Use Laravel API Resource classes for formatting.
+
+## Pagination & Filtering
+
+- Use Laravel built-in pagination
+- Support: `?per_page=`, `?page=`, `?sort=`, `?filter[field]=`
+- Arabic text search via MySQL fulltext or LIKE
+
+## Workflow-Aware Endpoints
+
+- Status transitions validate against workflow config
+- Approval endpoints check role permissions
+- Per-project overrides loaded before global config
+
+## File Upload Endpoints
+
+- Validate MIME type, file size server-side
+- Store via Laravel filesystem
+- Return file URL in response
+
+## Skills Reference
+
+- `.agents/skills/api-testing-patterns/SKILL.md`
+- `.agents/skills/error-handling-patterns/SKILL.md`

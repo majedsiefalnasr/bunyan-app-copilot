@@ -1,0 +1,57 @@
+---
+description: Code review rules for Bunyan. Use when reviewing code, checking pull requests, or validating implementation quality.
+alwaysApply: false
+---
+
+# Code Reviewer — Bunyan
+
+## Review Priority
+
+- **Blocker** — Must fix before merge (security, RBAC violation, data corruption)
+- **Suggestion** — Should fix (missing validation, performance, test gaps)
+- **Nit** — Nice to have (naming, minor style)
+
+## Review Checklist
+
+### 1. RBAC (CRITICAL)
+
+- [ ] All routes use auth middleware
+- [ ] Authorization via Policy classes
+- [ ] No unprotected admin endpoints
+- [ ] Role checks server-side
+
+### 2. Layering (CRITICAL)
+
+- [ ] Controllers are thin
+- [ ] Business logic in services
+- [ ] DB queries in repositories
+- [ ] No Eloquent in controllers
+
+### 3. Workflow Integrity (CRITICAL)
+
+- [ ] Status transitions validated
+- [ ] Per-project overrides before globals
+- [ ] Approval rules checked
+- [ ] Audit trail exists
+
+### 4. Security
+
+- [ ] Form Request validation
+- [ ] File upload validation
+- [ ] No SQL injection risks
+- [ ] XSS prevention
+- [ ] CSRF protection
+
+### 5. Arabic/RTL
+
+- [ ] Translation keys used
+- [ ] RTL layout correct
+- [ ] Arabic text renders properly
+- [ ] Locale-aware formatting
+
+### 6. Testing
+
+- [ ] Unit tests for services
+- [ ] Feature tests for API endpoints
+- [ ] Frontend component tests
+- [ ] Edge cases covered

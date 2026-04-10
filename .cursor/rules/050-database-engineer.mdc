@@ -1,0 +1,74 @@
+---
+description: Database engineering rules for Bunyan. Use when creating migrations, designing schemas, optimizing queries, or working with Eloquent relationships.
+globs: backend/database/**
+alwaysApply: false
+---
+
+# Database Engineer — Bunyan
+
+## Migration Governance
+
+### File Integrity
+
+- Migrations in `backend/database/migrations/`
+- Naming: `YYYY_MM_DD_HHMMSS_verb_noun_table.php`
+- Verbs: `create`, `add`, `modify`, `drop`, `rename`
+- Never modify existing migrations — forward-only
+- Always include `down()` rollback
+
+### Lock Risk Analysis (MySQL)
+
+| Risk   | Operations                                          |
+| ------ | --------------------------------------------------- |
+| LOW    | `ADD COLUMN` (nullable), `DROP COLUMN`              |
+| MEDIUM | `ADD COLUMN WITH DEFAULT`, `ADD INDEX`              |
+| HIGH   | `ALTER COLUMN TYPE`, `ADD NOT NULL` on large tables |
+
+Block HIGH-risk without mitigation strategy.
+
+### Foreign Key Safety
+
+- All relationships must have explicit foreign keys
+- Cascade deletes carefully considered (soft delete preferred)
+- Index foreign key columns
+
+## Query Performance
+
+- Eager load relationships (prevent N+1)
+- Use `select()` to limit columns
+- Query scopes for reusable conditions
+- Chunking for large datasets
+- Index: WHERE, ORDER BY, JOIN columns
+
+## MySQL-Specific
+
+- `InnoDB` engine for all tables
+- `utf8mb4` charset for Arabic text
+- Composite indexes for multi-column queries
+- Fulltext indexes for Arabic text search
+- Use `EXPLAIN` for slow queries
+
+## Core Schema
+
+| Table                   | Key Relationships                       |
+| ----------------------- | --------------------------------------- |
+| users                   | roles (many-to-many), projects          |
+| projects                | phases, users (polymorphic)             |
+| phases                  | tasks (optional), projects, reports     |
+| tasks                   | phases, reports                         |
+| workflow_configurations | projects (nullable for global)          |
+| approval_rules          | workflow_configurations                 |
+| reports                 | phases/tasks (polymorphic), users       |
+| transactions            | users, projects                         |
+| products                | categories, order_items                 |
+| orders                  | users, order_items, projects (nullable) |
+
+## Conventions
+
+- Soft deletes: users, projects, phases, tasks, products, orders
+- Audit columns: `created_at`, `updated_at`, `created_by`, `updated_by`
+
+## Skills Reference
+
+- `.agents/skills/db-migration-governance/SKILL.md`
+- `.agents/skills/eloquent-orm-patterns/SKILL.md`

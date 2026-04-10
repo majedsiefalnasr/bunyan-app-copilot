@@ -1,0 +1,61 @@
+---
+description: i18n, RTL, and Arabic localization rules for Bunyan. Use when working with translations, text rendering, or layout direction.
+globs: frontend/locales/**,backend/resources/lang/**
+alwaysApply: false
+---
+
+# i18n & RTL Governance — Bunyan
+
+## Language Config
+
+- Primary: Arabic (ar) — RTL
+- Secondary: English (en) — LTR
+- Default locale: ar
+
+## Translation Keys
+
+- Dot notation with category prefix: `projects.status.active`
+- Snake_case keys: `validation.field_required`
+- Never hardcode Arabic/English text in templates
+- Always provide both ar + en translations
+- Use parameters for dynamic values: `:amount`
+
+## Backend Translation Structure
+
+```
+backend/resources/lang/
+├── ar/ (auth.php, validation.php, projects.php, orders.php, common.php)
+└── en/ (same files)
+```
+
+## Frontend Translation Structure
+
+```
+frontend/locales/
+├── ar.json
+└── en.json
+```
+
+## RTL Layout Rules
+
+- `dir="rtl"` as default on `<html>`
+- Use CSS logical properties:
+  - `margin-inline-start` / `margin-inline-end`
+  - `padding-inline-start` / `padding-inline-end`
+  - `border-inline-start` / `border-inline-end`
+- Nuxt UI handles RTL natively
+
+## Currency & Formatting
+
+- Currency: Saudi Riyal (SAR / ر.س)
+- Date: `Intl.DateTimeFormat('ar-SA')`
+- Numbers: Arabic-Hindi numerals optional (٠١٢٣٤٥٦٧٨٩)
+
+## Validation Messages (Arabic)
+
+All validation errors MUST have Arabic translations:
+
+```php
+'name.required' => 'حقل الاسم مطلوب',
+'email.email' => 'البريد الإلكتروني غير صالح',
+```
