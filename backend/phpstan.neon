@@ -1,0 +1,17 @@
+includes:
+  - vendor/phpstan/phpstan/conf/config.level5.neon
+
+parameters:
+  level: 5
+  paths:
+    - app
+    - routes
+    - database/factories
+    - database/seeders
+  tmpDir: build/phpstan
+  typeAliases:
+    ID: 'int|string'
+  checkGenericClassInNonGenericObjectType: false
+  checkInternalClassCstringFormat: false
+  ignoreErrors:
+    - '#Access to an undefined property#'

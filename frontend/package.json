@@ -13,18 +13,19 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "nuxt": "^3.12.0",
-    "@nuxtjs/i18n": "^8.3.0"
+    "@nuxt/ui": "^4.6.1",
+    "@nuxtjs/i18n": "^8.3.0",
+    "nuxt": "^3.12.0"
   },
   "devDependencies": {
     "@nuxt/eslint": "latest",
     "@nuxt/test-utils": "latest",
-    "@vue/test-utils": "latest",
-    "vitest": "latest",
-    "@vitest/ui": "latest",
-    "vitest-canvas-mock": "latest",
     "@playwright/test": "latest",
+    "@vitest/ui": "latest",
+    "@vue/test-utils": "latest",
     "typescript": "latest",
+    "vitest": "latest",
+    "vitest-canvas-mock": "latest",
     "vue": "^3.4.0"
   }
 }

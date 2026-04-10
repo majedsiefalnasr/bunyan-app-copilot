@@ -62,7 +62,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Backend Configuration
 
-- [ ] **T003** [P] [US1] Configure MySQL database connection
+- [X] **T003** [P] [US1] Configure MySQL database connection
   - **Files:** 
     - `backend/.env`
     - `backend/.env.example`
@@ -74,7 +74,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 10 min
   - **Dependencies:** T001
 
-- [ ] **T004** [P] [US1] Install and configure Laravel Sanctum
+- [X] **T004** [P] [US1] Install and configure Laravel Sanctum
   - **Files:**
     - `backend/composer.json` (dependency added)
     - `backend/config/sanctum.php` (published)
@@ -94,7 +94,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 10 min
   - **Dependencies:** T001, T003
 
-- [ ] **T005** [P] [US1] Install and configure PHPStan + PHP-CS-Fixer
+- [X] **T005** [P] [US1] Install and configure PHPStan + PHP-CS-Fixer
   - **Files:**
     - `backend/composer.json` (dev dependencies added)
     - `backend/phpstan.neon`
@@ -118,7 +118,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 
 ### Frontend Configuration
 
-- [ ] **T006** [P] [US2] Install @nuxt/ui module + Tailwind CSS v4
+- [X] **T006** [P] [US2] Install @nuxt/ui module + Tailwind CSS v4
   - **Files:**
     - `frontend/package.json` (@nuxt/ui added)
     - `frontend/nuxt.config.ts` (module registration)
@@ -139,7 +139,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 12 min
   - **Dependencies:** T002
 
-- [ ] **T007** [P] [US2] Enable TypeScript strict mode + @nuxtjs/i18n
+- [X] **T007** [P] [US2] Enable TypeScript strict mode + @nuxtjs/i18n
   - **Files:**
     - `frontend/tsconfig.json`
     - `fronten d/nuxt.config.ts` (i18n module registration)
@@ -161,7 +161,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 12 min
   - **Dependencies:** T002, T006
 
-- [ ] **T008** [P] [US2] Configure RTL support + Tailwind logical properties
+- [X] **T008** [P] [US2] Configure RTL support + Tailwind logical properties
   - **Files:**
     - `frontend/nuxt.config.ts` (html dir binding)
     - `frontend/tailwind.config.ts` (important: support logical properties)
@@ -174,7 +174,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Estimated Time:** 10 min
   - **Dependencies:** T002, T006, T007
 
-- [ ] **T009** [P] [US2] Install @nuxtjs/eslint + configure Vitest
+- [X] **T009** [P] [US2] Install @nuxtjs/eslint + configure Vitest
   - **Files:**
     - `frontend/package.json` (eslint, vitest, @vue/test-utils added)
     - `frontend/.eslintrc.json` (created via npx)
