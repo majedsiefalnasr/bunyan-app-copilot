@@ -52,21 +52,25 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+          path: backend/vendor
+          key: composer-${{ hashFiles('backend/composer.lock') }}
           restore-keys: composer-
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
+        working-directory: backend
 
       - name: Copy environment file
         run: cp .env.ci .env
+        working-directory: backend
 
       - name: Generate application key
         run: php artisan key:generate
+        working-directory: backend
 
       - name: Run migrations
         run: php artisan migrate --force
+        working-directory: backend
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
@@ -76,12 +80,15 @@ jobs:
 
       - name: Laravel Pint (Lint)
         run: vendor/bin/pint --test
+        working-directory: backend
 
       - name: PHPStan (Static Analysis)
         run: vendor/bin/phpstan analyse --memory-limit=512M
+        working-directory: backend
 
       - name: PHPUnit (Tests)
         run: php artisan test --parallel
+        working-directory: backend
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
@@ -164,6 +171,7 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
+        working-directory: backend
 
       - name: Setup backend environment
         run: |
@@ -171,6 +179,7 @@ jobs:
           php artisan key:generate
           php artisan migrate --force
           php artisan db:seed --class=E2ESeeder --force
+        working-directory: backend
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
@@ -180,6 +189,7 @@ jobs:
 
       - name: Start Laravel API server
         run: php artisan serve --port=8000 &
+        working-directory: backend
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306

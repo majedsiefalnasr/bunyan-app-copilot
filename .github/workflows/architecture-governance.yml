@@ -20,6 +20,7 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
+        working-directory: backend
 
       - name: Validate layer boundaries
         run: |
@@ -34,6 +35,7 @@ jobs:
           else
             echo "✓ Controller layer clean"
           fi
+        working-directory: backend
 
       - name: Validate RBAC middleware
         run: |
@@ -46,6 +48,7 @@ jobs:
           else
             echo "✓ All API routes appear protected"
           fi
+        working-directory: backend
 
       - name: Check migration safety
         run: |
@@ -59,3 +62,4 @@ jobs:
           else
             echo "✓ No destructive migration operations"
           fi
+        working-directory: backend
