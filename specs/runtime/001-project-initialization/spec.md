@@ -308,3 +308,286 @@ HTTP Status Codes:
 - [ ] No [NEEDS CLARIFICATION] markers remain
 - [ ] README.md complete with setup + troubleshooting steps
 - [ ] `spec.md`, `plan.md`, `tasks.md`, and `checklists/requirements.md` all finalized
+
+---
+
+## Clarifications
+
+> **Mode:** AUTOPILOT (resolved with best judgment aligned to architecture governance)  
+> **Date:** 2026-04-10  
+> **Scope:** STAGE_01_PROJECT_INITIALIZATION foundation layer ambiguities
+
+### Q1: RBAC Middleware — Which routes should be public vs protected?
+
+**Question:** In the foundation stage, the RBAC middleware scaffold exists but no actual endpoints are implemented. Should we establish a principle for which routes are public vs protected?
+
+**Decision:** ✅ **Established Principle: Default-Protected, Explicit Exceptions**
+
+_Rationale:_ Per Bunyan AGENTS.md non-negotiable rule: "Role-based access control on all routes via Laravel middleware." This foundation stage must encode this principle into the scaffold.
+
+**Binding Decision:**
+- **.All** API routes under `/api/v1/*` MUST use `auth:sanctum` middleware by default
+- **Public exceptions** are explicit and documented:
+  - `POST /api/v1/auth/register` (unauthenticated signup)
+  - `POST /api/v1/auth/login` (unauthenticated login)
+  - `GET /api/v1/health` (health check)
+- **Health endpoint** returns `{ success: true, data: { status: 'ok' } }` with status 200
+- Every controller action MUST authorize via Laravel Policies (scaffolded in STAGE_04; placeholders in STAGE_01)
+- The middleware foundation includes placeholders for:
+  - `VerifyApiVersion` (rejects requests not specifying API version)
+  - `CheckRole` (placeholder; actual policy checks deferred to STAGE_04)
+
+**Implementation Detail:**
+```php
+// BaseController.php — All API responses use:
+return $this->response(data: $data, message: 'OK', status: 200);
+
+// Exception Handler — All errors formatted as:
+{ "success": false, "data": null, "message": "...", "errors": {...} }
+```
+
+---
+
+### Q2: Error Responses — Exact validation error structure?
+
+**Question:** The error contract specifies an `errors` object, but how should validation field errors be structured? Flat mapping or nested?
+
+**Decision:** ✅ **Laravel Standard Validation Format**
+
+_Rationale:_ Laravel's Form Request validation already produces this format; using it standardizes onboarding and reduces custom serialization.
+
+**Binding Decision:**
+- Validation errors in `errors` object map **field name → array of messages**
+- Example validation response:
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "message": "Validation failed",
+    "errors": {
+      "email": ["Email is required", "Email must be a valid email address"],
+      "password": ["Password must be at least 8 characters"]
+    }
+  }
+  ```
+- Server-side error (5xx, database, etc.) format:
+  ```json
+  {
+    "success": false,
+    "data": null,
+    "message": "Internal Server Error",
+    "errors": {}
+  }
+  ```
+- Include a user-facing `message` but never expose stack traces or SQL in production
+
+**Implementation Detail:**
+- Form Requests use `Base\FormRequest::rules()` to return validation rules
+- Exception Handler catches `ValidationException` and formats as above
+- All 4xx/5xx HTTP responses strictly follow this contract
+- No exceptions to this contract in any API layer
+
+---
+
+### Q3: Docker Compose — Which services are mandatory vs optional?
+
+**Question:** The spec mentions MySQL, Redis, and Node services, but which are required for foundation stage local dev?
+
+**Decision:** ✅ **Mandatory: MySQL | Recommended: Redis | Optional: Node watcher**
+
+_Rationale:_ Practicality for developers. Backend cannot work without a database; Redis and Node services support future stages but aren't blocking for foundation.
+
+**Binding Decision:**
+- **MySQL 8.x** — MANDATORY
+  - Required for `php artisan migrate` and `php artisan test`
+  - Docker Compose default; developers can opt-out and use local MySQL
+  - Environment: MySQL 8.0.x, `utf8mb4_unicode_ci`, port 3306
+  
+- **Redis** — RECOMMENDED (optional for STAGE_01, required later)
+  - Used in later stages for queues, caching, sessions
+  - Include in `docker-compose.yml` but not required to start
+  - Developers can defer enabling until needed
+  
+- **Node watcher** — OPTIONAL (frontend devs only)
+  - Not needed if developers run `npm run dev` locally
+  - Useful for Dockerized dev workflows
+  - Does NOT block STAGE_01 acceptance
+
+**Implementation Detail:**
+```yml
+# docker-compose.yml structure:
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: bunyan
+      MYSQL_ROOT_PASSWORD: root
+    # Required for backend
+
+  redis:
+    image: redis:7-alpine
+    # Optional; used in STAGE_14+ for queues/cache
+
+  # Node watcher deferred if needed
+```
+
+**Startup Command (Foundation Stage):**
+```bash
+docker-compose up -d mysql  # Start only MySQL
+php artisan serve            # Start Laravel API
+npm run dev                  # Start Nuxt dev server (local Node)
+```
+
+---
+
+### Q4: Nuxt UI — Which components are essential for foundation?
+
+**Question:** The spec requires "sample component renders correctly," but which components define "essential" for foundation stage?
+
+**Decision:** ✅ **Minimal Essential Set: UButton, UCard, UForm, UInput, ULayout**
+
+_Rationale:_ These five components are sufficient to demonstrate Nuxt UI setup, RTL capability, and baseline Tailwind integration. Avoids over-specifying; other components added incrementally in STAGE_30+.
+
+**Binding Decision:**
+- **Proof-of-Concept Components** (must render correctly):
+  1. `UButton` — Demonstrates component props, styling
+  2. `UCard` — Demonstrates shadow-as-border design from DESIGN.md
+  3. `UForm` + `UInput` — Together demonstrate Nuxt UI form system
+  4. `ULayout` / base `layouts/default.vue` — Demonstrates RTL-aware structure
+
+- **Verification Test** (E2E smoke test in Playwright):
+  - Load `http://localhost:3000/` (root page)
+  - Verify: Card renders, Button clickable, Form responsive
+  - Verify: RTL direction attribute present in HTML
+  - Verify: No console errors
+
+- **RTL Verification**:
+  - Inspect `<html dir="rtl">` attribute in dev server
+  - Verify Tailwind logical properties applied (`margin-inline`, `padding-block`)
+  - Verify component layout direction respected
+
+**Implementation Detail:**
+```vue
+<!-- pages/index.vue — Foundation demo -->
+<template>
+  <div class="p-8">
+    <UCard title="Bunyan Foundation">
+      <UForm :schema="schema">
+        <UInput v-model="form.email" label="Email" />
+        <UButton type="submit">Submit</UButton>
+      </UForm>
+    </UCard>
+  </div>
+</template>
+```
+
+---
+
+### Q5: RTL Support — Should all components strictly follow RTL from day 1?
+
+**Question:** The spec mentions RTL support verification, but should implementation be "strict RTL" or just "RTL-configured"?
+
+**Decision:** ✅ **RTL-Configured (not strict for foundation; content localization in later stages)**
+
+_Rationale:_ Foundation stage focuses on architecture and tooling. Content and component localization follow in STAGE_30+ when actual pages exist. Setting up infrastructure now (logical properties, `dir` attribute) is sufficient.
+
+**Binding Decision:**
+- **RTL Configuration** (STAGE_01 responsibility):
+  - `nuxt.config.ts`: Set `i18n.defaultLocale = 'ar'` and `dir: 'rtl'`
+  - `tailwind.config.ts`: Enable logical properties globally
+  - `layouts/default.vue`: Include `dir="rtl"` on root `<html>` tag
+  - All Nuxt UI components automatically inherit RTL via configuration
+  
+- **RTL Infrastructure** (verified but not strict):
+  - Confirm `<html dir="rtl">` renders correctly
+  - Confirm Tailwind logical properties compile (e.g., `margin-inline-start` instead of `margin-left`)
+  - No hardcoded LTR assumptions in grid, flex, or positioning
+  
+- **Content Localization** (deferred to STAGE_31+ frontend pages):
+  - Actual Arabic text, number formatting, date formatting = later
+  - Translation keys in `locales/ar.json` scaffolded but minimal
+  - Component RTL layout tested; Arabic content added in STAGE_31
+
+**Implementation Detail:**
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  i18n: {
+    locales: ['ar', 'en'],
+    defaultLocale: 'ar',
+    strategy: 'prefix',
+  },
+  dir: 'rtl', // Sets initial direction
+})
+```
+
+---
+
+### Q6: Testing Coverage — What % is acceptable for foundation stage?
+
+**Question:** The spec requires "100% pass rate for bootstrap tests," but does this mean 100% code coverage or just zero test failures?
+
+**Decision:** ✅ **Zero Test Failures; 70% Coverage for New Code**
+
+_Rationale:_ "Bootstrap tests" = generated scaffolding + example implementations. Expecting 100% coverage on auto-generated code is impractical; focus instead on meaningful coverage for business logic layers (services, repositories).
+
+**Binding Decision:**
+- **Bootstrap Test Definition**: Tests for scaffolded code (models, migrations, base controller/service placeholders)
+  
+- **Passing Criteria**:
+  - All tests must PASS (0 failures allowed)
+  - Coverage baseline: 70% for new code written by developers
+  - Generated/scaffolded code: No coverage requirement (it's infrastructure)
+  
+- **Coverage Reporting**:
+  - Backend: `composer run test:coverage` → generates report
+  - Frontend: `npm test` → includes coverage (optional for foundation)
+  
+- **Example Acceptable Coverage**:
+  - Model relationships: Not required (generated)
+  - Service layer: 70%+ (business logic)
+  - Repository queries: 70%+ (data access layer)
+  - Controllers: Not required (thin, delegated)
+  
+- **Foundation Stage Coverage Targets**:
+  - At least 3 Unit tests per service/repository created
+  - At least 2 Feature tests demonstrating protected routes (auth required)
+  - At least 1 E2E test demonstrating frontend/backend integration
+
+**Implementation Detail:**
+```bash
+# Backend
+composer run test:coverage  # Shows %
+
+# Frontend
+npm run test                # Vitest run
+
+# CI gate: Fail on test failures, warn on low coverage
+```
+
+---
+
+### Summary of Binding Decisions
+
+| Area | Decision | Impact |
+|------|----------|--------|
+| **RBAC Routes** | Default-protected all `/api/v1/*` routes; explicit public exceptions | Ensures security-first architecture |
+| **Error Format** | Laravel standard: field → array of messages | Native Laravel integration, consistent error handling |
+| **Docker Services** | MySQL mandatory, Redis optional, Node watcher optional | Flexible local dev, unblocks foundation delivery |
+| **Nuxt UI Components** | 5 essential components (Button, Card, Form, Input, Layout) | Minimal but sufficient proof-of-concept |
+| **RTL Support** | Configuration now; content localization deferred to STAGE_31+ | Builds infrastructure without over-specifying |
+| **Test Coverage** | 0 failures; 70% for new code (scaffolding excluded) | Practical for bootstrap stage, scales to production standards |
+
+### Governance Alignment
+
+✅ All clarifications remain **within architecture governance bounds**:
+- RBAC non-negotiable (✅ enforced as default-protected)
+- Error contract binding (✅ standardized to Laravel validation format)
+- No external dependencies unjustified (✅ all services already in tech stack)
+- RTL/Arabic support as first-class (✅ configured infrastructure-first)
+
+---
+
+**Status:** CLARIFICATIONS COMPLETE  
+**Next Step:** Proceed to `speckit.plan` to generate implementation design artifacts  
+**Branch:** `spec/001-project-initialization` (ready for planning phase)
