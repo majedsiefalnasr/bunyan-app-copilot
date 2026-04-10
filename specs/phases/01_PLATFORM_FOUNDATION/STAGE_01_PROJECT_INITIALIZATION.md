@@ -7,9 +7,18 @@
 
 ## Stage Status
 
-Status: NOT STARTED
-Step: —
+Status: DRAFT
+Step: pre_step
 Risk Level: LOW
+Initiated: 2026-04-10T00:00:00Z
+
+Scope Open:
+
+- Backend and frontend project initialization pending
+
+Architecture Governance Compliance:
+
+- Pending specification and governance audit
 
 ## Objective
 
