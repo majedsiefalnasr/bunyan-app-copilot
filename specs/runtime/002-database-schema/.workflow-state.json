@@ -62,7 +62,13 @@
     },
     {
       "event": "drift_analysis_passed",
-      "auditors": ["speckit.analyze", "security_auditor", "performance_optimizer", "qa_engineer", "code_reviewer"],
+      "auditors": [
+        "speckit.analyze",
+        "security_auditor",
+        "performance_optimizer",
+        "qa_engineer",
+        "code_reviewer"
+      ],
       "timestamp": "2026-04-11T00:15:00Z"
     },
     {

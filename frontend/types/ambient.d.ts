@@ -6,7 +6,9 @@ declare function useAsyncData<T = unknown>(
   fetcher: () => Promise<T> | T,
   opts?: unknown
 ): Promise<{ data: T }>;
-declare function queryCollection<T = unknown>(name: string): {
+declare function queryCollection<T = unknown>(
+  name: string
+): {
   path: (p: string) => {
     first: () => Promise<T> | T;
   };

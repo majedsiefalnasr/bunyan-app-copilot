@@ -11,13 +11,13 @@
 
 ## Plan Summary
 
-| Metric | Value |
-|--------|-------|
-| Total phases | 7 (Phase 0 – Phase 6) |
-| Total files to create | 17 |
-| Total files to modify | 3 |
-| Estimated tasks | 34 |
-| Key risks | 4 (see §Risks) |
+| Metric                | Value                 |
+| --------------------- | --------------------- |
+| Total phases          | 7 (Phase 0 – Phase 6) |
+| Total files to create | 17                    |
+| Total files to modify | 3                     |
+| Estimated tasks       | 34                    |
+| Key risks             | 4 (see §Risks)        |
 
 ---
 
@@ -39,13 +39,13 @@ Phase 0 (Verification)
 
 **Goal**: Confirm STAGE_01 output is clean and the environment is ready.
 
-| Task | Action | Acceptance |
-|------|--------|-----------|
-| P0-T1 | Run `php artisan migrate:fresh` on dev database | Zero errors; all STAGE_01 tables exist |
-| P0-T2 | Verify `app/Models/User.php` has `UserRole` cast and `HasApiTokens` | File matches STAGE_01 spec |
-| P0-T3 | Verify `app/Enums/UserRole.php` has all 5 cases | `admin`, `customer`, `contractor`, `supervising_architect`, `field_engineer` |
-| P0-T4 | Confirm `composer run lint` passes on current codebase | Zero PSR-12 violations |
-| P0-T5 | Confirm current branch is `spec/002-database-schema` | `git branch --show-current` |
+| Task  | Action                                                              | Acceptance                                                                   |
+| ----- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| P0-T1 | Run `php artisan migrate:fresh` on dev database                     | Zero errors; all STAGE_01 tables exist                                       |
+| P0-T2 | Verify `app/Models/User.php` has `UserRole` cast and `HasApiTokens` | File matches STAGE_01 spec                                                   |
+| P0-T3 | Verify `app/Enums/UserRole.php` has all 5 cases                     | `admin`, `customer`, `contractor`, `supervising_architect`, `field_engineer` |
+| P0-T4 | Confirm `composer run lint` passes on current codebase              | Zero PSR-12 violations                                                       |
+| P0-T5 | Confirm current branch is `spec/002-database-schema`                | `git branch --show-current`                                                  |
 
 ---
 
@@ -64,9 +64,10 @@ Phase 0 (Verification)
 **Dependencies**: STAGE_01 `create_users_table` migration
 
 **Implementation Notes**:
+
 - Use `Schema::table('users', ...)` (not `Schema::create`)
 - `up()` adds:
-  - `$table->string('phone', 30)->nullable()->after('email')` 
+  - `$table->string('phone', 30)->nullable()->after('email')`
   - `$table->boolean('is_active')->default(true)->after('remember_token')`
   - `$table->string('avatar', 500)->nullable()->after('is_active')`
   - `$table->softDeletes()` (adds `deleted_at` timestamp)
@@ -86,6 +87,7 @@ Phase 0 (Verification)
 **Dependencies**: None (no FKs pointing to other new tables)
 
 **Implementation Notes**:
+
 - `Schema::create('roles', ...)`
 - Columns: `id()`, `string('name', 100)->unique()`, `string('display_name', 150)`, `string('display_name_ar', 150)`, `text('description')->nullable()`, `timestamps()`
 - `down()`: `Schema::dropIfExists('roles')`
@@ -102,6 +104,7 @@ Phase 0 (Verification)
 **Dependencies**: None
 
 **Implementation Notes**:
+
 - `Schema::create('permissions', ...)`
 - Columns: `id()`, `string('name', 150)->unique()`, `string('display_name', 200)`, `string('group', 100)`, `text('description')->nullable()`, `timestamps()`
 - Index: `$table->index('group')` — required by NFR-003
@@ -118,6 +121,7 @@ Phase 0 (Verification)
 **Dependencies**: migrations 1 (`users` updated) and 2 (`roles` exists)
 
 **Implementation Notes**:
+
 - `Schema::create('role_user', ...)`
 - Columns: `$table->foreignId('role_id')->constrained()->cascadeOnDelete()`, `$table->foreignId('user_id')->constrained()->cascadeOnDelete()`, `$table->timestamps()`
 - Primary key: `$table->primary(['role_id', 'user_id'])` — composite, no auto-increment (FR-015)
@@ -136,6 +140,7 @@ Phase 0 (Verification)
 **Dependencies**: migrations 2 (`roles`) and 3 (`permissions`)
 
 **Implementation Notes**:
+
 - `Schema::create('permission_role', ...)`
 - Columns: `$table->foreignId('permission_id')->constrained()->cascadeOnDelete()`, `$table->foreignId('role_id')->constrained()->cascadeOnDelete()`, `$table->timestamps()`
 - Primary key: `$table->primary(['permission_id', 'role_id'])` — composite (FR-015)
@@ -159,6 +164,7 @@ Phase 0 (Verification)
 **Dependencies**: Migration 1 (adds `phone`, `is_active`, `avatar`, `deleted_at`)
 
 **Implementation Notes**:
+
 - Convert `#[Fillable]` attribute to explicit `$fillable` array property: `['name', 'email', 'phone', 'password', 'is_active', 'avatar']`
   - **Do NOT add `role` to `$fillable`** (SEC-FINDING-A: privilege escalation vector — `role` is an enum column assigned only via explicit `$user->role = UserRole::X; $user->save()` in seeders/factories, never via mass assignment)
 - Convert `#[Hidden]` attribute to explicit `$hidden` array property: `['password', 'remember_token']`
@@ -182,6 +188,7 @@ Phase 0 (Verification)
 **Dependencies**: Migration 2 (`roles` table)
 
 **Implementation Notes**:
+
 - Extends `Illuminate\Database\Eloquent\Model`
 - Uses `HasFactory`
 - `$fillable = ['name', 'display_name', 'display_name_ar', 'description']`
@@ -201,6 +208,7 @@ Phase 0 (Verification)
 **Dependencies**: Migration 3 (`permissions` table)
 
 **Implementation Notes**:
+
 - Extends `Illuminate\Database\Eloquent\Model`
 - Uses `HasFactory`
 - `$fillable = ['name', 'display_name', 'group', 'description']`
@@ -219,6 +227,7 @@ Phase 0 (Verification)
 **Dependencies**: None
 
 **Implementation Notes**:
+
 - Extends `Illuminate\Database\Eloquent\Model`
 - Uses `SoftDeletes`, `HasFactory`
 - `protected $guarded = []` — child models must declare explicit `$fillable`
@@ -275,6 +284,7 @@ interface RepositoryInterface
 **Dependencies**: Task 3.1 (RepositoryInterface)
 
 **Implementation Notes**:
+
 - Abstract class implements `RepositoryInterface`
 - Constructor: `public function __construct(protected Model $model)`
 - `find(int $id): ?Model` — `return $this->model->find($id)`
@@ -298,6 +308,7 @@ interface RepositoryInterface
 **Dependencies**: Task 3.2 (BaseRepository), Task 2.1 (User model updated)
 
 **Implementation Notes**:
+
 - Extends `BaseRepository`
 - Constructor injects `User` model: `public function __construct(User $model) { parent::__construct($model); }`
 - `findByEmail(string $email): ?User` — `return $this->model->where('email', $email)->first()`
@@ -315,6 +326,7 @@ interface RepositoryInterface
 **Dependencies**: Tasks 3.1, 3.3
 
 **Implementation Notes**:
+
 - In `register()` method add:
   ```php
   $this->app->bind(UserRepository::class, fn () => new UserRepository(new User()));
@@ -339,16 +351,17 @@ interface RepositoryInterface
 **Dependencies**: Migration 2 (roles table), Task 2.2 (Role model)
 
 **Implementation Notes**:
+
 - Use `Role::updateOrCreate(['name' => $slug], $data)` for idempotency
 - Insert exactly 5 roles:
 
-| Slug | display_name | display_name_ar |
-|------|-------------|-----------------|
-| `admin` | Administrator | الإدارة |
-| `customer` | Customer | العميل |
-| `contractor` | Contractor | المقاول |
-| `supervising_architect` | Supervising Architect | المهندس المشرف |
-| `field_engineer` | Field Engineer | المهندس الميداني |
+| Slug                    | display_name          | display_name_ar  |
+| ----------------------- | --------------------- | ---------------- |
+| `admin`                 | Administrator         | الإدارة          |
+| `customer`              | Customer              | العميل           |
+| `contractor`            | Contractor            | المقاول          |
+| `supervising_architect` | Supervising Architect | المهندس المشرف   |
+| `field_engineer`        | Field Engineer        | المهندس الميداني |
 
 **Acceptance Criteria**: US3-AC1, FR-012
 
@@ -361,6 +374,7 @@ interface RepositoryInterface
 **Dependencies**: Migration 3 (permissions table), Task 2.3 (Permission model)
 
 **Implementation Notes**:
+
 - Define permissions as a PHP array keyed by group, then iterate
 - Use `Permission::updateOrCreate(['name' => $slug], $data)` for idempotency
 - Minimum 25 permissions across 7 groups:
@@ -421,19 +435,20 @@ $permissions = [
 **Dependencies**: Task 4.1 (RoleSeeder must run first), Task 2.1 (User model updated)
 
 **Implementation Notes**:
+
 - Use `User::firstOrCreate(['email' => $email], $data)` for idempotency
 - Set `role` enum column (STAGE_01 field) AND attach `roles` relationship (STAGE_02 RBAC)
 - After creating user: `$user->roles()->syncWithoutDetaching([Role::where('name', $roleSlug)->firstOrFail()->id])`
 - Use `syncWithoutDetaching` to avoid duplicate pivot errors on re-seeding
 - Passwords: `bcrypt('password')` — **strictly test/local/CI only; never production**
 
-| Email | `role` enum | Role slug | name |
-|-------|------------|-----------|------|
-| `admin@bunyan.test` | `admin` | `admin` | Admin User |
-| `customer@bunyan.test` | `customer` | `customer` | Customer User |
-| `contractor@bunyan.test` | `contractor` | `contractor` | Contractor User |
-| `architect@bunyan.test` | `supervising_architect` | `supervising_architect` | Architect User |
-| `engineer@bunyan.test` | `field_engineer` | `field_engineer` | Engineer User |
+| Email                    | `role` enum             | Role slug               | name            |
+| ------------------------ | ----------------------- | ----------------------- | --------------- |
+| `admin@bunyan.test`      | `admin`                 | `admin`                 | Admin User      |
+| `customer@bunyan.test`   | `customer`              | `customer`              | Customer User   |
+| `contractor@bunyan.test` | `contractor`            | `contractor`            | Contractor User |
+| `architect@bunyan.test`  | `supervising_architect` | `supervising_architect` | Architect User  |
+| `engineer@bunyan.test`   | `field_engineer`        | `field_engineer`        | Engineer User   |
 
 **Acceptance Criteria**: US3-AC3, US3-AC4
 
@@ -446,6 +461,7 @@ $permissions = [
 **Dependencies**: Tasks 4.1, 4.2, 4.3
 
 **Implementation Notes**:
+
 - Replace the existing single-user `create` call with ordered seeder calls:
   ```php
   $this->call([
@@ -476,6 +492,7 @@ $permissions = [
 **Implementation Notes**:
 
 **Update `definition()` to add new columns**:
+
 ```php
 public function definition(): array
 {
@@ -493,6 +510,7 @@ public function definition(): array
 ```
 
 **Add role-state methods** (all use `afterCreating`):
+
 ```php
 public function admin(): static
 {
@@ -505,6 +523,7 @@ public function admin(): static
 ```
 
 **Add `inactive()` state**:
+
 ```php
 public function inactive(): static
 {
@@ -537,6 +556,7 @@ public function inactive(): static
 **Dependencies**: Task 2.1
 
 **Test cases**:
+
 - `fillable_contains_expected_fields()` — asserts `$fillable` contains `name`, `email`, `phone`, `is_active`, `avatar`
 - `hidden_contains_password_and_remember_token()` — asserts `$hidden`
 - `casts_include_is_active_as_boolean()` — asserts cast config
@@ -554,6 +574,7 @@ public function inactive(): static
 **Dependencies**: Task 2.2
 
 **Test cases**:
+
 - `fillable_contains_expected_fields()` — asserts `$fillable`
 - `users_relationship_is_declared()` — asserts `users()` method exists and returns `BelongsToMany`
 - `permissions_relationship_is_declared()` — asserts `permissions()` method exists and returns `BelongsToMany`
@@ -569,6 +590,7 @@ public function inactive(): static
 **Dependencies**: Task 2.3
 
 **Test cases**:
+
 - `fillable_contains_expected_fields()` — asserts `$fillable`
 - `scope_by_group_filters_correctly()` — creates permissions in different groups, asserts `Permission::byGroup('users')->get()` returns only that group
 - `roles_relationship_is_declared()` — asserts `roles()` returns `BelongsToMany`
@@ -584,6 +606,7 @@ public function inactive(): static
 **Dependencies**: All Phase 1 migrations
 
 **Test cases**:
+
 - `all_tables_exist_after_migration()` — asserts `Schema::hasTable()` for all 5 tables
 - `users_table_has_new_columns()` — asserts `phone`, `is_active`, `avatar`, `deleted_at` columns exist
 - `roles_table_has_correct_columns()` — asserts all column names
@@ -602,6 +625,7 @@ public function inactive(): static
 **Dependencies**: Phase 1 (migrations), Phase 2 (models), Phase 4 (RoleSeeder for setup)
 
 **Test cases**:
+
 - `user_can_access_roles_relationship()` — create user, seed role, attach, assert `$user->roles` contains role (US2-AC1)
 - `role_can_access_permissions_relationship()` — seed role + permission, attach, assert `$role->permissions` returns collection (US2-AC2)
 - `user_has_role_method_returns_true_for_assigned_role()` — US2-AC3 (enum-based `hasRole`)
@@ -619,6 +643,7 @@ public function inactive(): static
 **Dependencies**: Phase 4 (all seeders)
 
 **Test cases**:
+
 - `role_seeder_creates_exactly_five_roles()` — run RoleSeeder, assert `Role::count() === 5` (US3-AC1)
 - `roles_have_correct_arabic_display_names()` — assert each role has correct `display_name_ar`
 - `permission_seeder_creates_at_least_twenty_permissions()` — run PermissionSeeder, assert `Permission::count() >= 20` (US3-AC2)
@@ -638,6 +663,7 @@ public function inactive(): static
 **Dependencies**: Phase 4 (RoleSeeder — must be called in setUp), Phase 5 (factories)
 
 **Test cases**:
+
 - `factory_creates_user_without_role()` — `User::factory()->make()` produces valid User (US4-AC3)
 - `admin_state_attaches_admin_role()` — `User::factory()->admin()->create()`, assert `$user->roles->first()->name === 'admin'` (US4-AC1)
 - `customer_state_attaches_customer_role()` — US4-AC1 for customer
@@ -656,12 +682,12 @@ public function inactive(): static
 
 ## Risks
 
-| ID | Risk | Likelihood | Impact | Mitigation |
-|----|------|-----------|--------|-----------|
-| R1 | Migration naming conflict — if `2026_04_11_XXXXXX_` collides with another developer's migration | Low | High | Coordinate migration timestamps in PR; use sequential suffixes 000001–000005 |
-| R2 | `#[Fillable]` attribute removal on User model breaks existing STAGE_01 tests | Medium | Medium | Run full test suite after User model update; `#[Fillable]` and `$fillable` are functionally equivalent to Eloquent |
-| R3 | `UserFactory` role-state methods fail with `ModelNotFoundException` if tests don't seed roles | High | Medium | Add `$this->seed(RoleSeeder::class)` to all FactoryTest setUp; document in quickstart |
-| R4 | `role_user` composite PK syntax differs across Laravel versions | Low | Low | Use `$table->primary(['role_id', 'user_id'])` — confirmed valid in Laravel 11 |
+| ID  | Risk                                                                                            | Likelihood | Impact | Mitigation                                                                                                         |
+| --- | ----------------------------------------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
+| R1  | Migration naming conflict — if `2026_04_11_XXXXXX_` collides with another developer's migration | Low        | High   | Coordinate migration timestamps in PR; use sequential suffixes 000001–000005                                       |
+| R2  | `#[Fillable]` attribute removal on User model breaks existing STAGE_01 tests                    | Medium     | Medium | Run full test suite after User model update; `#[Fillable]` and `$fillable` are functionally equivalent to Eloquent |
+| R3  | `UserFactory` role-state methods fail with `ModelNotFoundException` if tests don't seed roles   | High       | Medium | Add `$this->seed(RoleSeeder::class)` to all FactoryTest setUp; document in quickstart                              |
+| R4  | `role_user` composite PK syntax differs across Laravel versions                                 | Low        | Low    | Use `$table->primary(['role_id', 'user_id'])` — confirmed valid in Laravel 11                                      |
 
 ---
 
@@ -669,44 +695,44 @@ public function inactive(): static
 
 ### Files to CREATE (17)
 
-| Phase | File |
-|-------|------|
-| 1 | `backend/database/migrations/2026_04_11_000001_add_profile_columns_to_users_table.php` |
-| 1 | `backend/database/migrations/2026_04_11_000002_create_roles_table.php` |
-| 1 | `backend/database/migrations/2026_04_11_000003_create_permissions_table.php` |
-| 1 | `backend/database/migrations/2026_04_11_000004_create_role_user_table.php` |
-| 1 | `backend/database/migrations/2026_04_11_000005_create_permission_role_table.php` |
-| 2 | `backend/app/Models/Role.php` |
-| 2 | `backend/app/Models/Permission.php` |
-| 2 | `backend/app/Models/BaseModel.php` |
-| 3 | `backend/app/Repositories/Contracts/RepositoryInterface.php` |
-| 3 | `backend/app/Repositories/BaseRepository.php` |
-| 3 | `backend/app/Repositories/UserRepository.php` |
-| 4 | `backend/database/seeders/RoleSeeder.php` |
-| 4 | `backend/database/seeders/PermissionSeeder.php` |
-| 4 | `backend/database/seeders/UserSeeder.php` |
-| 6 | `backend/tests/Unit/Models/UserModelTest.php` |
-| 6 | `backend/tests/Unit/Models/RoleModelTest.php` |
-| 6 | `backend/tests/Unit/Models/PermissionModelTest.php` |
+| Phase | File                                                                                   |
+| ----- | -------------------------------------------------------------------------------------- |
+| 1     | `backend/database/migrations/2026_04_11_000001_add_profile_columns_to_users_table.php` |
+| 1     | `backend/database/migrations/2026_04_11_000002_create_roles_table.php`                 |
+| 1     | `backend/database/migrations/2026_04_11_000003_create_permissions_table.php`           |
+| 1     | `backend/database/migrations/2026_04_11_000004_create_role_user_table.php`             |
+| 1     | `backend/database/migrations/2026_04_11_000005_create_permission_role_table.php`       |
+| 2     | `backend/app/Models/Role.php`                                                          |
+| 2     | `backend/app/Models/Permission.php`                                                    |
+| 2     | `backend/app/Models/BaseModel.php`                                                     |
+| 3     | `backend/app/Repositories/Contracts/RepositoryInterface.php`                           |
+| 3     | `backend/app/Repositories/BaseRepository.php`                                          |
+| 3     | `backend/app/Repositories/UserRepository.php`                                          |
+| 4     | `backend/database/seeders/RoleSeeder.php`                                              |
+| 4     | `backend/database/seeders/PermissionSeeder.php`                                        |
+| 4     | `backend/database/seeders/UserSeeder.php`                                              |
+| 6     | `backend/tests/Unit/Models/UserModelTest.php`                                          |
+| 6     | `backend/tests/Unit/Models/RoleModelTest.php`                                          |
+| 6     | `backend/tests/Unit/Models/PermissionModelTest.php`                                    |
 
 > Note: FactoryTest, MigrationTest, RelationshipTest, SeederTest are 4 additional files = total **21 files created** once feature tests are included.
 
 Wait — corrected count:
 
-| Category | Count |
-|----------|-------|
-| New migration files | 5 |
-| New model files | 3 |
-| New repository files | 3 |
-| New seeder files | 3 |
-| New unit test files | 3 |
-| New feature test files | 4 |
-| **Total CREATE** | **21** |
+| Category               | Count  |
+| ---------------------- | ------ |
+| New migration files    | 5      |
+| New model files        | 3      |
+| New repository files   | 3      |
+| New seeder files       | 3      |
+| New unit test files    | 3      |
+| New feature test files | 4      |
+| **Total CREATE**       | **21** |
 
 ### Files to MODIFY (3)
 
-| Phase | File | Change |
-|-------|------|--------|
-| 2 | `backend/app/Models/User.php` | Add SoftDeletes, update fillable/hidden, add roles(), scopeActive(), scopeByRole(), is_active cast |
-| 4 | `backend/database/seeders/DatabaseSeeder.php` | Replace hardcoded user creation with ordered seeder calls |
-| 5 | `backend/database/factories/UserFactory.php` | Add phone/is_active/avatar to definition; add role-state methods; add inactive() state |
+| Phase | File                                          | Change                                                                                             |
+| ----- | --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 2     | `backend/app/Models/User.php`                 | Add SoftDeletes, update fillable/hidden, add roles(), scopeActive(), scopeByRole(), is_active cast |
+| 4     | `backend/database/seeders/DatabaseSeeder.php` | Replace hardcoded user creation with ordered seeder calls                                          |
+| 5     | `backend/database/factories/UserFactory.php`  | Add phone/is_active/avatar to definition; add role-state methods; add inactive() state             |

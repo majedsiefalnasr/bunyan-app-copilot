@@ -1,7 +1,6 @@
 # Testing Guide — STAGE_02: Database Schema Foundation
 
-> **Branch:** `spec/002-database-schema`
-> **Stage:** STAGE_02_DATABASE_SCHEMA
+> **Branch:** `spec/002-database-schema` > **Stage:** STAGE_02_DATABASE_SCHEMA
 > **Phase:** 01_PLATFORM_FOUNDATION
 
 ---
@@ -22,6 +21,7 @@ composer run test
 ```
 
 Expected output:
+
 ```
 60 / 60   tests passed
 107 assertions
@@ -30,6 +30,7 @@ Time: ~2s
 ```
 
 Or run with more detail:
+
 ```bash
 php artisan test --testdox
 ```
@@ -39,11 +40,13 @@ php artisan test --testdox
 ## Running Individual Test Groups
 
 ### Unit Tests Only
+
 ```bash
 php artisan test --filter Unit
 ```
 
 ### Feature Tests Only
+
 ```bash
 php artisan test --filter Feature
 ```
@@ -72,16 +75,19 @@ php artisan test tests/Feature/Database/
 ## Migration Validation
 
 ### Fresh Migration (complete install)
+
 ```bash
 cd backend
 php artisan migrate:fresh
 ```
 
 Expected:
+
 - 9 migrations applied
 - 0 errors
 
 Tables created:
+
 - `users` (updated with phone, is_active, avatar, deleted_at)
 - `roles`
 - `permissions`
@@ -89,16 +95,19 @@ Tables created:
 - `permission_role`
 
 ### Rollback Test (FK-safety)
+
 ```bash
 php artisan migrate:rollback --step=5
 ```
 
 Expected:
+
 - 5 STAGE_02 migrations rolled back in reverse order
 - FK constraint violations: none
 - 0 errors
 
 ### Re-apply After Rollback
+
 ```bash
 php artisan migrate
 ```
@@ -110,12 +119,14 @@ Expected: clean re-apply with no errors.
 ## Seeder Validation
 
 ### Run Full Seeder (non-production)
+
 ```bash
 cd backend
 php artisan db:seed
 ```
 
 Expected output:
+
 ```
 Seeding: RoleSeeder    → 5 roles created/updated
 Seeding: PermissionSeeder → 26 permissions created/updated
@@ -126,6 +137,7 @@ Database seeding completed successfully.
 ### Verify Seeded Data
 
 Open Tinker and run:
+
 ```bash
 php artisan tinker
 ```
@@ -150,7 +162,9 @@ php artisan tinker
 ```
 
 ### Idempotency Test
+
 Run seeder twice — no duplicates or errors expected:
+
 ```bash
 php artisan db:seed
 php artisan db:seed
@@ -164,15 +178,16 @@ Expected: same counts, no unique constraint violations.
 
 > ⚠️ These credentials are for local/staging only. `UserSeeder` is guarded against production environments.
 
-| Role | Email | Password | Arabic Role Name |
-|---|---|---|---|
-| Admin | `admin@bunyan.test` | `password` | الإدارة |
-| Customer | `customer@bunyan.test` | `password` | العميل |
-| Contractor | `contractor@bunyan.test` | `password` | المقاول |
-| Supervising Architect | `architect@bunyan.test` | `password` | المهندس المشرف |
-| Field Engineer | `engineer@bunyan.test` | `password` | المهندس الميداني |
+| Role                  | Email                    | Password   | Arabic Role Name |
+| --------------------- | ------------------------ | ---------- | ---------------- |
+| Admin                 | `admin@bunyan.test`      | `password` | الإدارة          |
+| Customer              | `customer@bunyan.test`   | `password` | العميل           |
+| Contractor            | `contractor@bunyan.test` | `password` | المقاول          |
+| Supervising Architect | `architect@bunyan.test`  | `password` | المهندس المشرف   |
+| Field Engineer        | `engineer@bunyan.test`   | `password` | المهندس الميداني |
 
 Verify password hash is stored (not plaintext):
+
 ```php
 // In Tinker
 $user = \App\Models\User::where('email', 'admin@bunyan.test')->first();
@@ -263,6 +278,7 @@ composer run lint
 ```
 
 Expected:
+
 ```
 Found 0 errors in 55 files
 ```
@@ -277,6 +293,7 @@ composer run phpstan
 ```
 
 Expected:
+
 ```
 [OK] No errors
 ```

@@ -40,7 +40,7 @@ Architecture Governance Compliance:
 - Security Auditor: ✅ PASS (SEC-FINDING-A fixed: role removed from $fillable)
 - Performance Optimizer: ✅ PASS (12/12 criteria)
 - QA Engineer: ✅ PASS (genuine gaps resolved: paginate, password hash, index checks)
-- Code Reviewer: ✅ PASS (CR-03 resolved: test_ prefix removed from plan.md)
+- Code Reviewer: ✅ PASS (CR-03 resolved: test\_ prefix removed from plan.md)
 - Drift analysis PASSED — implementation AUTHORIZED
 
 Notes:

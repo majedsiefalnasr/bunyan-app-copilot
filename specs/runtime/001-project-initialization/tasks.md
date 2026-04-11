@@ -629,6 +629,7 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Final Verification
 
 - [x] **T036** Final pre-commit validation
+
   - **Commands:**
 
     ```bash

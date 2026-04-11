@@ -14,6 +14,7 @@
 This stage delivers the core MySQL database schema for Bunyan — a full-stack Arabic construction services and building materials marketplace. It establishes the foundational data structures, Eloquent model conventions, repository pattern base classes, seeders, and factories upon which all subsequent platform stages depend.
 
 The deliverables are:
+
 - Forward-only Laravel migrations for all identity and RBAC tables
 - Eloquent models (`User`, `Role`, `Permission`) with typed relationships, casts, and scopes
 - A `BaseModel` with shared traits (`SoftDeletes`, standard active scopes)
@@ -144,13 +145,13 @@ Forward-only policy means STAGE_02 MUST use an `ALTER TABLE` migration to add th
 
 ### STAGE_02 Migration File Sequence
 
-| Order | File                                                           | Purpose                                      |
-| ----- | -------------------------------------------------------------- | -------------------------------------------- |
-| 1     | `2026_04_11_000001_add_profile_columns_to_users_table.php`     | Adds `phone`, `is_active`, `avatar`, `deleted_at` to existing `users` table |
-| 2     | `2026_04_11_000002_create_roles_table.php`                     | Creates `roles` table                        |
-| 3     | `2026_04_11_000003_create_permissions_table.php`               | Creates `permissions` table                  |
-| 4     | `2026_04_11_000004_create_role_user_table.php`                 | Creates `role_user` pivot (FK → `users`, `roles`) |
-| 5     | `2026_04_11_000005_create_permission_role_table.php`           | Creates `permission_role` pivot (FK → `permissions`, `roles`) |
+| Order | File                                                       | Purpose                                                                     |
+| ----- | ---------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1     | `2026_04_11_000001_add_profile_columns_to_users_table.php` | Adds `phone`, `is_active`, `avatar`, `deleted_at` to existing `users` table |
+| 2     | `2026_04_11_000002_create_roles_table.php`                 | Creates `roles` table                                                       |
+| 3     | `2026_04_11_000003_create_permissions_table.php`           | Creates `permissions` table                                                 |
+| 4     | `2026_04_11_000004_create_role_user_table.php`             | Creates `role_user` pivot (FK → `users`, `roles`)                           |
+| 5     | `2026_04_11_000005_create_permission_role_table.php`       | Creates `permission_role` pivot (FK → `permissions`, `roles`)               |
 
 ### Existing `role` Enum Coexistence Strategy
 
@@ -174,20 +175,20 @@ The STAGE_01 `users` table contains a `role` enum column (`customer`, `contracto
 
 ### `users` Table
 
-| Column              | Type                | Nullable | Default | Notes                                          |
-| ------------------- | ------------------- | -------- | ------- | ---------------------------------------------- |
-| `id`                | `bigint UNSIGNED`   | NO       | —       | Auto-increment primary key                     |
-| `name`              | `varchar(255)`      | NO       | —       | Full name; utf8mb4                             |
-| `email`             | `varchar(255)`      | NO       | —       | UNIQUE index; utf8mb4_unicode_ci               |
-| `phone`             | `varchar(30)`       | YES      | NULL    | E.164 format recommended; no uniqueness needed |
-| `password`          | `varchar(255)`      | NO       | —       | Bcrypt hash; hidden from serialization         |
-| `email_verified_at` | `timestamp`         | YES      | NULL    | Set on email verification                      |
-| `remember_token`    | `varchar(100)`      | YES      | NULL    | Laravel auth; hidden from serialization        |
-| `is_active`         | `tinyint(1)`        | NO       | `1`     | Cast to boolean; `active()` scope filters this |
-| `avatar`            | `varchar(500)`      | YES      | NULL    | Relative or S3 path; actual storage in later stage |
-| `created_at`        | `timestamp`         | YES      | NULL    | Laravel managed                                |
-| `updated_at`        | `timestamp`         | YES      | NULL    | Laravel managed                                |
-| `deleted_at`        | `timestamp`         | YES      | NULL    | SoftDeletes column                             |
+| Column              | Type              | Nullable | Default | Notes                                              |
+| ------------------- | ----------------- | -------- | ------- | -------------------------------------------------- |
+| `id`                | `bigint UNSIGNED` | NO       | —       | Auto-increment primary key                         |
+| `name`              | `varchar(255)`    | NO       | —       | Full name; utf8mb4                                 |
+| `email`             | `varchar(255)`    | NO       | —       | UNIQUE index; utf8mb4_unicode_ci                   |
+| `phone`             | `varchar(30)`     | YES      | NULL    | E.164 format recommended; no uniqueness needed     |
+| `password`          | `varchar(255)`    | NO       | —       | Bcrypt hash; hidden from serialization             |
+| `email_verified_at` | `timestamp`       | YES      | NULL    | Set on email verification                          |
+| `remember_token`    | `varchar(100)`    | YES      | NULL    | Laravel auth; hidden from serialization            |
+| `is_active`         | `tinyint(1)`      | NO       | `1`     | Cast to boolean; `active()` scope filters this     |
+| `avatar`            | `varchar(500)`    | YES      | NULL    | Relative or S3 path; actual storage in later stage |
+| `created_at`        | `timestamp`       | YES      | NULL    | Laravel managed                                    |
+| `updated_at`        | `timestamp`       | YES      | NULL    | Laravel managed                                    |
+| `deleted_at`        | `timestamp`       | YES      | NULL    | SoftDeletes column                                 |
 
 **Indexes**: `UNIQUE(email)`, index on `is_active`, index on `deleted_at`.
 
@@ -195,15 +196,15 @@ The STAGE_01 `users` table contains a `role` enum column (`customer`, `contracto
 
 ### `roles` Table
 
-| Column           | Type           | Nullable | Default | Notes                                   |
-| ---------------- | -------------- | -------- | ------- | --------------------------------------- |
-| `id`             | `bigint UNSIGNED` | NO     | —       | Auto-increment primary key              |
-| `name`           | `varchar(100)` | NO       | —       | Slug form (e.g., `admin`); UNIQUE       |
-| `display_name`   | `varchar(150)` | NO       | —       | English label (e.g., `Administrator`)   |
-| `display_name_ar`| `varchar(150)` | NO       | —       | Arabic label (e.g., `الإدارة`)          |
-| `description`    | `text`         | YES      | NULL    | Optional explanation                    |
-| `created_at`     | `timestamp`    | YES      | NULL    | Laravel managed                         |
-| `updated_at`     | `timestamp`    | YES      | NULL    | Laravel managed                         |
+| Column            | Type              | Nullable | Default | Notes                                 |
+| ----------------- | ----------------- | -------- | ------- | ------------------------------------- |
+| `id`              | `bigint UNSIGNED` | NO       | —       | Auto-increment primary key            |
+| `name`            | `varchar(100)`    | NO       | —       | Slug form (e.g., `admin`); UNIQUE     |
+| `display_name`    | `varchar(150)`    | NO       | —       | English label (e.g., `Administrator`) |
+| `display_name_ar` | `varchar(150)`    | NO       | —       | Arabic label (e.g., `الإدارة`)        |
+| `description`     | `text`            | YES      | NULL    | Optional explanation                  |
+| `created_at`      | `timestamp`       | YES      | NULL    | Laravel managed                       |
+| `updated_at`      | `timestamp`       | YES      | NULL    | Laravel managed                       |
 
 **Indexes**: `UNIQUE(name)`.
 
@@ -211,15 +212,15 @@ The STAGE_01 `users` table contains a `role` enum column (`customer`, `contracto
 
 ### `permissions` Table
 
-| Column         | Type           | Nullable | Default | Notes                                       |
-| -------------- | -------------- | -------- | ------- | ------------------------------------------- |
-| `id`           | `bigint UNSIGNED` | NO     | —       | Auto-increment primary key                  |
-| `name`         | `varchar(150)` | NO       | —       | Dot-notation slug (e.g., `users.create`); UNIQUE |
-| `display_name` | `varchar(200)` | NO       | —       | Human-readable English label                |
-| `group`        | `varchar(100)` | NO       | —       | Domain group (e.g., `users`, `projects`)    |
-| `description`  | `text`         | YES      | NULL    | Optional explanation                        |
-| `created_at`   | `timestamp`    | YES      | NULL    | Laravel managed                             |
-| `updated_at`   | `timestamp`    | YES      | NULL    | Laravel managed                             |
+| Column         | Type              | Nullable | Default | Notes                                            |
+| -------------- | ----------------- | -------- | ------- | ------------------------------------------------ |
+| `id`           | `bigint UNSIGNED` | NO       | —       | Auto-increment primary key                       |
+| `name`         | `varchar(150)`    | NO       | —       | Dot-notation slug (e.g., `users.create`); UNIQUE |
+| `display_name` | `varchar(200)`    | NO       | —       | Human-readable English label                     |
+| `group`        | `varchar(100)`    | NO       | —       | Domain group (e.g., `users`, `projects`)         |
+| `description`  | `text`            | YES      | NULL    | Optional explanation                             |
+| `created_at`   | `timestamp`       | YES      | NULL    | Laravel managed                                  |
+| `updated_at`   | `timestamp`       | YES      | NULL    | Laravel managed                                  |
 
 **Indexes**: `UNIQUE(name)`, index on `group`.
 
@@ -227,12 +228,12 @@ The STAGE_01 `users` table contains a `role` enum column (`customer`, `contracto
 
 ### `role_user` Pivot Table
 
-| Column       | Type              | Nullable | Default | Notes                                        |
-| ------------ | ----------------- | -------- | ------- | -------------------------------------------- |
-| `role_id`    | `bigint UNSIGNED` | NO       | —       | FK → `roles.id` ON DELETE CASCADE            |
-| `user_id`    | `bigint UNSIGNED` | NO       | —       | FK → `users.id` ON DELETE CASCADE            |
-| `created_at` | `timestamp`       | YES      | NULL    | Pivot timestamps                             |
-| `updated_at` | `timestamp`       | YES      | NULL    | Pivot timestamps                             |
+| Column       | Type              | Nullable | Default | Notes                             |
+| ------------ | ----------------- | -------- | ------- | --------------------------------- |
+| `role_id`    | `bigint UNSIGNED` | NO       | —       | FK → `roles.id` ON DELETE CASCADE |
+| `user_id`    | `bigint UNSIGNED` | NO       | —       | FK → `users.id` ON DELETE CASCADE |
+| `created_at` | `timestamp`       | YES      | NULL    | Pivot timestamps                  |
+| `updated_at` | `timestamp`       | YES      | NULL    | Pivot timestamps                  |
 
 **Primary Key**: Composite `(role_id, user_id)`.  
 **Indexes**: Index on `user_id` for reverse lookups.
@@ -241,12 +242,12 @@ The STAGE_01 `users` table contains a `role` enum column (`customer`, `contracto
 
 ### `permission_role` Pivot Table
 
-| Column          | Type              | Nullable | Default | Notes                                        |
-| --------------- | ----------------- | -------- | ------- | -------------------------------------------- |
-| `permission_id` | `bigint UNSIGNED` | NO       | —       | FK → `permissions.id` ON DELETE CASCADE      |
-| `role_id`       | `bigint UNSIGNED` | NO       | —       | FK → `roles.id` ON DELETE CASCADE            |
-| `created_at`    | `timestamp`       | YES      | NULL    | Pivot timestamps                             |
-| `updated_at`    | `timestamp`       | YES      | NULL    | Pivot timestamps                             |
+| Column          | Type              | Nullable | Default | Notes                                   |
+| --------------- | ----------------- | -------- | ------- | --------------------------------------- |
+| `permission_id` | `bigint UNSIGNED` | NO       | —       | FK → `permissions.id` ON DELETE CASCADE |
+| `role_id`       | `bigint UNSIGNED` | NO       | —       | FK → `roles.id` ON DELETE CASCADE       |
+| `created_at`    | `timestamp`       | YES      | NULL    | Pivot timestamps                        |
+| `updated_at`    | `timestamp`       | YES      | NULL    | Pivot timestamps                        |
 
 **Primary Key**: Composite `(permission_id, role_id)`.  
 **Indexes**: Index on `role_id` for reverse lookups.
@@ -262,15 +263,15 @@ Extends: Illuminate\Foundation\Auth\User (Authenticatable)
 Uses: SoftDeletes, HasFactory
 ```
 
-| Property/Method    | Value/Description                                                   |
-| ------------------ | ------------------------------------------------------------------- |
-| `$fillable`        | `name`, `email`, `phone`, `password`, `is_active`, `avatar`        |
-| `$hidden`          | `password`, `remember_token`                                        |
-| `$casts`           | `email_verified_at` → `datetime`, `password` → `hashed`, `is_active` → `boolean` |
-| `roles()`          | `belongsToMany(Role::class, 'role_user')->withTimestamps()`         |
-| `scopeActive()`    | `->where('is_active', true)`                                        |
-| `scopeByRole()`    | `->whereHas('roles', fn($q) => $q->where('name', $role))`          |
-| `hasRole(string)`  | Returns `bool`; checks `roles` relationship for given slug          |
+| Property/Method   | Value/Description                                                                |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `$fillable`       | `name`, `email`, `phone`, `password`, `is_active`, `avatar`                      |
+| `$hidden`         | `password`, `remember_token`                                                     |
+| `$casts`          | `email_verified_at` → `datetime`, `password` → `hashed`, `is_active` → `boolean` |
+| `roles()`         | `belongsToMany(Role::class, 'role_user')->withTimestamps()`                      |
+| `scopeActive()`   | `->where('is_active', true)`                                                     |
+| `scopeByRole()`   | `->whereHas('roles', fn($q) => $q->where('name', $role))`                        |
+| `hasRole(string)` | Returns `bool`; checks `roles` relationship for given slug                       |
 
 **Notes**: No business logic. No Sanctum token methods in this stage.
 
@@ -283,12 +284,12 @@ Extends: Illuminate\Database\Eloquent\Model
 Uses: HasFactory
 ```
 
-| Property/Method  | Value/Description                                                   |
-| ---------------- | ------------------------------------------------------------------- |
-| `$fillable`      | `name`, `display_name`, `display_name_ar`, `description`           |
-| `$casts`         | none beyond defaults                                                |
-| `users()`        | `belongsToMany(User::class, 'role_user')->withTimestamps()`        |
-| `permissions()`  | `belongsToMany(Permission::class, 'permission_role')->withTimestamps()` |
+| Property/Method | Value/Description                                                       |
+| --------------- | ----------------------------------------------------------------------- |
+| `$fillable`     | `name`, `display_name`, `display_name_ar`, `description`                |
+| `$casts`        | none beyond defaults                                                    |
+| `users()`       | `belongsToMany(User::class, 'role_user')->withTimestamps()`             |
+| `permissions()` | `belongsToMany(Permission::class, 'permission_role')->withTimestamps()` |
 
 **Notes**: `name` is slug-form and must be lowercase ASCII.
 
@@ -301,12 +302,12 @@ Extends: Illuminate\Database\Eloquent\Model
 Uses: HasFactory
 ```
 
-| Property/Method  | Value/Description                                                   |
-| ---------------- | ------------------------------------------------------------------- |
-| `$fillable`      | `name`, `display_name`, `group`, `description`                     |
-| `$casts`         | none beyond defaults                                                |
-| `roles()`        | `belongsToMany(Role::class, 'permission_role')->withTimestamps()`  |
-| `scopeByGroup()` | `->where('group', $group)`                                          |
+| Property/Method  | Value/Description                                                 |
+| ---------------- | ----------------------------------------------------------------- |
+| `$fillable`      | `name`, `display_name`, `group`, `description`                    |
+| `$casts`         | none beyond defaults                                              |
+| `roles()`        | `belongsToMany(Role::class, 'permission_role')->withTimestamps()` |
+| `scopeByGroup()` | `->where('group', $group)`                                        |
 
 ---
 
@@ -322,6 +323,7 @@ Uses: SoftDeletes, HasFactory
 ```
 
 **Behaviors**:
+
 - Disables mass assignment protection via `$guarded = []` with explicit `$fillable` required on child models
 - Defines `scopeActive($query)` returning `$query->where('is_active', true)` when column exists
 - Sets `$dateFormat = 'Y-m-d H:i:s'` for consistent MySQL datetime serialization
@@ -355,19 +357,20 @@ Implements: RepositoryInterface
 ```
 
 **Properties**:
+
 - `protected Model $model` — injected via constructor
 
 **Method contracts**:
 
-| Method      | Implementation note                                                       |
-| ----------- | ------------------------------------------------------------------------- |
-| `find`      | `$this->model->find($id)` — returns null if not found                   |
-| `findAll`   | `$this->model->all()`                                                    |
-| `findBy`    | `$this->model->where($criteria)->get()`                                  |
-| `create`    | `$this->model->create($data)` — returns persisted model                  |
-| `update`    | Find by ID → `fill($data)` → `save()` — throws `ModelNotFoundException` |
-| `delete`    | Find by ID → `delete()` — returns `bool`                                 |
-| `paginate`  | `$this->model->paginate($perPage)`                                       |
+| Method     | Implementation note                                                     |
+| ---------- | ----------------------------------------------------------------------- |
+| `find`     | `$this->model->find($id)` — returns null if not found                   |
+| `findAll`  | `$this->model->all()`                                                   |
+| `findBy`   | `$this->model->where($criteria)->get()`                                 |
+| `create`   | `$this->model->create($data)` — returns persisted model                 |
+| `update`   | Find by ID → `fill($data)` → `save()` — throws `ModelNotFoundException` |
+| `delete`   | Find by ID → `delete()` — returns `bool`                                |
+| `paginate` | `$this->model->paginate($perPage)`                                      |
 
 **Notes**: No business logic. No HTTP exceptions. Service layer handles domain exceptions.
 
@@ -379,6 +382,7 @@ Constructor: injects User model
 ```
 
 Additional methods (beyond base):
+
 - `findByEmail(string $email): ?User`
 - `findActiveUsers(): Collection` — delegates to `User::active()->get()`
 
@@ -390,27 +394,27 @@ Additional methods (beyond base):
 
 Inserts exactly 5 roles via `Role::updateOrCreate(['name' => $slug], $data)`:
 
-| Slug                   | `display_name`         | `display_name_ar`   |
-| ---------------------- | ---------------------- | ------------------- |
-| `admin`                | Administrator          | الإدارة             |
-| `customer`             | Customer               | العميل              |
-| `contractor`           | Contractor             | المقاول             |
-| `supervising_architect`| Supervising Architect  | المهندس المشرف      |
-| `field_engineer`       | Field Engineer         | المهندس الميداني    |
+| Slug                    | `display_name`        | `display_name_ar` |
+| ----------------------- | --------------------- | ----------------- |
+| `admin`                 | Administrator         | الإدارة           |
+| `customer`              | Customer              | العميل            |
+| `contractor`            | Contractor            | المقاول           |
+| `supervising_architect` | Supervising Architect | المهندس المشرف    |
+| `field_engineer`        | Field Engineer        | المهندس الميداني  |
 
 ### `PermissionSeeder` (`database/seeders/PermissionSeeder.php`)
 
 Inserts core permissions grouped by domain. Minimum 20 permissions. Groups and examples:
 
-| Group          | Example Permission Slugs                               |
-| -------------- | ------------------------------------------------------ |
-| `users`        | `users.view`, `users.create`, `users.update`, `users.delete` |
+| Group          | Example Permission Slugs                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| `users`        | `users.view`, `users.create`, `users.update`, `users.delete`                                |
 | `projects`     | `projects.view`, `projects.create`, `projects.update`, `projects.delete`, `projects.manage` |
-| `reports`      | `reports.view`, `reports.create`, `reports.approve`    |
-| `transactions` | `transactions.view`, `transactions.create`, `transactions.approve` |
-| `products`     | `products.view`, `products.create`, `products.update`, `products.delete` |
-| `orders`       | `orders.view`, `orders.create`, `orders.manage`        |
-| `settings`     | `settings.view`, `settings.update`                     |
+| `reports`      | `reports.view`, `reports.create`, `reports.approve`                                         |
+| `transactions` | `transactions.view`, `transactions.create`, `transactions.approve`                          |
+| `products`     | `products.view`, `products.create`, `products.update`, `products.delete`                    |
+| `orders`       | `orders.view`, `orders.create`, `orders.manage`                                             |
+| `settings`     | `settings.view`, `settings.update`                                                          |
 
 Uses `Permission::updateOrCreate(['name' => $slug], $data)` for idempotency.
 
@@ -418,19 +422,20 @@ Uses `Permission::updateOrCreate(['name' => $slug], $data)` for idempotency.
 
 Creates one user per role via `User::firstOrCreate(['email' => $email], $data)` then attaches the matching role:
 
-| Email                       | Role                   | Password (seeded) |
-| --------------------------- | ---------------------- | ----------------- |
-| `admin@bunyan.test`         | `admin`                | `password`        |
-| `customer@bunyan.test`      | `customer`             | `password`        |
-| `contractor@bunyan.test`    | `contractor`           | `password`        |
-| `architect@bunyan.test`     | `supervising_architect`| `password`        |
-| `engineer@bunyan.test`      | `field_engineer`       | `password`        |
+| Email                    | Role                    | Password (seeded) |
+| ------------------------ | ----------------------- | ----------------- |
+| `admin@bunyan.test`      | `admin`                 | `password`        |
+| `customer@bunyan.test`   | `customer`              | `password`        |
+| `contractor@bunyan.test` | `contractor`            | `password`        |
+| `architect@bunyan.test`  | `supervising_architect` | `password`        |
+| `engineer@bunyan.test`   | `field_engineer`        | `password`        |
 
 **Security note**: Test passwords use `bcrypt('password')` — these users are strictly for local/CI environments; never seeded in production.
 
 ### `DatabaseSeeder` (`database/seeders/DatabaseSeeder.php`)
 
 Calls seeders in dependency order:
+
 1. `RoleSeeder`
 2. `PermissionSeeder`
 3. `UserSeeder`
@@ -445,13 +450,13 @@ Calls seeders in dependency order:
 
 **State methods**:
 
-| State method           | Role slug assigned      |
-| ---------------------- | ----------------------- |
-| `admin()`              | `admin`                 |
-| `customer()`           | `customer`              |
-| `contractor()`         | `contractor`            |
-| `supervisingArchitect()`| `supervising_architect`|
-| `fieldEngineer()`      | `field_engineer`        |
+| State method             | Role slug assigned      |
+| ------------------------ | ----------------------- |
+| `admin()`                | `admin`                 |
+| `customer()`             | `customer`              |
+| `contractor()`           | `contractor`            |
+| `supervisingArchitect()` | `supervising_architect` |
+| `fieldEngineer()`        | `field_engineer`        |
 
 Each state method uses `afterCreating()` callback to attach the role via `$user->roles()->attach(Role::where('name', $slug)->firstOrFail())`.
 
@@ -481,23 +486,23 @@ Each state method uses `afterCreating()` callback to attach the role via `$user-
 
 The following are explicitly **NOT** part of this stage and must not be implemented here:
 
-| Item                                   | Reason / Stage                                     |
-| -------------------------------------- | -------------------------------------------------- |
-| Laravel Sanctum API token generation   | STAGE_03 — Authentication                         |
-| Login / logout / register endpoints    | STAGE_03 — Authentication                         |
-| RBAC middleware and gate definitions   | STAGE_04 — RBAC System                            |
-| Policy classes                         | STAGE_04 — RBAC System                            |
-| Email verification flow                | STAGE_03 — Authentication                         |
-| Password reset flow                    | STAGE_03 — Authentication                         |
-| JWT or OAuth                           | Not planned; Sanctum only                          |
-| Project, Phase, Task tables            | Later phases                                       |
-| Product, Order tables                  | Later phases                                       |
-| File/avatar upload processing          | STAGE_05 or later                                  |
-| Caching layer (Redis/Memcached)        | Infrastructure stage                               |
-| Workflow engine tables                 | STAGE_06 or later                                  |
-| Admin UI or Filament                   | Not in scope for this platform                     |
-| Multi-tenancy                          | Not applicable to Bunyan domain                    |
-| Internationalization of model layer    | Arabic handled at API response/display layer only  |
+| Item                                 | Reason / Stage                                    |
+| ------------------------------------ | ------------------------------------------------- |
+| Laravel Sanctum API token generation | STAGE_03 — Authentication                         |
+| Login / logout / register endpoints  | STAGE_03 — Authentication                         |
+| RBAC middleware and gate definitions | STAGE_04 — RBAC System                            |
+| Policy classes                       | STAGE_04 — RBAC System                            |
+| Email verification flow              | STAGE_03 — Authentication                         |
+| Password reset flow                  | STAGE_03 — Authentication                         |
+| JWT or OAuth                         | Not planned; Sanctum only                         |
+| Project, Phase, Task tables          | Later phases                                      |
+| Product, Order tables                | Later phases                                      |
+| File/avatar upload processing        | STAGE_05 or later                                 |
+| Caching layer (Redis/Memcached)      | Infrastructure stage                              |
+| Workflow engine tables               | STAGE_06 or later                                 |
+| Admin UI or Filament                 | Not in scope for this platform                    |
+| Multi-tenancy                        | Not applicable to Bunyan domain                   |
+| Internationalization of model layer  | Arabic handled at API response/display layer only |
 
 ---
 

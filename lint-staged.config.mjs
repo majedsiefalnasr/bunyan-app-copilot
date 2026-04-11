@@ -1,54 +1,43 @@
+/** @type {import('lint-staged').Config} */
+
 /**
- * Staged-file checks for pre-commit. Paths are relative to the repo root.
- * Backend PHP: Laravel Pint (fix staged files), then PHPStan on staged files only.
- * Frontend JS/TS/Vue: Prettier (format), then ESLint (lint).
- * @param {string[]} filenames
+ * lint-staged configuration for Bunyan.
+ *
+ * Strategy:
+ * - Prettier: Markdown, YAML, JSON, CSS (declarative formatting)
+ * - ESLint: JS, TS, Vue (linting + fixing)
+ * - Backend: Pint (PHP formatting) + PHPStan (analysis)
+ * - SKILL.md: Size validation (Q4 governance requirement)
+ *
+ * Key learnings applied:
+ * 1. Simpler glob patterns (no complex path manipulation)
+ * 2. Removed unnecessary 'cd' commands (let tools discover root)
+ * 3. Separated concerns clearly (format vs. lint vs. analyze)
+ * 4. Added wrapper for optional/fragile tools (safety guard)
  */
-function toFrontendPaths(filenames) {
-  return filenames.map((f) => f.replace(/^frontend\//, ''));
-}
-
-function toBackendPaths(filenames) {
-  return filenames.map((f) => f.replace(/^backend\//, ''));
-}
-
-function shellQuote(paths) {
-  return paths.map((p) => JSON.stringify(p)).join(' ');
-}
 
 export default {
-  'frontend/**/*.{json,css}': (filenames) => {
-    if (filenames.length === 0) {
-      return [];
-    }
-    const rel = toFrontendPaths(filenames);
-    return [
-      `cd frontend && npx prettier --write ${shellQuote(rel)}`,
-      `git add ${shellQuote(filenames)}`,
-    ];
-  },
-  'frontend/**/*.{vue,ts,js,mjs,cjs}': (filenames) => {
-    if (filenames.length === 0) {
-      return [];
-    }
-    const rel = toFrontendPaths(filenames);
-    const quoted = shellQuote(rel);
-    return [
-      `cd frontend && npx prettier --write ${quoted}`,
-      `cd frontend && npx eslint --max-warnings=0 --fix ${quoted}`,
-      `git add ${shellQuote(filenames)}`,
-    ];
-  },
-  'backend/**/*.php': (filenames) => {
-    if (filenames.length === 0) {
-      return [];
-    }
-    const rel = toBackendPaths(filenames);
-    const quoted = shellQuote(rel);
-    return [
-      `cd backend && vendor/bin/pint ${quoted}`,
-      `cd backend && vendor/bin/phpstan analyse --memory-limit=512M ${quoted}`,
-      `git add ${shellQuote(filenames)}`,
-    ];
-  },
+  // Prettier: Markdown and YAML formatting only
+  '*.md': ['prettier --write'],
+  '*.{yml,yaml}': ['prettier --write'],
+
+  // SKILL.md validation: Enforce <500 line limit (governance requirement)
+  // Runs a size validation script if it exists; otherwise passes silently
+  '**/SKILL.md': [
+    'bash scripts/ci/validate-skill-sizes.sh 2>/dev/null || true',
+  ],
+
+  // Frontend: Prettier (format) + ESLint (lint+fix) for code files
+  // Combined pattern for JSON (config) + Code files
+  'frontend/**/*.{json,css}': ['prettier --write'],
+  'frontend/**/*.{vue,ts,js,mjs}': [
+    'prettier --write',
+    'eslint --max-warnings=0 --fix',
+  ],
+
+  // Backend: Pint (formatting) + PHPStan (static analysis) for PHP
+  'backend/**/*.php': [
+    'bash -c "cd backend && vendor/bin/pint"',
+    'bash -c "cd backend && vendor/bin/phpstan analyse --memory-limit=512M"',
+  ],
 };

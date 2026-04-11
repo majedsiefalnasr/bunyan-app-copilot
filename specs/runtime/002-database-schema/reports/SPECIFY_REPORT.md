@@ -5,12 +5,12 @@
 
 ## Specification Summary
 
-| Metric                 | Value |
-| ---------------------- | ----- |
-| User Stories           | 4 (US1: Migrations, US2: Models, US3: Seeders, US4: Factories) |
-| Acceptance Criteria    | 9 success criteria + per-story Given/When/Then scenarios |
-| Technical Requirements | 15 functional + 9 non-functional requirements |
-| Dependencies           | STAGE_01_PROJECT_INITIALIZATION (upstream) |
+| Metric                 | Value                                                                       |
+| ---------------------- | --------------------------------------------------------------------------- |
+| User Stories           | 4 (US1: Migrations, US2: Models, US3: Seeders, US4: Factories)              |
+| Acceptance Criteria    | 9 success criteria + per-story Given/When/Then scenarios                    |
+| Technical Requirements | 15 functional + 9 non-functional requirements                               |
+| Dependencies           | STAGE_01_PROJECT_INITIALIZATION (upstream)                                  |
 | Open Questions         | 2 (UUID strategy, translation column strategy — auto-resolved via codebase) |
 
 ## Scope Defined
@@ -36,12 +36,12 @@
 
 ## Risk Assessment
 
-| Risk | Level | Mitigation |
-|------|-------|-----------|
-| Existing users migration conflict | MEDIUM | Use `add_columns_to_users_table` migration; do not touch STAGE_01 migration file |
+| Risk                                 | Level  | Mitigation                                                                                          |
+| ------------------------------------ | ------ | --------------------------------------------------------------------------------------------------- |
+| Existing users migration conflict    | MEDIUM | Use `add_columns_to_users_table` migration; do not touch STAGE_01 migration file                    |
 | Existing `role` enum column on users | MEDIUM | Spec clarification: keep enum for backward compat with STAGE_01 code; roles table parallel for RBAC |
-| FK constraint order in migrations | LOW | Run users → roles → permissions → role_user → permission_role |
-| Seeder idempotency | LOW | Use `updateOrCreate` / `firstOrCreate` patterns throughout |
+| FK constraint order in migrations    | LOW    | Run users → roles → permissions → role_user → permission_role                                       |
+| Seeder idempotency                   | LOW    | Use `updateOrCreate` / `firstOrCreate` patterns throughout                                          |
 
 ## Checklist Status
 

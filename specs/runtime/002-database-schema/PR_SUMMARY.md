@@ -20,45 +20,45 @@ Establishes the complete database schema foundation for Bunyan's RBAC system, El
 
 ### Migrations (5 new)
 
-| File | Type | Purpose |
-|---|---|---|
-| `2026_04_11_000001_add_profile_columns_to_users_table.php` | ALTER | Adds `phone`, `is_active`, `avatar`, `deleted_at` to `users` |
-| `2026_04_11_000002_create_roles_table.php` | CREATE | RBAC roles with Arabic display names |
-| `2026_04_11_000003_create_permissions_table.php` | CREATE | Permissions with group field + index |
-| `2026_04_11_000004_create_role_user_table.php` | CREATE | User↔Role pivot (composite PK, reverse index) |
-| `2026_04_11_000005_create_permission_role_table.php` | CREATE | Role↔Permission pivot (composite PK, reverse index) |
+| File                                                       | Type   | Purpose                                                      |
+| ---------------------------------------------------------- | ------ | ------------------------------------------------------------ |
+| `2026_04_11_000001_add_profile_columns_to_users_table.php` | ALTER  | Adds `phone`, `is_active`, `avatar`, `deleted_at` to `users` |
+| `2026_04_11_000002_create_roles_table.php`                 | CREATE | RBAC roles with Arabic display names                         |
+| `2026_04_11_000003_create_permissions_table.php`           | CREATE | Permissions with group field + index                         |
+| `2026_04_11_000004_create_role_user_table.php`             | CREATE | User↔Role pivot (composite PK, reverse index)                |
+| `2026_04_11_000005_create_permission_role_table.php`       | CREATE | Role↔Permission pivot (composite PK, reverse index)          |
 
 All migrations include `down()` rollback methods and are FK-safe.
 
 ### Eloquent Models (3 new, 1 updated)
 
-| File | Status | Notes |
-|---|---|---|
-| `app/Models/BaseModel.php` | NEW | Abstract base; SoftDeletes, HasFactory, `scopeActive()` |
-| `app/Models/Role.php` | NEW | Extends `Eloquent\Model` (not BaseModel); Arabic display names |
-| `app/Models/Permission.php` | NEW | Extends `Eloquent\Model` (not BaseModel); `scopeByGroup()` |
-| `app/Models/User.php` | UPDATED | SoftDeletes, `roles()`, `hasRole()`, `hasEnumRole()`, `scopeByRole()` |
+| File                        | Status  | Notes                                                                 |
+| --------------------------- | ------- | --------------------------------------------------------------------- |
+| `app/Models/BaseModel.php`  | NEW     | Abstract base; SoftDeletes, HasFactory, `scopeActive()`               |
+| `app/Models/Role.php`       | NEW     | Extends `Eloquent\Model` (not BaseModel); Arabic display names        |
+| `app/Models/Permission.php` | NEW     | Extends `Eloquent\Model` (not BaseModel); `scopeByGroup()`            |
+| `app/Models/User.php`       | UPDATED | SoftDeletes, `roles()`, `hasRole()`, `hasEnumRole()`, `scopeByRole()` |
 
 **Security:** `role` is NOT in `User::$fillable`. Role is assigned only via explicit property assignment or pivot attachment.
 
 ### Repository Pattern (3 new files)
 
-| File | Purpose |
-|---|---|
-| `app/Repositories/Contracts/RepositoryInterface.php` | 7-method contract |
-| `app/Repositories/BaseRepository.php` | Abstract implementation; `ModelNotFoundException` on missing records |
-| `app/Repositories/UserRepository.php` | Domain methods: `findByEmail()`, `findActiveUsers()` |
+| File                                                 | Purpose                                                              |
+| ---------------------------------------------------- | -------------------------------------------------------------------- |
+| `app/Repositories/Contracts/RepositoryInterface.php` | 7-method contract                                                    |
+| `app/Repositories/BaseRepository.php`                | Abstract implementation; `ModelNotFoundException` on missing records |
+| `app/Repositories/UserRepository.php`                | Domain methods: `findByEmail()`, `findActiveUsers()`                 |
 
 `UserRepository` is bound in `AppServiceProvider`.
 
 ### Seeders (3 new, 1 updated)
 
-| File | Status | Data |
-|---|---|---|
-| `database/seeders/RoleSeeder.php` | NEW | 5 roles with Arabic `display_name_ar` |
-| `database/seeders/PermissionSeeder.php` | NEW | 26 permissions across 7 groups |
-| `database/seeders/UserSeeder.php` | NEW | 5 test users (one per role); production guard |
-| `database/seeders/DatabaseSeeder.php` | UPDATED | Ordered: RoleSeeder → PermissionSeeder → UserSeeder |
+| File                                    | Status  | Data                                                |
+| --------------------------------------- | ------- | --------------------------------------------------- |
+| `database/seeders/RoleSeeder.php`       | NEW     | 5 roles with Arabic `display_name_ar`               |
+| `database/seeders/PermissionSeeder.php` | NEW     | 26 permissions across 7 groups                      |
+| `database/seeders/UserSeeder.php`       | NEW     | 5 test users (one per role); production guard       |
+| `database/seeders/DatabaseSeeder.php`   | UPDATED | Ordered: RoleSeeder → PermissionSeeder → UserSeeder |
 
 All seeders use `updateOrCreate` / `firstOrCreate` for idempotency.
 
@@ -69,30 +69,30 @@ All seeders use `updateOrCreate` / `firstOrCreate` for idempotency.
 
 ### Tests (10 files, 60 tests)
 
-| Test File | Type | Tests |
-|---|---|---|
-| `Unit/Models/RoleModelTest.php` | Unit | Reflection-based, no DB |
-| `Feature/Models/UserModelTest.php` | Feature | Password hash, scopes, hasRole |
-| `Feature/Models/PermissionModelTest.php` | Feature | Fillable, scopes, relationships |
+| Test File                                     | Type    | Tests                              |
+| --------------------------------------------- | ------- | ---------------------------------- |
+| `Unit/Models/RoleModelTest.php`               | Unit    | Reflection-based, no DB            |
+| `Feature/Models/UserModelTest.php`            | Feature | Password hash, scopes, hasRole     |
+| `Feature/Models/PermissionModelTest.php`      | Feature | Fillable, scopes, relationships    |
 | `Feature/Repositories/UserRepositoryTest.php` | Feature | All 7 interface methods + paginate |
-| `Feature/Migrations/UsersMigrationTest.php` | Feature | Column + index assertions |
-| `Feature/Migrations/RolesMigrationTest.php` | Feature | RBAC tables, PKs, indexes |
-| `Feature/Seeders/RoleSeederTest.php` | Feature | 5 roles, Arabic, idempotency |
-| `Feature/Database/RelationshipTest.php` | Feature | 3-table traversal, cascade |
-| `Feature/Database/SeederTest.php` | Feature | 26 permissions, idempotency |
-| `Feature/Database/FactoryTest.php` | Feature | All role states |
+| `Feature/Migrations/UsersMigrationTest.php`   | Feature | Column + index assertions          |
+| `Feature/Migrations/RolesMigrationTest.php`   | Feature | RBAC tables, PKs, indexes          |
+| `Feature/Seeders/RoleSeederTest.php`          | Feature | 5 roles, Arabic, idempotency       |
+| `Feature/Database/RelationshipTest.php`       | Feature | 3-table traversal, cascade         |
+| `Feature/Database/SeederTest.php`             | Feature | 26 permissions, idempotency        |
+| `Feature/Database/FactoryTest.php`            | Feature | All role states                    |
 
 ---
 
 ## Acceptance Gate Results
 
-| Gate | Command | Result |
-|---|---|---|
-| CHK084 | `php artisan migrate:fresh` | ✅ 9 migrations, 0 errors |
-| CHK085 | `php artisan migrate:rollback --step=5` | ✅ FK-safe, 0 errors |
-| CHK086 | `php artisan db:seed` | ✅ 5 roles, 26 permissions, 5 users |
-| CHK087 | `composer run lint` | ✅ 55 files, 0 violations |
-| CHK088 | `composer run test` | ✅ 60 passed, 107 assertions |
+| Gate   | Command                                 | Result                              |
+| ------ | --------------------------------------- | ----------------------------------- |
+| CHK084 | `php artisan migrate:fresh`             | ✅ 9 migrations, 0 errors           |
+| CHK085 | `php artisan migrate:rollback --step=5` | ✅ FK-safe, 0 errors                |
+| CHK086 | `php artisan db:seed`                   | ✅ 5 roles, 26 permissions, 5 users |
+| CHK087 | `composer run lint`                     | ✅ 55 files, 0 violations           |
+| CHK088 | `composer run test`                     | ✅ 60 passed, 107 assertions        |
 
 ---
 

@@ -10,12 +10,12 @@
 
 ### Migrations Inherited (Immutable)
 
-| File | Purpose |
-|------|---------|
-| `0001_01_01_000000_create_users_table.php` | Creates `users`, `password_reset_tokens`, `sessions` tables. The `users` table columns: `id`, `name`, `email` (UNIQUE + indexed), `email_verified_at`, `password`, `role` (enum), `remember_token`, `created_at`, `updated_at`. Also indexes `role` and `created_at`. |
-| `0001_01_01_000001_create_cache_table.php` | Creates `cache` and `cache_locks` tables. |
-| `0001_01_01_000002_create_jobs_table.php` | Creates `jobs`, `job_batches`, `failed_jobs` tables. |
-| `2026_04_10_155208_create_personal_access_tokens_table.php` | Creates `personal_access_tokens` table (Sanctum). |
+| File                                                        | Purpose                                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0001_01_01_000000_create_users_table.php`                  | Creates `users`, `password_reset_tokens`, `sessions` tables. The `users` table columns: `id`, `name`, `email` (UNIQUE + indexed), `email_verified_at`, `password`, `role` (enum), `remember_token`, `created_at`, `updated_at`. Also indexes `role` and `created_at`. |
+| `0001_01_01_000001_create_cache_table.php`                  | Creates `cache` and `cache_locks` tables.                                                                                                                                                                                                                             |
+| `0001_01_01_000002_create_jobs_table.php`                   | Creates `jobs`, `job_batches`, `failed_jobs` tables.                                                                                                                                                                                                                  |
+| `2026_04_10_155208_create_personal_access_tokens_table.php` | Creates `personal_access_tokens` table (Sanctum).                                                                                                                                                                                                                     |
 
 ### User Model Inherited
 
@@ -92,10 +92,10 @@ This is the safe FK-respecting reverse order.
 
 After STAGE_02, the platform temporarily runs two parallel role representations:
 
-| System | Column/Table | Purpose |
-|--------|-------------|---------|
-| Enum column | `users.role` (STAGE_01) | Fast, denormalised role lookup; used in STAGE_03 auth guards and JWT claims |
-| RBAC tables | `roles` + `role_user` + `permission_role` (STAGE_02) | Full granular permission system used from STAGE_04 onward |
+| System      | Column/Table                                         | Purpose                                                                     |
+| ----------- | ---------------------------------------------------- | --------------------------------------------------------------------------- |
+| Enum column | `users.role` (STAGE_01)                              | Fast, denormalised role lookup; used in STAGE_03 auth guards and JWT claims |
+| RBAC tables | `roles` + `role_user` + `permission_role` (STAGE_02) | Full granular permission system used from STAGE_04 onward                   |
 
 ### Why Both Are Needed
 
@@ -167,6 +167,7 @@ public function admin(): static
 ### Dependency Requirement
 
 Role-state factory methods depend on the `roles` table being seeded. In PHPUnit tests, either:
+
 - Call `$this->seed(RoleSeeder::class)` before using role-state factories, OR
 - Create the role inline in the test setup
 
@@ -174,21 +175,21 @@ This is documented in `quickstart.md` and test file headers.
 
 ### Available State Methods
 
-| Method | Role Slug | Notes |
-|--------|-----------|-------|
-| `admin()` | `admin` | |
-| `customer()` | `customer` | |
-| `contractor()` | `contractor` | |
-| `supervisingArchitect()` | `supervising_architect` | camelCase per Laravel convention |
-| `fieldEngineer()` | `field_engineer` | camelCase per Laravel convention |
-| `unverified()` | — | sets `email_verified_at = null` (inherited from STAGE_01 factory, kept) |
-| `inactive()` | — | sets `is_active = false` |
+| Method                   | Role Slug               | Notes                                                                   |
+| ------------------------ | ----------------------- | ----------------------------------------------------------------------- |
+| `admin()`                | `admin`                 |                                                                         |
+| `customer()`             | `customer`              |                                                                         |
+| `contractor()`           | `contractor`            |                                                                         |
+| `supervisingArchitect()` | `supervising_architect` | camelCase per Laravel convention                                        |
+| `fieldEngineer()`        | `field_engineer`        | camelCase per Laravel convention                                        |
+| `unverified()`           | —                       | sets `email_verified_at = null` (inherited from STAGE_01 factory, kept) |
+| `inactive()`             | —                       | sets `is_active = false`                                                |
 
 ---
 
 ## 6. User Model Update: Attribute Syntax Migration
 
-The existing `User.php` uses PHP 8.3 attribute-style declarations (`#[Fillable]`, `#[Hidden]`). STAGE_02 must add `phone`, `is_active`, `avatar` to fillable. 
+The existing `User.php` uses PHP 8.3 attribute-style declarations (`#[Fillable]`, `#[Hidden]`). STAGE_02 must add `phone`, `is_active`, `avatar` to fillable.
 
 **Decision**: Replace attribute-style declarations with traditional `$fillable` and `$hidden` array properties to allow SoftDeletes and additional relationship methods to coexist cleanly. The PHP 8.3 attribute syntax for Eloquent is newer and less universally supported by tooling. This is a within-file refactor of the existing User model — not a new feature, but necessary for correctness.
 
@@ -198,10 +199,10 @@ The existing `User.php` uses PHP 8.3 attribute-style declarations (`#[Fillable]`
 
 All unknowns from the clarification step have been resolved:
 
-| Question | Resolution |
-|----------|------------|
-| Should `role_user` composite PK use `$table->primary(['role_id', 'user_id'])`? | **Yes** — explicit composite PK per FR-015. No auto-increment on pivot tables. |
-| Should `UserSeeder` also set `users.role` enum column? | **Yes** — `User::firstOrCreate` payload includes `role` to keep both systems in sync. |
-| Does `BaseModel` use `$guarded = []` or `$fillable`? | `$guarded = []` on BaseModel as default (as per spec), but child models MUST declare explicit `$fillable`. |
-| Should `UserRepository` be bound in a Service Provider? | **Yes** — bind `RepositoryInterface` implementations in `AppServiceProvider` for DI. Documented in plan Phase 3. |
-| Are `roles` and `permissions` tables needing soft deletes? | **No** — NFR-007 explicitly excludes them. They are configuration data. |
+| Question                                                                       | Resolution                                                                                                       |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| Should `role_user` composite PK use `$table->primary(['role_id', 'user_id'])`? | **Yes** — explicit composite PK per FR-015. No auto-increment on pivot tables.                                   |
+| Should `UserSeeder` also set `users.role` enum column?                         | **Yes** — `User::firstOrCreate` payload includes `role` to keep both systems in sync.                            |
+| Does `BaseModel` use `$guarded = []` or `$fillable`?                           | `$guarded = []` on BaseModel as default (as per spec), but child models MUST declare explicit `$fillable`.       |
+| Should `UserRepository` be bound in a Service Provider?                        | **Yes** — bind `RepositoryInterface` implementations in `AppServiceProvider` for DI. Documented in plan Phase 3. |
+| Are `roles` and `permissions` tables needing soft deletes?                     | **No** — NFR-007 explicitly excludes them. They are configuration data.                                          |

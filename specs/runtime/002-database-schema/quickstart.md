@@ -62,6 +62,7 @@ php artisan db:seed
 ```
 
 This runs in order:
+
 1. `RoleSeeder` — creates 5 platform roles
 2. `PermissionSeeder` — creates 25+ permissions across 7 groups
 3. `UserSeeder` — creates 5 test users (one per role)
@@ -198,12 +199,12 @@ PSR-12 compliance is required on all PHP files before committing.
 
 ## Test User Credentials
 
-| Email | Password | Role |
-|-------|----------|------|
-| `admin@bunyan.test` | `password` | admin |
-| `customer@bunyan.test` | `password` | customer |
-| `contractor@bunyan.test` | `password` | contractor |
-| `architect@bunyan.test` | `password` | supervising_architect |
-| `engineer@bunyan.test` | `password` | field_engineer |
+| Email                    | Password   | Role                  |
+| ------------------------ | ---------- | --------------------- |
+| `admin@bunyan.test`      | `password` | admin                 |
+| `customer@bunyan.test`   | `password` | customer              |
+| `contractor@bunyan.test` | `password` | contractor            |
+| `architect@bunyan.test`  | `password` | supervising_architect |
+| `engineer@bunyan.test`   | `password` | field_engineer        |
 
 > **Security warning**: These credentials are for local development and CI environments only. Never seed these users in production.

@@ -2,40 +2,40 @@
 
 > **Phase:** 01_PLATFORM_FOUNDATION
 > **Stage:** STAGE_02_DATABASE_SCHEMA
-> **Branch:** `spec/002-database-schema`
-> **Generated:** 2026-04-11T00:30:00Z
+> **Branch:** `spec/002-database-schema` > **Generated:** 2026-04-11T00:30:00Z
 > **Status:** PRODUCTION READY
 
 ## Stage Summary
 
-| Metric | Value |
-|---|---|
-| Stage | DATABASE_SCHEMA |
-| Phase | 01_PLATFORM_FOUNDATION |
-| Branch | spec/002-database-schema |
-| Tasks | 32 / 32 |
-| Tests | 60 passed, 107 assertions, 0 failures |
-| Migrations | 5 (ALTER + 4 CREATE) |
-| Files Created | 24 |
-| Files Modified | 4 |
-| Status | PRODUCTION READY |
+| Metric         | Value                                 |
+| -------------- | ------------------------------------- |
+| Stage          | DATABASE_SCHEMA                       |
+| Phase          | 01_PLATFORM_FOUNDATION                |
+| Branch         | spec/002-database-schema              |
+| Tasks          | 32 / 32                               |
+| Tests          | 60 passed, 107 assertions, 0 failures |
+| Migrations     | 5 (ALTER + 4 CREATE)                  |
+| Files Created  | 24                                    |
+| Files Modified | 4                                     |
+| Status         | PRODUCTION READY                      |
 
 ## Workflow Timeline
 
-| Step | Started | Completed | Duration |
-|---|---|---|---|
-| Pre-Step | 2026-04-11T00:00:00Z | 2026-04-11T00:00:30Z | ~30s |
-| Specify | 2026-04-11T00:00:00Z | 2026-04-11T00:01:00Z | ~1m |
-| Clarify | 2026-04-11T00:01:00Z | 2026-04-11T00:02:00Z | ~1m |
-| Plan | 2026-04-11T00:02:00Z | 2026-04-11T00:03:00Z | ~1m |
-| Tasks | 2026-04-11T00:03:00Z | 2026-04-11T00:04:00Z | ~1m |
-| Analyze | 2026-04-11T00:04:00Z | 2026-04-11T00:15:00Z | ~11m |
-| Implement | 2026-04-11T00:15:00Z | 2026-04-11T00:25:00Z | ~10m |
-| Closure | 2026-04-11T00:25:00Z | 2026-04-11T00:30:00Z | ~5m |
+| Step      | Started              | Completed            | Duration |
+| --------- | -------------------- | -------------------- | -------- |
+| Pre-Step  | 2026-04-11T00:00:00Z | 2026-04-11T00:00:30Z | ~30s     |
+| Specify   | 2026-04-11T00:00:00Z | 2026-04-11T00:01:00Z | ~1m      |
+| Clarify   | 2026-04-11T00:01:00Z | 2026-04-11T00:02:00Z | ~1m      |
+| Plan      | 2026-04-11T00:02:00Z | 2026-04-11T00:03:00Z | ~1m      |
+| Tasks     | 2026-04-11T00:03:00Z | 2026-04-11T00:04:00Z | ~1m      |
+| Analyze   | 2026-04-11T00:04:00Z | 2026-04-11T00:15:00Z | ~11m     |
+| Implement | 2026-04-11T00:15:00Z | 2026-04-11T00:25:00Z | ~10m     |
+| Closure   | 2026-04-11T00:25:00Z | 2026-04-11T00:30:00Z | ~5m      |
 
 ## Scope Delivered
 
 ### Database Schema (US1)
+
 - ✅ ALTER TABLE migration: `phone` (varchar 30), `is_active` (boolean, default true), `avatar` (varchar 500), `deleted_at` (softDeletes) added to `users` table
 - ✅ CREATE `roles` table with `display_name_ar` for Arabic locale
 - ✅ CREATE `permissions` table with `group` field for domain-based organization
@@ -44,6 +44,7 @@
 - ✅ All 5 migrations have working `down()` rollback methods
 
 ### Eloquent Models (US2)
+
 - ✅ `BaseModel`: abstract base, SoftDeletes, HasFactory, `scopeActive()`
 - ✅ `Role`: belongs to User and Permission via many-to-many pivots
 - ✅ `Permission`: belongs to Role, `scopeByGroup()`
@@ -51,24 +52,28 @@
 - ✅ `role` field NOT in `$fillable` (privilege escalation protection)
 
 ### Repository Pattern
+
 - ✅ `RepositoryInterface`: 7-method contract (`find`, `findAll`, `findBy`, `create`, `update`, `delete`, `paginate`)
 - ✅ `BaseRepository`: abstract implementation with `ModelNotFoundException` on missing records
 - ✅ `UserRepository`: `findByEmail()`, `findActiveUsers()` domain methods
 - ✅ `AppServiceProvider`: `UserRepository` binding registered
 
 ### Seeders (US3 — idempotent)
+
 - ✅ `RoleSeeder`: 5 roles with Arabic display names (الإدارة, العميل, المقاول, المهندس المشرف, المهندس الميداني)
 - ✅ `PermissionSeeder`: 26 permissions across 7 groups (users, projects, reports, transactions, products, orders, settings)
 - ✅ `UserSeeder`: 5 test users — one per role — with production environment guard
 - ✅ `DatabaseSeeder`: updated to ordered call chain
 
 ### Factory (US4)
+
 - ✅ `UserFactory`: updated with `phone`, `is_active`, `avatar` definitions
 - ✅ 5 role state methods: `admin()`, `customer()`, `contractor()`, `supervisingArchitect()`, `fieldEngineer()`
 - ✅ `inactive()` state
 - ✅ All factory states use `afterCreating()` for correct pivot attachment
 
 ### Test Coverage (60 tests)
+
 - ✅ T023 `UserModelTest`: password hash, scopeActive, hasRole/hasEnumRole, fillable
 - ✅ T024 `RoleModelTest`: fillable, relationships (reflection only, Unit/)
 - ✅ T025 `PermissionModelTest`: fillable, scopeByGroup, roles()
@@ -82,13 +87,13 @@
 
 ## Deferred Scope
 
-| Item | Reason | Target Stage |
-|---|---|---|
-| Sanctum API tokens | Authentication layer not in scope for schema stage | STAGE_03 |
-| Auth middleware / Policies | Requires HTTP routing | STAGE_03 |
-| RoleRepository, PermissionRepository | No HTTP consumers yet | STAGE_04 |
-| findBy() column allowlist (SEC-FINDING-D) | No raw HTTP input in this stage | STAGE_03 |
-| BaseModel boot guard for $fillable | Defensive improvement, non-blocking | STAGE_03/security hardening |
+| Item                                      | Reason                                             | Target Stage                |
+| ----------------------------------------- | -------------------------------------------------- | --------------------------- |
+| Sanctum API tokens                        | Authentication layer not in scope for schema stage | STAGE_03                    |
+| Auth middleware / Policies                | Requires HTTP routing                              | STAGE_03                    |
+| RoleRepository, PermissionRepository      | No HTTP consumers yet                              | STAGE_04                    |
+| findBy() column allowlist (SEC-FINDING-D) | No raw HTTP input in this stage                    | STAGE_03                    |
+| BaseModel boot guard for $fillable        | Defensive improvement, non-blocking                | STAGE_03/security hardening |
 
 ## Architecture Compliance
 
