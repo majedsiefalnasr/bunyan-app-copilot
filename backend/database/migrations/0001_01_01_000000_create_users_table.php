@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('role', ['customer', 'contractor', 'supervising_architect', 'field_engineer', 'admin'])->default('customer');
             $table->rememberToken();
             $table->timestamps();
-            
+
             // Indexes
             $table->index('email');
             $table->index('role');

@@ -12,25 +12,34 @@ This guide walks you through setting up the complete development environment.
 - Composer
 - npm or pnpm
 
-## Quick Start
+## Quick Start (Monorepo)
 
-### 1. Clone & Install Dependencies
+From **repository root**:
 
 ```bash
-# Backend setup
-cd backend
-composer install
-cp .env.example .env
-php artisan key:generate
-
-# Frontend setup
-cd ../frontend
-npm install
+npm run setup        # Install all dependencies (backend + frontend)
+npm run dev          # Start backend & frontend dev servers concurrently
 ```
 
-### 2. Configure Environment
+### Database Options
 
+**Option A: Docker (Recommended)**
+
+```bash
+npm run docker:up    # Starts MySQL, Redis, backend, frontend
+npm run docker:logs  # Watch logs
+```
+
+**Option B: Local Services (SQLite)**
+
+```bash
+npm run setup        # Already configured to use SQLite for local dev
+npm run dev          # Start dev servers
+```
+
+**Option C: Local MySQL**
 Edit `backend/.env`:
+
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -38,112 +47,98 @@ DB_PORT=3306
 DB_DATABASE=bunyan_dev
 DB_USERNAME=root
 DB_PASSWORD=
-
-SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1
-SANCTUM_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
-### 3. Database Setup (Local MySQL)
+Then:
 
-**Option A: Docker Compose (Recommended)**
 ```bash
-# From project root
-docker-compose up -d
-
-# Run migrations
-cd backend
 php artisan migrate
-```
-
-**Option B: Local MySQL**
-```bash
-# Create database
-mysql -u root -p -e "CREATE DATABASE bunyan_dev;"
-
-# Run migrations
-cd backend
-php artisan migrate
-```
-
-### 4. Start Development Servers
-
-**Terminal 1: Backend**
-```bash
-cd backend
-php artisan serve
-# API available at http://localhost:8000
-```
-
-**Terminal 2: Frontend**
-```bash
-cd frontend
 npm run dev
-# App available at http://localhost:3000
 ```
 
-### 5. Verify Setup
+## Troubleshooting Setup
 
-- **Backend:** Visit http://localhost:8000 (should show Laravel welcome or API endpoint)
-- **Frontend:** Visit http://localhost:3000 (should show Nuxt app)
-- **Login Page:** http://localhost:3000/auth/login
+### `npm install` fails with peer dependency errors
+
+```bash
+# This is normal during initial setup. The .npmrc file handles this:
+npm install --legacy-peer-deps
+```
+
+### MySQL Connection Error
+
+- **Symptom**: `Access denied for user 'root'@'127.0.0.1'`
+- **Solution**: Use SQLite for local dev (already configured), or ensure MySQL is running
 
 ## Testing
 
-### Backend Tests
+### Run All Tests (Monorepo)
+
 ```bash
+npm run test           # Backend + frontend tests
+npm run validate       # Lint + typecheck + analyze + test
+```
+
+### Backend Tests
+
+```bash
+npm run test:backend   # All tests
+
+# Or directly:
 cd backend
-
-# Run all tests
 php artisan test
-
-# Run specific test
 php artisan test tests/Feature/Auth/RegisterTest.php
-
-# With coverage
 php artisan test --coverage
 ```
 
 ### Frontend Tests
+
 ```bash
+npm run test:frontend  # Unit tests
+npm run test:e2e       # E2E tests
+
+# Or directly:
 cd frontend
-
-# Unit tests
 npm run test
-
-# E2E tests  
 npm run test:e2e
-
-# Watch mode
 npm run test -- --watch
 ```
 
 ## Code Quality
 
-### Backend
+### Run All Linting & Checking (Monorepo)
+
 ```bash
+npm run lint           # Lint both stacks
+npm run lint:fix       # Fix linting issues
+npm run typecheck      # Type checking
+npm run analyze        # PHP static analysis
+npm run validate       # Complete validation: lint + typecheck + analyze + test
+```
+
+### Backend
+
+```bash
+npm run lint:backend              # Lint backend
+npm run lint:backend:fix          # Fix backend issues
+
+# Or directly:
 cd backend
-
-# Lint
-vendor/bin/pint
-
-# Fix issues
-vendor/bin/pint
-
-# Static analysis
+composer run lint
 vendor/bin/phpstan analyze
 ```
 
 ### Frontend
+
 ```bash
+npm run lint:frontend             # Lint frontend
+npm run lint:frontend:fix         # Fix frontend issues
+npm run typecheck                 # Type checking
+
+# Or directly:
 cd frontend
-
-# Lint
 npm run lint
-
-# Fix issues
 npm run lint -- --fix
-
-# Type checking
 npm run typecheck
 ```
 
@@ -180,15 +175,18 @@ bunyan-app-copilot/
 ## Troubleshooting
 
 ### Database Connection Error
+
 - Ensure MySQL is running (`docker-compose ps` or `mysql.server status`)
 - Check DB_HOST, credentials in `backend/.env`
 - Run `php artisan migrate --force`
 
 ### Port Already in Use
+
 - Backend: Change port in `php artisan serve --port=8001`
 - Frontend: Change port in `nuxt.config.ts` or `npm run dev -- --port 3001`
 
 ### npm Dependencies Issues
+
 ```bash
 cd frontend
 rm -rf node_modules package-lock.json
@@ -196,6 +194,7 @@ npm install
 ```
 
 ### PHP Autoload Issues
+
 ```bash
 cd backend
 composer dump-autoload
@@ -211,6 +210,7 @@ composer dump-autoload
 ## Support
 
 For questions or issues:
+
 1. Check the documentation in `docs/`
 2. Review open issues/pull requests on GitHub
 3. Ask in team Slack channel #engineering

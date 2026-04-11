@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import { fileURLToPath } from 'node:url'
+import {fileURLToPath} from 'node:url'
+import {defineConfig} from 'vitest/config'
 
 export default defineConfig({
   plugins: [vue()],
@@ -17,10 +17,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        '.nuxt/',
-      ],
+      exclude: ['node_modules/', '.nuxt/'],
     },
   },
 })
