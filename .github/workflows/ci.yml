@@ -45,7 +45,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           extensions: pdo, pdo_mysql, redis, mbstring, xml, bcmath, gd
           coverage: xdebug
 
@@ -166,7 +166,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.4"
           extensions: pdo, pdo_mysql, redis, mbstring, xml, bcmath, gd
 
       - name: Install Composer dependencies
