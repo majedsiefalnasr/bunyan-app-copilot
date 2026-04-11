@@ -2,7 +2,7 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router';
 const route = useRoute() as RouteLocationNormalizedLoaded;
 
-const { data: page } = await useAsyncData('page-' + route.path, () => {
+const { data: page } = await useAsyncData<any | null>('page-' + route.path, () => {
   return queryCollection('content')
     .path(route.path as string)
     .first();
