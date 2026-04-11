@@ -199,43 +199,43 @@
 
 ### Documentation
 
-- [ ] T065 [P] Create `specs/runtime/005-error-handling/quickstart.md` developer quick reference — AC: Shows: error response format example, common error codes, exception handler usage, API response helper usage, logging patterns, frontend error handling, i18n setup; includes code snippets for each pattern
+- [X] T065 [P] Create `specs/runtime/005-error-handling/quickstart.md` developer quick reference — AC: Shows: error response format example, common error codes, exception handler usage, API response helper usage, logging patterns, frontend error handling, i18n setup; includes code snippets for each pattern
 
-- [ ] T066 [P] Create `docs/api/error-codes.md` comprehensive error code reference — AC: Lists all 12 error codes; for each code: code value, HTTP status, description, example scenario, example request/response pair, client handling strategy; searchable table of contents; syntax-highlighted examples
+- [X] T066 [P] Create `docs/api/error-codes.md` comprehensive error code reference — AC: Lists all 12 error codes; for each code: code value, HTTP status, description, example scenario, example request/response pair, client handling strategy; searchable table of contents; syntax-highlighted examples
 
-- [ ] T067 [P] Create `docs/guides/error-handling-guide.md` comprehensive error handling implementation guide — AC: Backend patterns (exception handler, api response helper, logging); frontend patterns (error boundary, API interceptor, toast, error pages); testing strategies; localization best practices; migration guide for existing endpoints
+- [X] T067 [P] Create `docs/guides/error-handling-guide.md` comprehensive error handling implementation guide — AC: Backend patterns (exception handler, api response helper, logging); frontend patterns (error boundary, API interceptor, toast, error pages); testing strategies; localization best practices; migration guide for existing endpoints
 
-- [ ] T068 Create `specs/runtime/005-error-handling/research.md` phase research document — AC: Documents technology choices (monitoring strategy, logging library selection, framework features used); rationale for each choice; alternatives considered; links to external documentation
+- [X] T068 Create `specs/runtime/005-error-handling/research.md` phase research document — AC: Documents technology choices (monitoring strategy, logging library selection, framework features used); rationale for each choice; alternatives considered; links to external documentation
 
 ### Cross-Cutting Testing
 
-- [ ] T069 [US1-US6] Write comprehensive integration test `backend/tests/Feature/ErrorHandlingIntegrationTest.php` — AC: Tests end-to-end error flow: client request → backend handling → error response → client reception; covers all 6 user stories; authentication flow tested; workflow errors tested; payment errors tested; rate limiting tested
+- [X] T069 [US1-US6] Write comprehensive integration test `backend/tests/Feature/ErrorHandlingIntegrationTest.php` — AC: Tests end-to-end error flow: client request → backend handling → error response → client reception; covers all 6 user stories; authentication flow tested; workflow errors tested; payment errors tested; rate limiting tested
 
 - [X] T070 [US1-US6] Write E2E test suite for complete error workflows in `frontend/tests/e2e/errorWorkflows.test.ts` — AC: E2E tests for: validation error display, auth error redirect, not found page, access denied page, server error with retry, rate limit feedback; screenshots captured for each state; tested in both Arabic and English locales
 
-- [ ] T071 Arabic/RTL accessibility verification test — AC: All error messages display correctly in RTL mode; text alignment proper (right-aligned for Arabic); component layouts RTL-safe using Tailwind logical properties; tested with manual RTL toggle; verified in both Firefox and Chrome
+- [X] T071 Arabic/RTL accessibility verification test — AC: All error messages display correctly in RTL mode; text alignment proper (right-aligned for Arabic); component layouts RTL-safe using Tailwind logical properties; tested with manual RTL toggle; verified in both Firefox and Chrome
 
-- [ ] T072 Performance regression test for logging overhead — AC: Validates logging adds < 50ms (99th percentile, CHK-PERF-001); runs 5000 requests with full logging; measures 50th, 95th, 99th percentile response times; fails if 99th percentile > 50ms baseline
+- [X] T072 Performance regression test for logging overhead — AC: Validates logging adds < 50ms (99th percentile, CHK-PERF-001); runs 5000 requests with full logging; measures 50th, 95th, 99th percentile response times; fails if 99th percentile > 50ms baseline
 
-- [ ] T073 Sensitive data masking verification in logs — AC: Captures actual log output; validates passwords replaced with `***`; validates tokens masked as `tok_****...`; validates card numbers masked as `****-1234`; no plaintext sensitive data in any log file; automated scan of log files
+- [X] T073 Sensitive data masking verification in logs — AC: Captures actual log output; validates passwords replaced with `***`; validates tokens masked as `tok_****...`; validates card numbers masked as `****-1234`; no plaintext sensitive data in any log file; automated scan of log files
 
 ### Security & RBAC Testing — Post-Remediation (CRITICAL)
 
-- [ ] T083 [US2] Create RBAC role-based integration test matrix in `backend/tests/Feature/RBACErrorMatrixTest.php` — AC: Tests all 5 roles (Customer, Contractor, Field Engineer, Supervising Architect, Admin) × 5 endpoint types (Customer, Contractor, Admin, Architect, Field Engineer) = 25 scenarios; each role accessing endpoint exclusive to another role returns 403 RBAC_ROLE_DENIED; error code verified; error message does NOT expose role names; all 25 test cases passing
+- [X] T083 [US2] Create RBAC role-based integration test matrix in `backend/tests/Feature/RBACErrorMatrixTest.php` — AC: Tests all 5 roles (Customer, Contractor, Field Engineer, Supervising Architect, Admin) × 5 endpoint types (Customer, Contractor, Admin, Architect, Field Engineer) = 25 scenarios; each role accessing endpoint exclusive to another role returns 403 RBAC_ROLE_DENIED; error code verified; error message does NOT expose role names; all 25 test cases passing
 
-- [ ] T084 [US2] Create attack simulation test suite in `backend/tests/Feature/SecurityAttackSimulationTest.php` — AC: Tests brute-force attack (1000 req/min to /api/login) → 429 RATE_LIMIT_EXCEEDED; tests header injection (malicious correlation ID with XSS payload) → rejected; tests X-Forwarded-For spoofing → rate limiting still effective; all attack scenarios logged and monitored; security audit trail verified
+- [X] T084 [US2] Create attack simulation test suite in `backend/tests/Feature/SecurityAttackSimulationTest.php` — AC: Tests brute-force attack (1000 req/min to /api/login) → 429 RATE_LIMIT_EXCEEDED; tests header injection (malicious correlation ID with XSS payload) → rejected; tests X-Forwarded-For spoofing → rate limiting still effective; all attack scenarios logged and monitored; security audit trail verified
 
-- [ ] T085 [US4] Create PII masking regression test suite in `backend/tests/Feature/PIIMaskingRegressionTest.php` — AC: Automated scan of all log files for sensitive data (passwords, tokens, credit cards, SSN, email); fails if any sensitive pattern found unmasked; detects false positives (e.g., "admin" in error messages); tests field-level error details masking in 422 responses; prevents PII leaks on each deployment
+- [X] T085 [US4] Create PII masking regression test suite in `backend/tests/Feature/PIIMaskingRegressionTest.php` — AC: Automated scan of all log files for sensitive data (passwords, tokens, credit cards, SSN, email); fails if any sensitive pattern found unmasked; detects false positives (e.g., "admin" in error messages); tests field-level error details masking in 422 responses; prevents PII leaks on each deployment
 
 ### Validation & Sign-Off
 
-- [ ] T086 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
+- [X] T086 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
 
-- [ ] T087 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
+- [X] T087 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
 
-- [ ] T088 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
+- [X] T088 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
 
-- [ ] T089 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
+- [X] T089 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
 
 ---
 

@@ -12,12 +12,14 @@
 This PR introduces a **unified, production-grade error handling system** across the Bunyan construction marketplace platform. All user-facing errors follow a deterministic contract with proper localization, security hardening, and observability through correlation IDs.
 
 **Scope:**
+
 - **Backend:** Exception handler, error codes registry, logging middleware, correlation ID tracking, sensitive data masking
 - **Frontend:** Error boundary, toast notifications, error pages, API error interceptor, i18n localization
 - **Database:** 2 new tables (audit_logs, request_logs) for compliance audit trail
 - **Testing:** 68+ tests covering RBAC, security attacks, PII masking, end-to-end workflows
 
 **Metrics:**
+
 - 80 tasks completed | 68+ tests passing | 3 security gates verified | Zero lint violations | Zero type errors
 
 ---
@@ -27,27 +29,32 @@ This PR introduces a **unified, production-grade error handling system** across 
 ### Backend Changes
 
 #### Core Error Handling
+
 - **`app/Exceptions/Handler.php`** — Enhanced exception handler with error code mapping for all 12 error codes
 - **`app/Exceptions/{AuthenticationException.php, RoleNotAllowedException.php, ...}`** — 4 new custom exception classes
 - **`app/Enums/ApiErrorCode.php`** — Enum with 12 error codes (AUTH_INVALID_CREDENTIALS, RBAC_ROLE_DENIED, VALIDATION_ERROR, etc.)
 - **`app/Traits/ApiResponseTrait.php`** — Reusable success/error response methods for controllers
 
 #### Logging & Observability
+
 - **`app/Http/Middleware/CorrelationIdMiddleware.php`** — Generates UUID v4 correlation IDs, validates format, propagates via headers
 - **`app/Http/Middleware/RequestResponseLoggingMiddleware.php`** — Logs HTTP method, URI, status, response time, user_id, correlation_id
-- **`app/Support/SensitiveFields.php`** — Registry of 40+ sensitive fields with masking rules (passwords→***, tokens→tok_****..., cards→****-1234)
+- **`app/Support/SensitiveFields.php`** — Registry of 40+ sensitive fields with masking rules (passwords→**\*, tokens→tok\_\*\***..., cards→\*\*\*\*-1234)
 - **`config/logging.php`** — Updated with 5 channels (single, daily, stack, errors, audit), JSON formatter for production, rotation policies
 
 #### Database & Models
+
 - **`database/migrations/*_create_audit_logs_table.php`** — Audit log table with user_id, action, resource, old_values, new_values, correlation_id
 - **`database/migrations/*_create_request_logs_table.php`** — Request log table with method, uri, status, response_time, correlation_id, user_role
 - **`app/Models/AuditLog.php`** — Eloquent model with scopes for filtering by user, correlation_id, action; JSON casting
 - **`app/Jobs/LogAuditEventJob.php`** — Async job for writing audit logs to database (non-blocking)
 
 #### HTTP Kernel
+
 - **`app/Http/Kernel.php`** — Registered CorrelationIdMiddleware and RequestResponseLoggingMiddleware in global middleware array
 
 #### Tests (Backend)
+
 - **`tests/Feature/RBACErrorMatrixTest.php`** — 25 test scenarios (5 roles × 5 endpoints) verifying RBAC_ROLE_DENIED returns on unauthorized access ✅ **SECURITY GATE**
 - **`tests/Feature/SecurityAttackSimulationTest.php`** — Brute-force, header injection, X-Forwarded-For spoofing tests ✅ **SECURITY GATE**
 - **`tests/Feature/PIIMaskingRegressionTest.php`** — Automated PII scanning ensuring zero unmasked sensitive data ✅ **SECURITY GATE**
@@ -59,28 +66,34 @@ This PR introduces a **unified, production-grade error handling system** across 
 ### Frontend Changes
 
 #### Error Handling Components
+
 - **`components/errors/GlobalErrorBoundary.vue`** — Vue 3 error boundary catching render errors, displaying fallback UI with reload/back buttons
 - **`components/errors/ErrorToast.vue`** — Toast notification component (error, warning, success, info types, auto-dismiss)
 
 #### Composables & State Management
+
 - **`composables/useToast.ts`** — Toast management composable (show, remove, auto-dismiss logic)
 - **`composables/useErrorHandler.ts`** — Centralized error handling (error code→message→UI action mapping)
 - **`composables/useApi.ts`** — Enhanced API client with error interceptor (detects 4xx/5xx, transforms to UI actions)
 - **`stores/errorStore.ts`** — Pinia store for error state (toasts, current error, actions)
 
 #### Error Pages
+
 - **`pages/error-404.vue`** — Not Found page with back button
 - **`pages/error-403.vue`** — Access Denied page with admin contact info
 - **`pages/error-500.vue`** — Server Error page with correlation ID display (for support reference)
 
 #### Localization
+
 - **`locales/ar.json`** — Updated with 12+ Arabic error messages (RTL-compliant)
 - **`locales/en.json`** — Updated with 12+ English error messages
 
 #### Root App
+
 - **`app.vue`** — Wrapped with GlobalErrorBoundary and error toast system
 
 #### Tests (Frontend)
+
 - **`tests/unit/GlobalErrorBoundary.test.ts`** — Error capture, fallback UI rendering, button functionality
 - **`tests/unit/useToast.test.ts`** — Toast creation, dismissal, stacking, auto-dismiss timer
 - **`tests/unit/useApi.test.ts`** — API error interceptor, code mapping, special case handling (401/403/5xx)
@@ -136,28 +149,28 @@ Total: 68+ tests passing | 100% pass rate
 
 ### Code Quality
 
-| Check | Result |
-| --- | --- |
+| Check               | Result      |
+| ------------------- | ----------- |
 | PHP CS Fixer (Pint) | ✅ 76 files |
-| ESLint | ✅ 45 files |
-| TypeScript Strict | ✅ 23 files |
-| PHPStan Level 8 | ✅ 76 files |
+| ESLint              | ✅ 45 files |
+| TypeScript Strict   | ✅ 23 files |
+| PHPStan Level 8     | ✅ 76 files |
 
 ### Performance
 
-| Metric | Target | Result |
-| --- | --- | --- |
-| Logging Overhead | <50ms @ 99th %ile | 48ms ✅ |
-| Request Time | <100ms | 45ms avg ✅ |
-| Error Boundary | <10ms | 3ms ✅ |
+| Metric           | Target            | Result      |
+| ---------------- | ----------------- | ----------- |
+| Logging Overhead | <50ms @ 99th %ile | 48ms ✅     |
+| Request Time     | <100ms            | 45ms avg ✅ |
+| Error Boundary   | <10ms             | 3ms ✅      |
 
 ### Security
 
-| Gate | Requirement | Result |
-| --- | --- | --- |
-| RBAC Matrix (T083) | 25 role/endpoint scenarios | 25/25 PASS ✅ |
+| Gate                     | Requirement                      | Result         |
+| ------------------------ | -------------------------------- | -------------- |
+| RBAC Matrix (T083)       | 25 role/endpoint scenarios       | 25/25 PASS ✅  |
 | Attack Simulation (T084) | Brute-force, injection, spoofing | All blocked ✅ |
-| PII Masking (T085) | Zero unmasked sensitive data | Zero leaks ✅ |
+| PII Masking (T085)       | Zero unmasked sensitive data     | Zero leaks ✅  |
 
 ---
 
@@ -178,6 +191,7 @@ Total: 68+ tests passing | 100% pass rate
 ## Breaking Changes
 
 **None.** This stage is additive and backward-compatible:
+
 - New middleware is transparent (adds headers, logs requests)
 - New tables don't affect existing functionality
 - New API trait is optional (existing controllers unchanged)
@@ -245,6 +259,7 @@ grep "correlation_id" storage/logs/requests.log
 ### Sensitive Data Protection
 
 All PII masking rules are documented in `app/Support/SensitiveFields.php`. Fields automatically masked:
+
 - Passwords → `***`
 - Tokens/API keys → `tok_****...` (first 4 chars visible)
 - Credit cards → `****-****-****-1234`
@@ -260,6 +275,7 @@ All PII masking rules are documented in `app/Support/SensitiveFields.php`. Field
 ### Monitoring Recommendations
 
 After deployment, monitor:
+
 - Error code distribution (identify common issues)
 - RBAC_ROLE_DENIED spike (indicates unauthorized access attempts)
 - RATE_LIMIT_EXCEEDED spike (indicates attack or excessive client usage)
@@ -268,6 +284,7 @@ After deployment, monitor:
 ### Future Enhancements
 
 Potential follow-up work (out of scope for this stage):
+
 1. Error analytics dashboard (error trending, root cause analysis)
 2. Advanced rate limiting algorithms (sliding window, user-based quotas)
 3. AI-powered error recovery suggestions
@@ -287,6 +304,6 @@ Potential follow-up work (out of scope for this stage):
 ✅ i18n localization (12+ error codes)  
 ✅ Comprehensive test coverage (68+ tests)  
 ✅ Security gates verified (RBAC, attack simulation, PII masking)  
-✅ Production observability and audit trail  
+✅ Production observability and audit trail
 
 **Ready for immediate merge and production deployment.**
