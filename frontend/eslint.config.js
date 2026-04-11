@@ -1,4 +1,4 @@
-import {createConfigForNuxt} from '@nuxt/eslint-config/flat'
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
 
 /**
  * ESLint 9+ flat config. Replaces legacy `.eslintrc.json`.
@@ -18,4 +18,4 @@ export default createConfigForNuxt(
       'vue/no-multiple-template-root': 'off',
     },
   }
-)
+);

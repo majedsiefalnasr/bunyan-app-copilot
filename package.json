@@ -20,6 +20,10 @@
     "lint:backend:fix": "cd backend && composer run lint:fix",
     "lint:frontend": "cd frontend && npm run lint",
     "lint:frontend:fix": "cd frontend && npm run lint:fix",
+    "lint:staged": "lint-staged",
+    "format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\"",
+    "format:staged": "prettier --write",
     "typecheck": "cd frontend && npm run typecheck",
     "analyze": "cd backend && composer run analyze",
     "test": "npm run test:backend && npm run test:frontend",
@@ -31,14 +35,30 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "docker:build": "docker-compose build"
+    "docker:build": "docker-compose build",
+    "prepare": "husky install"
   },
   "dependencies": {},
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
+    "prettier": "^2.8.8"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue}": [
+      "npx --prefix frontend prettier --write",
+      "npx --prefix frontend eslint --fix"
+    ],
+    "*.{css,scss,json,md}": [
+      "npx --prefix frontend prettier --write"
+    ],
+    "*.php": [
+      "cd backend && composer run lint"
+    ]
   }
 }
