@@ -8,20 +8,30 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: MEDIUM
-Initiated: 2026-04-11T00:00:00Z
+Last Updated: 2026-04-11T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- MySQL schema: users, roles, permissions, role_user, permission_role tables
+- Eloquent models: User, Role, Permission, BaseModel
+- Repository pattern base classes
+- Seeders (5 roles, 20+ permissions, 5 test users)
+- UserFactory with 5 role states
+
+Deferred Scope:
+
+- Sanctum tokens, auth endpoints (STAGE_03)
+- RBAC middleware + policies (STAGE_04)
+- Project/Phase/Task/Product tables (later phases)
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 
