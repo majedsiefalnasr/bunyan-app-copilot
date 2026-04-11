@@ -98,7 +98,7 @@ class User extends Authenticatable
 
     public function hasAnyRole(UserRole ...$roles): bool
     {
-        if (!($this->role instanceof UserRole)) {
+        if (! ($this->role instanceof UserRole)) {
             return false;
         }
 
