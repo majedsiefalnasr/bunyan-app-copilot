@@ -11,7 +11,5 @@ parameters:
   tmpDir: build/phpstan
   typeAliases:
     ID: 'int|string'
-  checkGenericClassInNonGenericObjectType: false
-  checkInternalClassCstringFormat: false
   ignoreErrors:
     - '#Access to an undefined property#'
