@@ -17,6 +17,7 @@
     "require-dev": {
         "brianium/paratest": "^7.0",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pail": "^1.2.5",
         "laravel/pint": "^1.29",
         "mockery/mockery": "^1.6",

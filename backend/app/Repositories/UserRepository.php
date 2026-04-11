@@ -17,11 +17,15 @@ class UserRepository extends BaseRepository
     public function findByEmail(string $email): ?User
     {
         /** @var User|null */
-        return $this->model->where('email', $email)->first();
+        return $this->model->query()->where('email', $email)->first();
     }
 
+    /** @return Collection<int, User> */
     public function findActiveUsers(): Collection
     {
-        return $this->model->active()->get();
+        /** @var User $userModel */
+        $userModel = $this->model;
+
+        return $userModel->active()->get();
     }
 }

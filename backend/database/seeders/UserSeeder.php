@@ -64,8 +64,10 @@ class UserSeeder extends Seeder
             );
 
             // Set the enum column directly (not via mass assignment — privilege escalation guard)
-            $user->role = $roleEnum;
-            $user->save();
+            if ($user->role !== $roleEnum) {
+                $user->role = $roleEnum;
+                $user->save();
+            }
 
             // Attach role pivot record (idempotent)
             $role = Role::where('name', $roleSlug)->first();

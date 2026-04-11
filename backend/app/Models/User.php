@@ -14,6 +14,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property UserRole $role The user's role enum value
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -90,11 +93,15 @@ class User extends Authenticatable
      */
     public function hasEnumRole(UserRole $role): bool
     {
-        return $this->role === $role;
+        return ($this->role instanceof UserRole) && $this->role === $role;
     }
 
     public function hasAnyRole(UserRole ...$roles): bool
     {
+        if (!($this->role instanceof UserRole)) {
+            return false;
+        }
+
         return in_array($this->role, $roles, true);
     }
 }
