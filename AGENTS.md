@@ -114,7 +114,7 @@ Error responses:
   "success": false,
   "data": null,
   "message": "Error description",
-  "errors": {"field": ["validation message"]}
+  "errors": { "field": ["validation message"] }
 }
 ```
 

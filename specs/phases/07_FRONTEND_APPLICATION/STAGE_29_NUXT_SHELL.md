@@ -82,12 +82,12 @@ Implement the Nuxt.js application shell with layout system, role-based navigatio
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/i18n'],
   ui: {
-    theme: {colors: ['primary', 'secondary', 'success', 'warning', 'error', 'info']},
+    theme: { colors: ['primary', 'secondary', 'success', 'warning', 'error', 'info'] },
   },
   app: {
-    head: {htmlAttrs: {dir: 'rtl', lang: 'ar'}},
+    head: { htmlAttrs: { dir: 'rtl', lang: 'ar' } },
   },
-})
+});
 ```
 
 ## Testing
@@ -111,15 +111,15 @@ export default defineNuxtConfig({
 
 ```typescript
 // tests/e2e/shell.spec.ts
-import {test, expect} from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
-test('RTL direction persists across navigation', async ({page}) => {
-  await page.goto('/')
-  await page.click('[data-testid="rtl-toggle"]')
-  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl')
-  await page.goto('/projects')
-  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl')
-})
+test('RTL direction persists across navigation', async ({ page }) => {
+  await page.goto('/');
+  await page.click('[data-testid="rtl-toggle"]');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.goto('/projects');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+});
 ```
 
 ## Dependencies

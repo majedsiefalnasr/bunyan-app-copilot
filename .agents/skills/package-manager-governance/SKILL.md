@@ -8,6 +8,7 @@ description: Package manager governance (Composer + npm)
 ## Backend: Composer (PHP)
 
 ### Commands
+
 ```bash
 composer install                 # Install from lock file
 composer require vendor/package  # Add dependency
@@ -15,6 +16,7 @@ composer update vendor/package   # Update specific package
 ```
 
 ### Rules
+
 - Never run `composer update` without specifying a package
 - Always commit `composer.lock`
 - Use `--dev` flag for dev-only dependencies
@@ -23,6 +25,7 @@ composer update vendor/package   # Update specific package
 ## Frontend: npm (Node.js)
 
 ### Commands
+
 ```bash
 npm install                      # Install from lock file
 npm install package-name         # Add dependency
@@ -30,6 +33,7 @@ npm install -D package-name      # Add dev dependency
 ```
 
 ### Rules
+
 - Always commit `package-lock.json`
 - Use `--save-exact` for critical packages
 - Never use `npm install` without lock file in CI

@@ -8,6 +8,7 @@ description: Safe code restructuring
 ## When to Use
 
 When the user wants to:
+
 - Rename a function/class
 - Extract code into a module
 - Move code between files
@@ -23,6 +24,7 @@ When the user wants to:
 ## Safety Checks
 
 Before refactoring:
+
 - [ ] All tests pass on current code
 - [ ] Impact analysis completed
 - [ ] No CLOSED/HARDENED stage affected

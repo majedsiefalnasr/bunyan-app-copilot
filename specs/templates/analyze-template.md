@@ -1,7 +1,6 @@
 # Drift Analysis — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Analyzed:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Analyzed:** {{ISO_TIMESTAMP}}
 
 ## Structural Integrity
 

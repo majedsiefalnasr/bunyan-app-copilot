@@ -472,7 +472,7 @@ Write to: `specs/runtime/<STAGE_DIR_NAME>/.workflow-state.json`
   "last_updated": "<ISO_TIMESTAMP>",
   "step_timings": {},
   "history": [
-    {"event": "branch_created", "branch": "spec/<STAGE_DIR_NAME>", "timestamp": "<ISO_TIMESTAMP>"}
+    { "event": "branch_created", "branch": "spec/<STAGE_DIR_NAME>", "timestamp": "<ISO_TIMESTAMP>" }
   ]
 }
 ```

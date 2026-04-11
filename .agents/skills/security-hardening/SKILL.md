@@ -8,12 +8,14 @@ description: CSRF, CSP, input sanitization, rate limiting (Laravel)
 ## Authentication
 
 ### Laravel Sanctum Configuration
+
 - Token-based authentication for SPA and API
 - Token expiration: 24 hours for web, configurable for API
 - Rate limit login attempts: 5 per minute per IP
 - Password requirements: min 8 chars, mixed case, number, symbol
 
 ### Session Security
+
 ```php
 // config/session.php
 'secure' => true,
@@ -24,6 +26,7 @@ description: CSRF, CSP, input sanitization, rate limiting (Laravel)
 ## RBAC Authorization
 
 ### Policy Pattern (Mandatory)
+
 ```php
 class ProjectPolicy
 {
@@ -41,6 +44,7 @@ class ProjectPolicy
 ```
 
 ### Middleware Stack
+
 ```php
 Route::middleware(['auth:sanctum', 'verified', 'role:admin,contractor'])->group(fn () => ...);
 ```

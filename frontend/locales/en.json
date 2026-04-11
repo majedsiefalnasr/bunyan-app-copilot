@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome",
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "logout": "Logout",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "profile": "Profile",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "loading": "Loading",
+  "error": "Error",
+  "success": "Success",
+  "confirm": "Confirm"
+}

@@ -8,6 +8,7 @@ description: Dead code removal and readability refactors
 ## When to Trigger
 
 After implementation completes, run simplification to:
+
 1. Remove dead code
 2. Consolidate duplicates
 3. Improve naming

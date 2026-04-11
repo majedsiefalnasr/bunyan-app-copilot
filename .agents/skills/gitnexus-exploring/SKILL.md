@@ -8,6 +8,7 @@ description: Architecture exploration and code understanding
 ## When to Use
 
 When the user asks:
+
 - "How does X work?"
 - "What calls this function?"
 - "Show me the auth flow"
@@ -36,6 +37,7 @@ query: "What does the workflow engine module contain?"
 ## Output Format
 
 Present findings as:
+
 1. Summary (1-2 sentences)
 2. Call chain / dependency graph
 3. Key files involved

@@ -1,8 +1,6 @@
 # Technical Plan — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Based on:** `specs/runtime/{{STAGE_DIR_NAME}}/spec.md`
-> **Created:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Based on:** `specs/runtime/{{STAGE_DIR_NAME}}/spec.md` > **Created:** {{ISO_TIMESTAMP}}
 
 ## Architecture Overview
 

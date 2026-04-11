@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.env.example
+.env.*.local
+node_modules
+.nuxt
+dist
+tests
+.vscode
+.idea
+*.log
+coverage

@@ -8,6 +8,7 @@ description: Eloquent ORM schema, query, and repository patterns
 ## Schema Definition Patterns
 
 ### Model with Relationships
+
 ```php
 class Project extends Model
 {
@@ -111,21 +112,25 @@ class ProjectRepository
 ## Query Optimization Rules
 
 1. **Always eager load** relationships used in responses:
+
    ```php
    $project->load(['customer', 'contractor', 'phases.tasks']);
    ```
 
 2. **Use `select()`** to limit columns:
+
    ```php
    Project::select(['id', 'name', 'status', 'customer_id'])->get();
    ```
 
 3. **Avoid N+1** — use `withCount()` for counts:
+
    ```php
    Project::withCount('tasks')->get();
    ```
 
 4. **Use chunking** for bulk operations:
+
    ```php
    Project::where('status', 'completed')->chunk(100, function ($projects) {
        // Process batch

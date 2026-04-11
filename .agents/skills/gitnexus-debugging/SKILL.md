@@ -8,6 +8,7 @@ description: Bug tracing via knowledge graph
 ## When to Use
 
 When the user is:
+
 - Debugging a bug
 - Tracing an error
 - Asking why something fails

@@ -15,30 +15,30 @@ description: Subagent handoff validation and retry handling
 
 ## Registered Subagents
 
-| Name | Purpose |
-|------|---------|
-| Planner | DAG-based execution plans |
-| Implementer | TDD code implementation |
-| Researcher | Codebase exploration |
-| Debugger | Root-cause analysis |
-| Critic | Assumption challenging |
-| Code Simplifier | Complexity reduction |
-| Code Reviewer | Code quality review |
-| Security Auditor | Security analysis |
-| Architecture Guardian | Architecture validation |
-| Database Engineer | DB design + migration |
-| QA Engineer | Test strategy + coverage |
-| Frontend Developer | UI implementation |
-| API Designer | API design |
-| DevOps Engineer | CI/CD + deployment |
-| Technical Writer | Documentation |
-| Performance Optimizer | Performance analysis |
-| Laravel Expert | Laravel patterns |
-| Nuxt Expert | Nuxt.js patterns |
-| ADR Generator | Architecture decisions |
-| Accessibility Expert | WCAG compliance |
-| GitHub Actions Expert | CI/CD workflows |
-| Context7 Expert | Library documentation |
+| Name                  | Purpose                   |
+| --------------------- | ------------------------- |
+| Planner               | DAG-based execution plans |
+| Implementer           | TDD code implementation   |
+| Researcher            | Codebase exploration      |
+| Debugger              | Root-cause analysis       |
+| Critic                | Assumption challenging    |
+| Code Simplifier       | Complexity reduction      |
+| Code Reviewer         | Code quality review       |
+| Security Auditor      | Security analysis         |
+| Architecture Guardian | Architecture validation   |
+| Database Engineer     | DB design + migration     |
+| QA Engineer           | Test strategy + coverage  |
+| Frontend Developer    | UI implementation         |
+| API Designer          | API design                |
+| DevOps Engineer       | CI/CD + deployment        |
+| Technical Writer      | Documentation             |
+| Performance Optimizer | Performance analysis      |
+| Laravel Expert        | Laravel patterns          |
+| Nuxt Expert           | Nuxt.js patterns          |
+| ADR Generator         | Architecture decisions    |
+| Accessibility Expert  | WCAG compliance           |
+| GitHub Actions Expert | CI/CD workflows           |
+| Context7 Expert       | Library documentation     |
 
 ## Handoff Template
 

@@ -1,7 +1,6 @@
 # Analyze Report — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Generated:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Generated:** {{ISO_TIMESTAMP}}
 
 ## Drift Analysis Results
 

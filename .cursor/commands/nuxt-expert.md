@@ -52,10 +52,10 @@ Read `DESIGN.md` before any UI work:
 
 ```vue
 <script setup lang="ts">
-  // Composition API only
-  // Props via defineProps<T>()
-  // Emits via defineEmits<T>()
-  // Composables for reusable logic
+// Composition API only
+// Props via defineProps<T>()
+// Emits via defineEmits<T>()
+// Composables for reusable logic
 </script>
 
 <template>

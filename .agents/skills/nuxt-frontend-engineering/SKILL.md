@@ -64,8 +64,8 @@ frontend/
 ```typescript
 // composables/useApi.ts
 export function useApi() {
-  const config = useRuntimeConfig()
-  const auth = useAuthStore()
+  const config = useRuntimeConfig();
+  const auth = useAuthStore();
 
   const apiFetch = $fetch.create({
     baseURL: config.public.apiBaseUrl,
@@ -73,20 +73,20 @@ export function useApi() {
       Accept: 'application/json',
       'Accept-Language': 'ar',
     },
-    onRequest({options}) {
+    onRequest({ options }) {
       if (auth.token) {
-        options.headers.set('Authorization', `Bearer ${auth.token}`)
+        options.headers.set('Authorization', `Bearer ${auth.token}`);
       }
     },
-    onResponseError({response}) {
+    onResponseError({ response }) {
       if (response.status === 401) {
-        auth.logout()
-        navigateTo('/auth/login')
+        auth.logout();
+        navigateTo('/auth/login');
       }
     },
-  })
+  });
 
-  return {apiFetch}
+  return { apiFetch };
 }
 ```
 
@@ -94,31 +94,31 @@ export function useApi() {
 
 ```typescript
 // middleware/role.ts
-export default defineNuxtRouteMiddleware(to => {
-  const auth = useAuthStore()
-  const requiredRoles = to.meta.roles as string[] | undefined
+export default defineNuxtRouteMiddleware((to) => {
+  const auth = useAuthStore();
+  const requiredRoles = to.meta.roles as string[] | undefined;
 
-  if (!requiredRoles || requiredRoles.length === 0) return
+  if (!requiredRoles || requiredRoles.length === 0) return;
 
   if (!auth.user || !requiredRoles.includes(auth.user.role)) {
-    return navigateTo('/dashboard')
+    return navigateTo('/dashboard');
   }
-})
+});
 ```
 
 ## Page with RBAC
 
 ```vue
 <script setup lang="ts">
-  definePageMeta({
-    middleware: ['auth', 'role'],
-    roles: ['customer', 'admin'],
-  })
+definePageMeta({
+  middleware: ['auth', 'role'],
+  roles: ['customer', 'admin'],
+});
 
-  const {apiFetch} = useApi()
-  const {data: projects, status} = await useAsyncData('projects', () =>
-    apiFetch('/api/v1/projects')
-  )
+const { apiFetch } = useApi();
+const { data: projects, status } = await useAsyncData('projects', () =>
+  apiFetch('/api/v1/projects')
+);
 </script>
 
 <template>
@@ -141,35 +141,35 @@ export default defineNuxtRouteMiddleware(to => {
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const user = ref<User | null>(null)
-    const token = ref<string | null>(null)
+    const user = ref<User | null>(null);
+    const token = ref<string | null>(null);
 
-    const isAuthenticated = computed(() => !!token.value)
-    const isAdmin = computed(() => user.value?.role === 'admin')
-    const isCustomer = computed(() => user.value?.role === 'customer')
+    const isAuthenticated = computed(() => !!token.value);
+    const isAdmin = computed(() => user.value?.role === 'admin');
+    const isCustomer = computed(() => user.value?.role === 'customer');
 
     async function login(credentials: LoginCredentials) {
-      const {apiFetch} = useApi()
+      const { apiFetch } = useApi();
       const response = await apiFetch('/api/v1/auth/login', {
         method: 'POST',
         body: credentials,
-      })
-      token.value = response.data.token
-      user.value = response.data.user
+      });
+      token.value = response.data.token;
+      user.value = response.data.user;
     }
 
     function logout() {
-      user.value = null
-      token.value = null
-      navigateTo('/auth/login')
+      user.value = null;
+      token.value = null;
+      navigateTo('/auth/login');
     }
 
-    return {user, token, isAuthenticated, isAdmin, isCustomer, login, logout}
+    return { user, token, isAuthenticated, isAdmin, isCustomer, login, logout };
   },
   {
     persist: true,
   }
-)
+);
 ```
 
 ## RTL & Nuxt UI Configuration
@@ -180,10 +180,10 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/i18n', '@pinia/nuxt'],
   app: {
     head: {
-      htmlAttrs: {dir: 'rtl', lang: 'ar'},
+      htmlAttrs: { dir: 'rtl', lang: 'ar' },
     },
   },
-})
+});
 ```
 
 Nuxt UI handles RTL via Tailwind logical properties automatically. No Bootstrap imports needed.

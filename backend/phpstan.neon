@@ -1,0 +1,15 @@
+includes:
+  - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+  level: 5
+  paths:
+    - app
+    - routes
+    - database/factories
+    - database/seeders
+  tmpDir: build/phpstan
+  typeAliases:
+    ID: 'int|string'
+  ignoreErrors:
+    - '#Access to an undefined property#'

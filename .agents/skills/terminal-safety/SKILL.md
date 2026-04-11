@@ -16,6 +16,7 @@ description: Safety rules for terminal operations
 ## Safe Command Patterns
 
 ### Backend
+
 ```bash
 php artisan migrate              # Run pending migrations
 php artisan migrate:status       # Check migration status (safe)
@@ -25,6 +26,7 @@ composer run analyze             # PHPStan
 ```
 
 ### Frontend
+
 ```bash
 npm run dev                      # Start dev server
 npm run build                    # Build for production
@@ -34,6 +36,7 @@ npm run test                     # Vitest
 ```
 
 ### Database (Read-Only Safe)
+
 ```bash
 php artisan tinker               # REPL — use caution
 php artisan db:show              # Show database info
@@ -43,6 +46,7 @@ php artisan schema:dump          # Dump schema
 ## Confirmation Required
 
 Before executing these, AI must ask for confirmation:
+
 - `php artisan migrate:rollback`
 - `php artisan db:wipe`
 - `npm run build` (production)

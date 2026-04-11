@@ -30,6 +30,7 @@ You **MUST** consider the user input before proceeding (if not empty).
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
+
   - **Optional hook** (`optional: true`):
 
     ```
@@ -64,6 +65,7 @@ The text the user typed after `/speckit.specify` in the triggering message **is*
 Given that feature description, do this:
 
 1. **Generate a concise short name** (2-4 words) for the branch:
+
    - Analyze the feature description and extract the most meaningful keywords
    - Create a 2-4 word short name that captures the essence of the feature
    - Use action-noun format when possible (e.g., "add-user-auth", "fix-payment-bug")
@@ -77,6 +79,7 @@ Given that feature description, do this:
    ```
 
    **IMPORTANT**:
+
    - Do NOT pass `--number` — the script determines the correct next number automatically
    - Always include `--json` so the output can be parsed reliably
    - You must only ever run this script once per feature
@@ -85,11 +88,13 @@ Given that feature description, do this:
 3. Load `.specify/templates/spec-template.md` to understand required sections.
 
 4. Follow this execution flow:
+
    1. Parse user description from Input
       If empty: ERROR "No feature description provided"
    2. Extract key concepts from description
       Identify: actors, actions, data, constraints
    3. For unclear aspects:
+
       - Make informed guesses based on context and industry standards
       - Only mark with [NEEDS CLARIFICATION: specific question] if:
         - The choice significantly impacts feature scope or user experience

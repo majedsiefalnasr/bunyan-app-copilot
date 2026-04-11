@@ -25,6 +25,7 @@ Execution steps:
 1. Run `.specify/scripts/bash/check-prerequisites.sh --json --paths-only` from repo root. Parse JSON for `FEATURE_DIR` and `FEATURE_SPEC`.
 
 2. Load the current spec file. Perform a structured ambiguity & coverage scan:
+
    - Functional Scope & Behavior
    - Domain & Data Model
    - Interaction & UX Flow
@@ -36,6 +37,7 @@ Execution steps:
    - Completion Signals
 
 3. Generate (internally) a prioritized queue of candidate clarification questions (maximum 5). Apply constraints:
+
    - Maximum of 5 total questions across the whole session.
    - Each question must be answerable with EITHER:
      - A short multiple-choice selection (2-5 options), OR
@@ -43,6 +45,7 @@ Execution steps:
    - Only include questions whose answers materially impact architecture, data modeling, task decomposition, test design, UX behavior, or compliance validation.
 
 4. Sequential questioning loop (interactive):
+
    - Present EXACTLY ONE question at a time.
    - After each answer, encode the decision into the spec immediately.
    - Continue until all questions are asked or user opts out.

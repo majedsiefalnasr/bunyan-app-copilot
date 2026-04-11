@@ -2,25 +2,15 @@
   "mcpServers": {
     "context7": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ]
+      "args": ["-y", "@upstash/context7-mcp@latest"]
     },
     "gitnexus": {
       "command": "npx",
-      "args": [
-        "-y",
-        "gitnexus@latest",
-        "mcp"
-      ]
+      "args": ["-y", "gitnexus@latest", "mcp"]
     },
     "github": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_TOKEN}"
       }

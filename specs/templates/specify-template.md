@@ -1,9 +1,6 @@
 # {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Stage File:** `specs/phases/{{PHASE_NAME}}/{{STAGE_FILE_NAME}}`
-> **Branch:** `spec/{{STAGE_DIR_NAME}}`
-> **Created:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Stage File:** `specs/phases/{{PHASE_NAME}}/{{STAGE_FILE_NAME}}` > **Branch:** `spec/{{STAGE_DIR_NAME}}` > **Created:** {{ISO_TIMESTAMP}}
 
 ## Objective
 

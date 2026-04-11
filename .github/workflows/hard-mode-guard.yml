@@ -82,3 +82,21 @@ jobs:
               exit 1
             fi
           fi
+
+      - name: Check for TESTING_GUIDE.md in stages
+        run: |
+          set -e
+          missing=0
+          for dir in specs/runtime/*; do
+            if [ -d "$dir" ]; then
+              if [ ! -f "$dir/guides/TESTING_GUIDE.md" ]; then
+                echo "Missing TESTING_GUIDE.md in $dir"
+                missing=1
+              fi
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "::error file=specs/runtime::One or more stages missing TESTING_GUIDE.md"
+            exit 1
+          fi
+          echo "All testing guides present."

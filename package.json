@@ -1,0 +1,53 @@
+{
+  "name": "bunyan",
+  "version": "1.0.0",
+  "description": "Bunyan بنيان - Arabic Construction Services Marketplace (Monorepo Root)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "install": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && composer install",
+    "install:frontend": "cd frontend && npm install",
+    "dev": "concurrently --kill-others -c \"#93c5fd,#c4b5fd\" \"npm run dev:backend\" \"npm run dev:frontend\" --names=backend,frontend",
+    "dev:backend": "cd backend && composer run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "setup": "npm run install && npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && composer run setup",
+    "setup:frontend": "cd frontend && npm install",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:fix": "npm run lint:backend:fix && npm run lint:frontend:fix",
+    "lint:backend": "cd backend && composer run lint",
+    "lint:backend:fix": "cd backend && composer run lint:fix",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:frontend:fix": "cd frontend && npm run lint:fix",
+    "lint:staged": "lint-staged",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\"",
+    "format:staged": "prettier --write",
+    "typecheck": "cd frontend && npm run typecheck",
+    "analyze": "cd backend && composer run analyze",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && composer run test",
+    "test:backend:coverage": "cd backend && composer run test:coverage",
+    "test:frontend": "cd frontend && npm run test",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "validate": "npm run lint && npm run typecheck && npm run analyze && npm run test",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:build": "docker-compose build",
+    "prepare": "husky install"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
+    "prettier": "^2.8.8"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

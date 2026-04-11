@@ -83,25 +83,25 @@ Implement the admin panel with user management, platform settings, and system co
 
 ```typescript
 // tests/e2e/admin.spec.ts
-import {test, expect} from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
-test('non-admin is redirected from admin panel', async ({page}) => {
-  await page.goto('/auth/login')
-  await page.fill('[data-testid="email-input"]', 'customer@example.com')
-  await page.fill('[data-testid="password-input"]', 'password123')
-  await page.click('[data-testid="login-button"]')
-  await page.goto('/admin')
-  await expect(page).not.toHaveURL('/admin')
-})
+test('non-admin is redirected from admin panel', async ({ page }) => {
+  await page.goto('/auth/login');
+  await page.fill('[data-testid="email-input"]', 'customer@example.com');
+  await page.fill('[data-testid="password-input"]', 'password123');
+  await page.click('[data-testid="login-button"]');
+  await page.goto('/admin');
+  await expect(page).not.toHaveURL('/admin');
+});
 
-test('admin can approve a pending supplier', async ({page}) => {
-  await page.goto('/admin/suppliers')
-  await page.click('[data-testid="supplier-approve-btn"]:first-child')
-  await page.click('[data-testid="confirm-approve"]')
+test('admin can approve a pending supplier', async ({ page }) => {
+  await page.goto('/admin/suppliers');
+  await page.click('[data-testid="supplier-approve-btn"]:first-child');
+  await page.click('[data-testid="confirm-approve"]');
   await expect(page.locator('[data-testid="supplier-status"]:first-child')).toContainText(
     'Verified'
-  )
-})
+  );
+});
 ```
 
 ## Dependencies

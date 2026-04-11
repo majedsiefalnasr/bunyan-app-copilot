@@ -7,15 +7,15 @@ description: GitNexus tools and schema reference
 
 ## Available Tools
 
-| Tool | Purpose |
-|------|---------|
-| `context` | Get repo context and index status |
-| `query` | Query the knowledge graph |
-| `impact` | Analyze blast radius of changes |
-| `detect_changes` | Detect recent changes |
-| `route_map` | Map execution routes |
-| `rename` | Track renames across codebase |
-| `cypher` | Raw Cypher queries |
+| Tool             | Purpose                           |
+| ---------------- | --------------------------------- |
+| `context`        | Get repo context and index status |
+| `query`          | Query the knowledge graph         |
+| `impact`         | Analyze blast radius of changes   |
+| `detect_changes` | Detect recent changes             |
+| `route_map`      | Map execution routes              |
+| `rename`         | Track renames across codebase     |
+| `cypher`         | Raw Cypher queries                |
 
 ## Graph Schema
 

@@ -8,45 +8,57 @@ description: Report, PR summary, ADR generation protocol
 ## Document Types
 
 ### ADR (Architecture Decision Record)
+
 ```markdown
 # ADR-NNN: Title
 
 ## Status
+
 Proposed | Accepted | Deprecated | Superseded
 
 ## Context
+
 What is the issue we are facing?
 
 ## Decision
+
 What was decided?
 
 ## Consequences
+
 What are the positive and negative results?
 
 ## Alternatives Considered
+
 What alternatives were evaluated?
 ```
 
 ### API Endpoint Documentation
+
 ```markdown
 ## POST /api/v1/projects
 
 ### Description
+
 Create a new construction project.
 
 ### Authorization
+
 Role: `customer`, `admin`
 
 ### Request Body
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| name | string | ✅ | Project name |
-| budget | number | ✅ | Project budget (SAR) |
+
+| Field  | Type   | Required | Description          |
+| ------ | ------ | -------- | -------------------- |
+| name   | string | ✅       | Project name         |
+| budget | number | ✅       | Project budget (SAR) |
 
 ### Response
+
 { success: true, data: ProjectResource }
 
 ### Error Codes
+
 - `VALIDATION_ERROR` (422)
 - `AUTH_UNAUTHORIZED` (403)
 ```

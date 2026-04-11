@@ -1,7 +1,6 @@
 # Clarification Session — {{STAGE_NAME}}
 
-> **Date:** {{ISO_DATE}}
-> **Spec:** `specs/runtime/{{STAGE_DIR_NAME}}/spec.md`
+> **Date:** {{ISO_DATE}} > **Spec:** `specs/runtime/{{STAGE_DIR_NAME}}/spec.md`
 
 ## Questions
 

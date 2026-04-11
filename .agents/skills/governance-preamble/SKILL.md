@@ -31,18 +31,21 @@ This skill is loaded by all Bunyan agents as their governance baseline.
 ## Non-Negotiable Rules
 
 ### RBAC Enforcement (Hard Rule)
+
 - 5 roles: Customer (عميل), Contractor (مقاول), Supervising Architect (مهندس مشرف), Field Engineer (مهندس ميداني), Admin (إدارة)
 - Every API route MUST have explicit role authorization
 - Never trust client-side role checks alone
 - Middleware-based authorization on all protected routes
 
 ### Layering
+
 - **Controllers**: HTTP handling only — no business logic
 - **Services**: Business logic — no HTTP, no direct DB
 - **Repositories**: Database queries — no business logic
 - **Models**: Eloquent models — relationships, scopes, casts
 
 ### Import Boundaries
+
 - Controllers → Services ✅
 - Services → Repositories ✅
 - Repositories → Models ✅
@@ -51,9 +54,11 @@ This skill is loaded by all Bunyan agents as their governance baseline.
 - Frontend → Backend internals ❌
 
 ### Error Contract
+
 All API responses: `{ success: boolean, data: object | null, error: { code: string, message: string } | null }`
 
 ### Migration Discipline
+
 - Forward-only migrations in `backend/database/migrations/`
 - Never modify existing migration files
 - Use schema naming: `YYYY_MM_DD_HHMMSS_verb_noun_table.php`
