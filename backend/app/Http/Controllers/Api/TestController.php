@@ -10,14 +10,14 @@ use Illuminate\Http\JsonResponse;
  *
  * Provides test endpoints for validating the API error response contract.
  * Used for integration testing and API contract validation.
- * 
+ *
  * These endpoints are NOT production endpoints and should be disabled in production.
  */
 class TestController extends BaseController
 {
     /**
      * Test success response format.
-     * 
+     *
      * Example response:
      * {
      *   "success": true,

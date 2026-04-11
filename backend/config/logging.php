@@ -73,6 +73,30 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'requests' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/requests.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_REQUESTS_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
+        'audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/audit.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_AUDIT_DAYS', 90),
+            'replace_placeholders' => true,
+        ],
+
+        'errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/errors.log'),
+            'level' => 'error',
+            'days' => env('LOG_ERRORS_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

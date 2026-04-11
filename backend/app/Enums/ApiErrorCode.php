@@ -77,7 +77,7 @@ enum ApiErrorCode: string
      * Supports Arabic (ar_SA) and English (en_US) localization.
      * Falls back to English if locale not supported.
      *
-     * @param string|null $locale Locale code (ar_SA, en_US, etc.)
+     * @param  string|null  $locale  Locale code (ar_SA, en_US, etc.)
      * @return string User-friendly error message
      */
     public function defaultMessage(?string $locale = null): string

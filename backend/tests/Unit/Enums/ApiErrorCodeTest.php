@@ -105,7 +105,7 @@ class ApiErrorCodeTest extends TestCase
             $this->assertEquals(
                 $errorCode->name,
                 $errorCode->value,
-                "Error code value should match its name for semantic consistency"
+                'Error code value should match its name for semantic consistency'
             );
         }
     }
@@ -214,7 +214,7 @@ class ApiErrorCodeTest extends TestCase
         $this->assertCount(
             count($requiredCodes),
             ApiErrorCode::cases(),
-            'Must have exactly ' . count($requiredCodes) . ' error codes'
+            'Must have exactly '.count($requiredCodes).' error codes'
         );
     }
 }

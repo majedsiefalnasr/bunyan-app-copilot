@@ -1,17 +1,15 @@
 <?php
 
-use App\Enums\ApiErrorCode;
 use App\Http\Controllers\Api\TestController;
 use Illuminate\Support\Facades\Route;
 
 /**
  * API Routes — Bunyan v1
- * 
+ *
  * Note: These routes are automatically prefixed with /api and versioned (/v1)
  * All routes accessed via: /api/v1/...
  * Authentication via Laravel Sanctum bearer tokens
  */
-
 Route::prefix('v1')->group(function () {
     /**
      * Health & Test Endpoints

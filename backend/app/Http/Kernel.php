@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http;
+
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CorrelationIdMiddleware;
+use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\RequestResponseLoggingMiddleware;
+use App\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
+use Illuminate\Auth\Middleware\Authorize;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
+use Illuminate\Auth\Middleware\RequirePassword;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Middleware\SetCacheHeaders;
+use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Middleware\ValidateSignature;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+
+/**
+ * HTTP Kernel — Bunyan Application
+ *
+ * Registers middleware for the entire application.
+ * Middleware in `$middleware` applies globally to all requests.
+ * Middleware in `$routeMiddleware` can be conditionally applied to routes.
+ */
+class Kernel extends HttpKernel
+{
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     * Order matters: middleware executes top-to-bottom.
+     *
+     * @var array<int, class-string|string>
+     */
+    protected $middleware = [
+        // \App\Http\Middleware\TrustHosts::class,
+        TrustProxies::class,
+        HandleCors::class,
+        ValidatePostSize::class,
+        ConvertEmptyStringsToNull::class,
+
+        // ===== Bunyan Observability =====
+        // Correlation ID must be first to ensure it's available to all subsequent middleware
+        CorrelationIdMiddleware::class,
+        // Request/response logging happens after correlation ID is set
+        RequestResponseLoggingMiddleware::class,
+    ];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * These middleware may be assigned to groups or used individually
+     * via the middleware provider or route definitions.
+     *
+     * @var array<string, array<int, class-string|string>>
+     */
+    protected $middlewareGroups = [
+        'web' => [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+        ],
+
+        'api' => [
+            ThrottleRequests::class.':api',
+            SubstituteBindings::class,
+        ],
+    ];
+
+    /**
+     * The application's middleware aliases.
+     *
+     * Aliases may be used to conveniently assign middleware to routes and groups.
+     *
+     * @var array<string, class-string|string>
+     */
+    protected $middlewareAliases = [
+        'auth' => Authenticate::class,
+        'auth.basic' => AuthenticateWithBasicAuth::class,
+        'auth.session' => AuthenticateSession::class,
+        'cache.headers' => SetCacheHeaders::class,
+        'can' => Authorize::class,
+        'guest' => RedirectIfAuthenticated::class,
+        'password.confirm' => RequirePassword::class,
+        'signed' => ValidateSignature::class,
+        'throttle' => ThrottleRequests::class,
+        'verified' => EnsureEmailIsVerified::class,
+    ];
+}

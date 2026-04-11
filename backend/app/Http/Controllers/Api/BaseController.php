@@ -10,9 +10,9 @@ use Illuminate\Routing\Controller;
  *
  * All API controllers inherit from this base class to ensure
  * consistent response formatting via ApiResponseTrait.
- * 
+ *
  * Enforces the unified error contract across all API endpoints.
- * 
+ *
  * @see App\Traits\ApiResponseTrait
  * @see specs/runtime/005-error-handling/contracts/error-response.json
  */

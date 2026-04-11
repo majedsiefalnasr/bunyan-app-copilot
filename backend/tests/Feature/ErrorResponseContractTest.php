@@ -262,7 +262,7 @@ class ErrorResponseContractTest extends TestCase
 
         // Validate JSON encoding
         $this->assertIsString($json['error']['message']);
-        
+
         // Message should be properly encoded
         $reencoded = json_encode($json['error']['message']);
         $this->assertIsString($reencoded);

@@ -59,35 +59,35 @@
 
 ### Exception Handler Implementation
 
-- [ ] T019 [P] [US2] Modify `backend/app/Exceptions/Handler.php` to implement JSON response rendering for API requests — AC: `render()` method detects JSON requests via `$request->expectsJson()` or Accept header; returns JSON responses for API requests (not HTML); calls `response()->json()` with proper contract format; passes `phpstan` analysis
+- [X] T019 [P] [US2] Modify `backend/app/Exceptions/Handler.php` to implement JSON response rendering for API requests — AC: `render()` method detects JSON requests via `$request->expectsJson()` or Accept header; returns JSON responses for API requests (not HTML); calls `response()->json()` with proper contract format; passes `phpstan` analysis
 
-- [ ] T020 [P] [US2] Implement exception handling for `ValidationException` in Handler — AC: Catches `ValidationException`; returns 422 HTTP status; `error.code = VALIDATION_ERROR`; `error.details` contains field-level validation messages (from Laravel validator); tested via feature test
+- [X] T020 [P] [US2] Implement exception handling for `ValidationException` in Handler — AC: Catches `ValidationException`; returns 422 HTTP status; `error.code = VALIDATION_ERROR`; `error.details` contains field-level validation messages (from Laravel validator); tested via feature test
 
-- [ ] T021 [P] [US2] Implement exception handling for `AuthenticationException` in Handler — AC: Catches `AuthenticationException`; returns 401 HTTP status; `error.code = AUTH_INVALID_CREDENTIALS` or `AUTH_TOKEN_EXPIRED` (determined by exception context); message localized; tested via feature test
+- [X] T021 [P] [US2] Implement exception handling for `AuthenticationException` in Handler — AC: Catches `AuthenticationException`; returns 401 HTTP status; `error.code = AUTH_INVALID_CREDENTIALS` or `AUTH_TOKEN_EXPIRED` (determined by exception context); message localized; tested via feature test
 
-- [ ] T022 [P] [US2] Implement exception handling for `AuthorizationException` in Handler — AC: Catches `AuthorizationException`; returns 403 HTTP status; `error.code = AUTH_UNAUTHORIZED`; does NOT expose role information in message; tested via feature test
+- [X] T022 [P] [US2] Implement exception handling for `AuthorizationException` in Handler — AC: Catches `AuthorizationException`; returns 403 HTTP status; `error.code = AUTH_UNAUTHORIZED`; does NOT expose role information in message; tested via feature test
 
-- [ ] T023 [P] [US2] Implement exception handling for `ModelNotFoundException` in Handler — AC: Catches `ModelNotFoundException`; returns 404 HTTP status; `error.code = RESOURCE_NOT_FOUND`; message user-friendly (en/ar); tested via feature test
+- [X] T023 [P] [US2] Implement exception handling for `ModelNotFoundException` in Handler — AC: Catches `ModelNotFoundException`; returns 404 HTTP status; `error.code = RESOURCE_NOT_FOUND`; message user-friendly (en/ar); tested via feature test
 
-- [ ] T024 [P] [US2] Implement exception handling for throttling/rate limit exceptions in Handler — AC: Catches rate limit exception (Laravel ThrottleRequestsException or custom); returns 429 HTTP status; `error.code = RATE_LIMIT_EXCEEDED`; includes `Retry-After` header with delay in seconds; AC from CHK-API-024
+- [X] T024 [P] [US2] Implement exception handling for throttling/rate limit exceptions in Handler — AC: Catches rate limit exception (Laravel ThrottleRequestsException or custom); returns 429 HTTP status; `error.code = RATE_LIMIT_EXCEEDED`; includes `Retry-After` header with delay in seconds; AC from CHK-API-024
 
-- [ ] T025 [P] [US2] Implement default exception handling for unhandled exceptions in Handler — AC: Catches all other `Throwable` exceptions; returns 500 HTTP status; `error.code = SERVER_ERROR`; message generic (does NOT expose stack trace or error details to client); logs full exception server-side with structured context
+- [X] T025 [P] [US2] Implement default exception handling for unhandled exceptions in Handler — AC: Catches all other `Throwable` exceptions; returns 500 HTTP status; `error.code = SERVER_ERROR`; message generic (does NOT expose stack trace or error details to client); logs full exception server-side with structured context
 
-- [ ] T026 [US2] Implement structured logging in exception handler with correlation ID and context — AC: Each exception logged with: timestamp, exception type, message, stack trace, user_id (if authenticated), endpoint, correlation_id (from request); logged to `storage/logs/errors.log`; structured JSON format for production
+- [X] T026 [US2] Implement structured logging in exception handler with correlation ID and context — AC: Each exception logged with: timestamp, exception type, message, stack trace, user_id (if authenticated), endpoint, correlation_id (from request); logged to `storage/logs/errors.log`; structured JSON format for production
 
-- [ ] T027 [P] [US2] Write feature tests for global exception handler in `backend/tests/Feature/ExceptionHandlerTest.php` — AC: All exception types tested; correct HTTP status for each; correct error codes; validation errors include field details; server errors do NOT expose stack traces; 100% exception handler coverage
+- [X] T027 [P] [US2] Write feature tests for global exception handler in `backend/tests/Feature/ExceptionHandlerTest.php` — AC: All exception types tested; correct HTTP status for each; correct error codes; validation errors include field details; server errors do NOT expose stack traces; 100% exception handler coverage
 
 ### Security Hardening — Post-Remediation (CRITICAL)
 
 - [ ] T078 [P] [US2] Create `backend/app/Http/Middleware/RateLimitByRoleMiddleware.php` with role-based rate limiting — AC: Enforces global 100 req/min limit via user IP; enforces per-user 10 req/min limit on auth/payment endpoints (identified by route tags or controller namespaces); returns 429 RATE_LIMIT_EXCEEDED when exceeded; includes `Retry-After` header with seconds to reset; passes feature test with 1000+ concurrent requests
 
-- [ ] T079 [P] [US2] Enhance T025 exception handler with production/dev APP_DEBUG conditional — AC: Modified `backend/app/Exceptions/Handler.php` to check `app('env') === 'production'`; in production: error response has generic "Server error. Please try again." message, NO stack trace; in local/dev: error response includes full stack trace for debugging; tested via feature test with APP_DEBUG toggle
+- [X] T079 [P] [US2] Enhance T025 exception handler with production/dev APP_DEBUG conditional — AC: Modified `backend/app/Exceptions/Handler.php` to check `app('env') === 'production'`; in production: error response has generic "Server error. Please try again." message, NO stack trace; in local/dev: error response includes full stack trace for debugging; tested via feature test with APP_DEBUG toggle
 
-- [ ] T080 [P] [US2] Create custom `backend/app/Exceptions/RoleNotAllowedException.php` exception distinct from `AuthorizationException` — AC: New exception class extends `AuthorizationException` with role-specific context; handler catches this separately; returns 403 with `error.code = RBAC_ROLE_DENIED` (vs AUTH_UNAUTHORIZED for generic auth); enables role-based error logging and monitoring; documented in exception hierarchy diagram
+- [X] T080 [P] [US2] Create custom `backend/app/Exceptions/RoleNotAllowedException.php` exception distinct from `AuthorizationException` — AC: New exception class extends `AuthorizationException` with role-specific context; handler catches this separately; returns 403 with `error.code = RBAC_ROLE_DENIED` (vs AUTH_UNAUTHORIZED for generic auth); enables role-based error logging and monitoring; documented in exception hierarchy diagram
 
-- [ ] T081 [P] [US4] Enhance T033 correlation ID middleware with UUID v4 validation — AC: Modify `CorrelationIdMiddleware` to validate incoming `X-Correlation-ID` header matches UUID v4 regex pattern; reject malformed correlation IDs with 400 Bad Request; log validation failure with IP and attempted ID; prevents header injection attacks; tested via feature test with invalid correlation IDs (XSS payloads, SQL patterns)
+- [X] T081 [P] [US4] Enhance T033 correlation ID middleware with UUID v4 validation — AC: Modify `CorrelationIdMiddleware` to validate incoming `X-Correlation-ID` header matches UUID v4 regex pattern; reject malformed correlation IDs with 400 Bad Request; log validation failure with IP and attempted ID; prevents header injection attacks; tested via feature test with invalid correlation IDs (XSS payloads, SQL patterns)
 
-- [ ] T082 [P] [US2] Implement error response payload masking in `backend/app/Exceptions/Handler.php` — AC: Before JSON serialization, call `SensitiveFields::mask($error['details'])` to mask error details; prevents field names (e.g., "password") from appearing in 422 responses; ensures consistent masking across request logging and error responses; tested via feature test verifying no sensitive field names in 422 error details
+- [X] T082 [P] [US2] Implement error response payload masking in `backend/app/Exceptions/Handler.php` — AC: Before JSON serialization, call `SensitiveFields::mask($error['details'])` to mask error details; prevents field names (e.g., "password") from appearing in 422 responses; ensures consistent masking across request logging and error responses; tested via feature test verifying no sensitive field names in 422 error details
 
 ### Response Helper Validation
 
@@ -101,49 +101,49 @@
 
 ### Logging Configuration
 
-- [ ] T030 [P] [US4] Configure `backend/config/logging.php` with multiple channels (single, daily, stack, errors, audit) — AC: `single` channel for development; `daily` channel rotates by date; `stack` combines multiple channels; `errors` channel for exception logs only; `audit` channel for financial/workflow logs; retention policies set (30 days general, 90 days audit); tested via configuration validation
+- [X] T030 [P] [US4] Configure `backend/config/logging.php` with multiple channels (single, daily, stack, errors, audit) — AC: `single` channel for development; `daily` channel rotates by date; `stack` combines multiple channels; `errors` channel for exception logs only; `audit` channel for financial/workflow logs; retention policies set (30 days general, 90 days audit); tested via configuration validation
 
-- [ ] T031 [P] [US4] Set up JSON formatter for production logging in `backend/config/logging.php` — AC: Production environment uses JSON format (queryable); local environment uses human-readable format; both formats include timestamp, level, message, context fields
+- [X] T031 [P] [US4] Set up JSON formatter for production logging in `backend/config/logging.php` — AC: Production environment uses JSON format (queryable); local environment uses human-readable format; both formats include timestamp, level, message, context fields
 
-- [ ] T032 [P] [US4] Configure log file rotation and retention policies in `backend/config/logging.php` — AC: Daily channel rotates each day; files retained for 30 days (general) and 90 days (audit); Laravel `rotateDaily()` and `days()` methods configured; cleanup handled by Laravel schedule
+- [X] T032 [P] [US4] Configure log file rotation and retention policies in `backend/config/logging.php` — AC: Daily channel rotates each day; files retained for 30 days (general) and 90 days (audit); Laravel `rotateDaily()` and `days()` methods configured; cleanup handled by Laravel schedule
 
 ### Correlation ID Middleware
 
-- [ ] T033 [P] [US4] Create `backend/app/Http/Middleware/CorrelationIdMiddleware.php` generating UUID per request — AC: Generates UUID v4 if not in request; preserves existing correlation ID from `X-Correlation-ID` header if present; makes available via `$request->correlationId()` or `request()->correlationId()`; tested via middleware test
+- [X] T033 [P] [US4] Create `backend/app/Http/Middleware/CorrelationIdMiddleware.php` generating UUID per request — AC: Generates UUID v4 if not in request; preserves existing correlation ID from `X-Correlation-ID` header if present; makes available via `$request->correlationId()` or `request()->correlationId()`; tested via middleware test
 
-- [ ] T034 [P] [US4] Implement correlation ID propagation in `CorrelationIdMiddleware` via Log context binding — AC: Correlation ID added to Log context using `Log::withContext(['correlation_id' => $id])`; available in all subsequent logs; returned in response header `X-Correlation-ID`; tested via integration test
+- [X] T034 [P] [US4] Implement correlation ID propagation in `CorrelationIdMiddleware` via Log context binding — AC: Correlation ID added to Log context using `Log::withContext(['correlation_id' => $id])`; available in all subsequent logs; returned in response header `X-Correlation-ID`; tested via integration test
 
-- [ ] T035 [P] [US4] Register `CorrelationIdMiddleware` in `backend/app/Http/Kernel.php` middleware stack — AC: Middleware in global `$middleware` array (not just `$routeMiddleware`); executes for all requests before other middleware; accessible via `Request` bag throughout request lifecycle
+- [X] T035 [P] [US4] Register `CorrelationIdMiddleware` in `backend/app/Http/Kernel.php` middleware stack — AC: Middleware in global `$middleware` array (not just `$routeMiddleware`); executes for all requests before other middleware; accessible via `Request` bag throughout request lifecycle
 
 ### Request/Response Logging Middleware
 
-- [ ] T036 [P] [US4] Create `backend/app/Http/Middleware/RequestResponseLoggingMiddleware.php` logging HTTP details — AC: Logs method, URI, query parameters, status code, response time (milliseconds), payload size; includes user_id and user_role if authenticated; excludes sensitive fields; uses correlation_id from context; tested via middleware test
+- [X] T036 [P] [US4] Create `backend/app/Http/Middleware/RequestResponseLoggingMiddleware.php` logging HTTP details — AC: Logs method, URI, query parameters, status code, response time (milliseconds), payload size; includes user_id and user_role if authenticated; excludes sensitive fields; uses correlation_id from context; tested via middleware test
 
-- [ ] T037 [P] [US4] Implement sensitive data masking in `backend/app/Support/SensitiveFields.php` — AC: Registry of sensitive field names (password, token, api_key, credit_card, ssn, etc.); masking rules: passwords→`***`, tokens→`tok_****...`, card→`****-1234`; masking applied via method `mask(array $data): array`; tested via unit test with regex validation
+- [X] T037 [P] [US4] Implement sensitive data masking in `backend/app/Support/SensitiveFields.php` — AC: Registry of sensitive field names (password, token, api_key, credit_card, ssn, etc.); masking rules: passwords→`***`, tokens→`tok_****...`, card→`****-1234`; masking applied via method `mask(array $data): array`; tested via unit test with regex validation
 
-- [ ] T038 [P] [US4] Integrate sensitive field masking into `RequestResponseLoggingMiddleware` — AC: Request/response payloads masked before logging; passwords never appear in logs; tokens truncated; card numbers masked; applies masking before serialization to JSON; tested via feature test with payload capturing
+- [X] T038 [P] [US4] Integrate sensitive field masking into `RequestResponseLoggingMiddleware` — AC: Request/response payloads masked before logging; passwords never appear in logs; tokens truncated; card numbers masked; applies masking before serialization to JSON; tested via feature test with payload capturing
 
-- [ ] T039 [P] [US4] Register `RequestResponseLoggingMiddleware` in `backend/app/Http/Kernel.php` — AC: Middleware in global `$middleware` array after correlation ID middleware; executes for all requests; logs to `storage/logs/requests.log` or configured channel
+- [X] T039 [P] [US4] Register `RequestResponseLoggingMiddleware` in `backend/app/Http/Kernel.php` — AC: Middleware in global `$middleware` array after correlation ID middleware; executes for all requests; logs to `storage/logs/requests.log` or configured channel
 
 ### Database Migrations for Audit Logs (Optional)
 
-- [ ] T040 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_audit_logs_table.php` for audit log storage — AC: Table has columns: id, correlation_id, request_id, user_id, action, resource_type, resource_id, old_values (JSON), new_values (JSON), status, error_code, ip_address, user_agent, duration_ms, created_at; indexes on (user_id, created_at), (correlation_id), (resource_type, resource_id); uses `bigIncrements` for id
+- [X] T040 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_audit_logs_table.php` for audit log storage — AC: Table has columns: id, correlation_id, request_id, user_id, action, resource_type, resource_id, old_values (JSON), new_values (JSON), status, error_code, ip_address, user_agent, duration_ms, created_at; indexes on (user_id, created_at), (correlation_id), (resource_type, resource_id); uses `bigIncrements` for id
 
-- [ ] T041 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_request_logs_table.php` for request log storage — AC: Table has columns: id, correlation_id, request_id, method, uri, status_code, response_time_ms, payload_size_bytes, user_id, user_role, ip_address, created_at; indexes on (user_id, created_at), (correlation_id), (status_code), (created_at)
+- [X] T041 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_request_logs_table.php` for request log storage — AC: Table has columns: id, correlation_id, request_id, method, uri, status_code, response_time_ms, payload_size_bytes, user_id, user_role, ip_address, created_at; indexes on (user_id, created_at), (correlation_id), (status_code), (created_at)
 
-- [ ] T042 [P] [US4] Create `backend/app/Models/AuditLog.php` Eloquent model for audit logs — AC: Model uses `timestamps` (created_at only, no updated_at); `fillable` array includes all audit columns; relationships to User model; query scopes for filtering by user, correlation_id, action; `withCasts` for JSON columns
+- [X] T042 [P] [US4] Create `backend/app/Models/AuditLog.php` Eloquent model for audit logs — AC: Model uses `timestamps` (created_at only, no updated_at); `fillable` array includes all audit columns; relationships to User model; query scopes for filtering by user, correlation_id, action; `withCasts` for JSON columns
 
-- [ ] T043 [P] [US4] Create Laravel job `backend/app/Jobs/LogAuditEventJob.php` for async audit logging — AC: Job accepts: user_id, action, resource_type, resource_id, old_values, new_values, correlation_id, ip_address, user_agent; writes to database asynchronously; handles failures gracefully (retry logic); uses `dispatched_async`
+- [X] T043 [P] [US4] Create Laravel job `backend/app/Jobs/LogAuditEventJob.php` for async audit logging — AC: Job accepts: user_id, action, resource_type, resource_id, old_values, new_values, correlation_id, ip_address, user_agent; writes to database asynchronously; handles failures gracefully (retry logic); uses `dispatched_async`
 
 ### Logging Tests
 
-- [ ] T044 [US4] Write unit tests for `CorrelationIdMiddleware` in `backend/tests/Unit/Middleware/CorrelationIdMiddlewareTest.php` — AC: Correlation ID generated for each request; existing correlation ID preserved; UUID v4 format validated; makes available in request; available in Log context; correlation ID returned in response header
+- [X] T044 [US4] Write unit tests for `CorrelationIdMiddleware` in `backend/tests/Unit/Middleware/CorrelationIdMiddlewareTest.php` — AC: Correlation ID generated for each request; existing correlation ID preserved; UUID v4 format validated; makes available in request; available in Log context; correlation ID returned in response header
 
-- [ ] T045 [US4] Write unit tests for `RequestResponseLoggingMiddleware` in `backend/tests/Unit/Middleware/RequestResponseLoggingMiddlewareTest.php` — AC: HTTP method, URI, status code logged; response time captured; user_id included; sensitive fields masked; correlat... ID present in log; output tested via mock logger
+- [X] T045 [US4] Write unit tests for `RequestResponseLoggingMiddleware` in `backend/tests/Unit/Middleware/RequestResponseLoggingMiddlewareTest.php` — AC: HTTP method, URI, status code logged; response time captured; user_id included; sensitive fields masked; correlation ID present in log; output tested via mock logger
 
-- [ ] T046 [US4] Write integration tests for logging behavior in `backend/tests/Feature/LoggingIntegrationTest.php` — AC: End-to-end logging verified via file inspection; correlation IDs propagate through middleware chain; request/response details captured; sensitive data masked; performance overhead < 50ms (99th percentile, CHK-PERF-001)
+- [X] T046 [US4] Write integration tests for logging behavior in `backend/tests/Feature/LoggingIntegrationTest.php` — AC: End-to-end logging verified via file inspection; correlation IDs propagate through middleware chain; request/response details captured; sensitive data masked; performance overhead < 50ms (99th percentile, CHK-PERF-001)
 
-- [ ] T047 [US4] Write performance test for logging overhead in `backend/tests/Feature/LoggingPerformanceTest.php` — AC: Logging adds < 50ms per request (99th percentile); 1000-request stress test; measures with/without logging; failure if overhead exceeds threshold; addresses CHK-PERF-001
+- [X] T047 [US4] Write performance test for logging overhead in `backend/tests/Feature/LoggingPerformanceTest.php` — AC: Logging adds < 50ms per request (99th percentile); 1000-request stress test; measures with/without logging; failure if overhead exceeds threshold; addresses CHK-PERF-001
 
 ---
 

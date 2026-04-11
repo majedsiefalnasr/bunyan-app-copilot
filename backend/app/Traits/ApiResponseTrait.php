@@ -25,10 +25,9 @@ trait ApiResponseTrait
      *   "error": null
      * }
      *
-     * @param mixed $data The response data (array, object, collection, null)
-     * @param string|null $message Optional success message (typically not used)
-     * @param int $statusCode HTTP status code (default: 200)
-     * @return JsonResponse
+     * @param  mixed  $data  The response data (array, object, collection, null)
+     * @param  string|null  $message  Optional success message (typically not used)
+     * @param  int  $statusCode  HTTP status code (default: 200)
      */
     protected function success(
         mixed $data = null,
@@ -56,11 +55,10 @@ trait ApiResponseTrait
      *   }
      * }
      *
-     * @param ApiErrorCode $code The error code
-     * @param string|null $message Human-readable error message
-     * @param array<string, mixed>|null $details Field-level error details (for validation errors)
-     * @param int|null $statusCode HTTP status code (defaults to code's httpStatus())
-     * @return JsonResponse
+     * @param  ApiErrorCode  $code  The error code
+     * @param  string|null  $message  Human-readable error message
+     * @param  array<string, mixed>|null  $details  Field-level error details (for validation errors)
+     * @param  int|null  $statusCode  HTTP status code (defaults to code's httpStatus())
      */
     protected function error(
         ApiErrorCode $code,
