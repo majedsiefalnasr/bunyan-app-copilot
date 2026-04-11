@@ -134,6 +134,42 @@ As a test engineer, I need `UserFactory` state methods per role so that PHPUnit 
 
 ---
 
+## Migration Strategy
+
+### Existing STAGE_01 Migration (Immutable)
+
+The migration `0001_01_01_000000_create_users_table.php` was created in STAGE_01 and MUST NOT be modified. It already creates the `users` table with columns: `id`, `name`, `email` (unique), `email_verified_at`, `password`, `role` (enum), `remember_token`, `created_at`, `updated_at`.
+
+Forward-only policy means STAGE_02 MUST use an `ALTER TABLE` migration to add the missing columns.
+
+### STAGE_02 Migration File Sequence
+
+| Order | File                                                           | Purpose                                      |
+| ----- | -------------------------------------------------------------- | -------------------------------------------- |
+| 1     | `2026_04_11_000001_add_profile_columns_to_users_table.php`     | Adds `phone`, `is_active`, `avatar`, `deleted_at` to existing `users` table |
+| 2     | `2026_04_11_000002_create_roles_table.php`                     | Creates `roles` table                        |
+| 3     | `2026_04_11_000003_create_permissions_table.php`               | Creates `permissions` table                  |
+| 4     | `2026_04_11_000004_create_role_user_table.php`                 | Creates `role_user` pivot (FK → `users`, `roles`) |
+| 5     | `2026_04_11_000005_create_permission_role_table.php`           | Creates `permission_role` pivot (FK → `permissions`, `roles`) |
+
+### Existing `role` Enum Coexistence Strategy
+
+The STAGE_01 `users` table contains a `role` enum column (`customer`, `contractor`, `supervising_architect`, `field_engineer`, `admin`). This column:
+
+- **MUST NOT** be removed or altered in STAGE_02 (forward-only rule).
+- Coexists with the new `roles` table and `role_user` pivot introduced in STAGE_02.
+- Serves as a fast denormalised role indicator for STAGE_03 authentication guards.
+- The `roles` table + `role_user` pivot provide the full granular RBAC permission system used in STAGE_04.
+- **NFR-002 scope**: The no-ENUM rule applies only to NEW tables created in STAGE_02. The existing `role` enum column on `users` is exempt.
+
+### `down()` Rollback Guidance
+
+- `add_profile_columns_to_users_table` → `dropColumn` for each added column.
+- New tables → `Schema::dropIfExists()`.
+- Rollback order is the reverse of creation order (pivot tables dropped before parent tables).
+
+---
+
 ## Database Tables
 
 ### `users` Table
@@ -485,7 +521,60 @@ The following are explicitly **NOT** part of this stage and must not be implemen
 - MySQL 8.x with InnoDB engine is the target database (Docker Compose already configured).
 - The `develop` branch is the base for all feature branches; this stage branches from `develop` as established in STAGE_01.
 - Test user passwords are `password` (hashed via bcrypt); this is acceptable for local/CI only.
-- The `users` table uses auto-increment `bigint` IDs (not UUIDs) in this stage. UUID support is deferred — [NEEDS CLARIFICATION: confirm if UUID primary keys are required for users, or if auto-increment `bigint` is acceptable for the platform].
-- `display_name_ar` is a separate column rather than a JSON translation column — if a JSON-based localization approach is preferred, this should be revisited. [NEEDS CLARIFICATION: prefer separate `_ar` columns for each translatable field, or a single `translations` JSON column, or a polymorphic `model_translations` table?]
+- The `users` table uses auto-increment `bigint` IDs (not UUIDs) in this stage. **Confirmed (2026-04-11)**: Auto-increment `bigint` is the platform standard. UUID support is explicitly deferred to a future ADR. All tables in STAGE_02 use `$table->id()` (bigint auto-increment) to match the existing STAGE_01 `users` table.
+- `display_name_ar` is a separate column on the `roles` table. **Confirmed (2026-04-11)**: Separate `_ar` columns are the chosen translation strategy. No JSON translation column, no polymorphic `model_translations` table. This keeps the schema simple and avoids JSON column overhead for a small, fixed-size configuration table.
 - `RoleFactory` is not needed; roles are configuration data seeded explicitly.
 - The `avatar` column stores a path/URL string; actual file validation and storage logic is deferred to a later file-management stage.
+
+---
+
+## Clarifications
+
+### Session: 2026-04-11 — Pre-Plan Clarification Pass
+
+All clarifications below were resolved prior to invoking `/speckit.plan` to avoid ambiguity propagating into the implementation plan.
+
+---
+
+#### CLR-001 — Primary Key Strategy: Auto-Increment vs UUID
+
+**Status**: RESOLVED  
+**Source**: Pre-resolved against existing STAGE_01 codebase (`0001_01_01_000000_create_users_table.php`, `app/Models/User.php`)  
+**Decision**: All STAGE_02 tables use `$table->id()` (bigint UNSIGNED auto-increment). UUID primary keys are explicitly deferred. This is consistent with the immutable STAGE_01 `users` migration.  
+**Impact**: `users`, `roles`, `permissions` tables all use bigint auto-increment PKs. Pivot tables reference bigint FKs accordingly.
+
+---
+
+#### CLR-002 — Translation Column Strategy for `roles.display_name_ar`
+
+**Status**: RESOLVED  
+**Source**: Pre-resolved; no JSON or polymorphic translation infrastructure exists in the codebase  
+**Decision**: Use a dedicated `display_name_ar varchar(150)` column on the `roles` table. No JSON translation column, no polymorphic `model_translations` table. Translation strategy for future tables follows the same pattern (separate `_ar` columns) unless a future ADR mandates otherwise.  
+**Impact**: `roles` table schema includes `display_name_ar`. `Role::$fillable` includes `display_name_ar`.
+
+---
+
+#### CLR-003 — Existing `users` Table Conflict (CRITICAL)
+
+**Status**: RESOLVED  
+**Source**: Pre-resolved; STAGE_01 migration is immutable  
+**Decision**: STAGE_02 does NOT recreate the `users` table. It adds missing columns (`phone`, `is_active`, `avatar`, `deleted_at`) via a new ADD COLUMN migration: `2026_04_11_000001_add_profile_columns_to_users_table.php`. The STAGE_01 migration `0001_01_01_000000_create_users_table.php` MUST NOT be touched.  
+**Impact**: Migration sequence starts with an ALTER migration, not a CREATE. `down()` for this migration uses `dropColumn`.
+
+---
+
+#### CLR-004 — Existing `role` Enum Column Coexistence
+
+**Status**: RESOLVED  
+**Source**: Pre-resolved; STAGE_03/STAGE_04 compatibility requirement  
+**Decision**: The existing `role` enum column on `users` is preserved as-is. The new `roles` table and `role_user` pivot are additive structures for granular RBAC (used in STAGE_04). Both coexist: the enum provides a fast single-column role indicator; the pivot table provides full permission assignment. The enum column MUST NOT be removed in STAGE_02.  
+**Impact**: `User` model retains `role` enum attribute; `roles()` relationship is added alongside it.
+
+---
+
+#### CLR-005 — NFR-002 Scope (No-ENUM Rule vs Existing Enum)
+
+**Status**: RESOLVED  
+**Source**: Pre-resolved against forward-only migration policy  
+**Decision**: NFR-002 ("Avoid ENUM types") applies ONLY to new tables created in STAGE_02 (`roles`, `permissions`, `role_user`, `permission_role`). The existing `role` enum column on `users` (from STAGE_01) is explicitly exempt. Retroactive modification of STAGE_01 migrations is forbidden.  
+**Impact**: No changes to STAGE_01 migration. No violation of NFR-002 for new tables (none use ENUM).

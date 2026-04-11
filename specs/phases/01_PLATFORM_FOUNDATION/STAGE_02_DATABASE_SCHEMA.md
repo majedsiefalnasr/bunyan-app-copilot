@@ -8,17 +8,15 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: MEDIUM
-Last Updated: 2026-04-11T00:00:00Z
+Last Updated: 2026-04-11T00:02:00Z
 
 Scope Defined:
 
-- MySQL schema: users, roles, permissions, role_user, permission_role tables
-- Eloquent models: User, Role, Permission, BaseModel
-- Repository pattern base classes
-- Seeders (5 roles, 20+ permissions, 5 test users)
-- UserFactory with 5 role states
+- MySQL schema: users (ALTER), roles, permissions, role_user, permission_role tables
+- Eloquent models + repository base classes + seeders + factories
+- Migration strategy: 5 new files, STAGE_01 migration immutable
 
 Deferred Scope:
 
@@ -28,10 +26,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 
