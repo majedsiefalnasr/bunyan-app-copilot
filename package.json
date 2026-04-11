@@ -21,6 +21,7 @@
     "lint:frontend": "cd frontend && npm run lint",
     "lint:frontend:fix": "cd frontend && npm run lint:fix",
     "lint:staged": "lint-staged",
+    "check": "npm run lint && npm run typecheck && npm run test",
     "format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\"",
     "format:staged": "prettier --write",
@@ -48,17 +49,5 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  },
-  "lint-staged": {
-    "*.{js,ts,vue}": [
-      "npx --prefix frontend prettier --write",
-      "npx --prefix frontend eslint --fix"
-    ],
-    "*.{css,scss,json,md}": [
-      "npx --prefix frontend prettier --write"
-    ],
-    "*.php": [
-      "cd backend && composer run lint"
-    ]
   }
 }
