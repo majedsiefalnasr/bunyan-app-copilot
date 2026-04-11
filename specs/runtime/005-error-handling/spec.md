@@ -449,6 +449,84 @@ All API responses (success and error) MUST follow this format:
 
 ---
 
+### C6: Sensitive Data Masking Strategy — RESOLVED ✅
+
+**Question:** Which fields are considered sensitive and what masking rules should be applied?
+
+**Decision:** **Explicit sensitive field registry with per-field masking rules.**
+
+**Sensitive Fields:**
+- Passwords → `***` (never log, hash if captured)
+- Tokens (API, Session, CSRF) → `tok_****...` (first 3 + last 3 characters visible)
+- Payment Card Numbers → `****-****-****-1234` (last 4 digits visible)
+- PII (email, phone, SSN) → Capture once per user per day (to avoid spam logs)
+- Bank Account Numbers → `****-****-****-1234`
+
+**Implementation:**
+- Create `app/Support/SensitiveFields.php` with registry and masking functions
+- Configure request logging middleware to apply masking automatically
+- Add test case to validate sensitive data patterns don't appear in logs
+- Document how to extend sensitive field registry for new features
+
+**Masking Patterns (Regex validation in test suite):**
+- Card numbers: `\b(?:\d{4}[-\s]?){3}\d{4}\b` → replaced with masked version
+- Tokens: `\b[a-zA-Z0-9_-]{20,}\b` → truncated to `tok_****...`
+- Passwords: Never logged (caught before logging layer)
+
+---
+
+### C7: Query Optimization & Async Logging — RESOLVED ✅
+
+**Question:** How should audit logging impact database query performance?
+
+**Decision:** **Async logging via Laravel queued jobs with batch optimization.**
+
+**Performance Targets:**
+- Logging overhead: < 50ms per request (99th percentile)
+- Audit log inserts queued asynchronously (fire-and-forget)
+- Request context saved immediately; full serialization done in background job
+
+**Implementation Strategy (Phase 2):**
+1. Audit log writes via `AuditLog::create()` → queued job pattern
+2. Database indexes on: `(user_id, created_at)`, `(correlation_id)`, `(status_code)`, `(created_at)`
+3. Request logging middleware logs to file immediately; database writes queued
+4. Add Laravel Telescope optional integration for development-time performance monitoring
+5. Performance test: Validate that logging + response time remains < 50ms additional latency
+
+**Batch Optimization:**
+- Group audit logs into daily buckets for batch deletion after retention period
+- Use raw `flush()` queries for log purge (faster than model deletion)
+
+---
+
+### C8: Correlation ID Response Placement — RESOLVED ✅
+
+**Question:** Where should correlation ID appear in error responses (header, body, or both)?
+
+**Decision:** **Correlation ID in THREE places for maximum visibility:**
+
+1. **HTTP Response Header:** `X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000`
+   - Extracted easily by client libraries
+   - Available for support tickets automatically
+   - Visible in browser DevTools Network tab
+
+2. **Error Message Text:** "Internal Server Error with ID: 550e8400-e29b-41d4-a716-446655440000"
+   - Visible to end users in error messages
+   - Easy for support tickets ("Tell us the error ID you see")
+   - Helps users report issues
+
+3. **Optional Response Body Field:** `error.correlation_id` (for convenience)
+   - Parsed by JSON API clients
+   - Enables structured logging on frontend
+
+**Implementation Guidance:**
+- Middleware: Generate UUID v4 if not in incoming request `X-Correlation-ID` header
+- Handler: Attach correlation ID to all logged context
+- Response: Include in header + message text + optional body field
+- Frontend: Extract from header if present; fallback to parse from message text
+
+---
+
 ## Open Questions
 
 *(All clarified — stage ready for planning.)*
@@ -461,6 +539,8 @@ All API responses (success and error) MUST follow this format:
 - [ ] Error codes are stable, documented, and used consistently
 - [ ] Global exception handler catches and formats all exceptions
 - [ ] Structured logging includes correlation IDs for request tracing
+- [ ] Sensitive data automatically masked in all logs
+- [ ] Async logging maintains sub-50ms response overhead
 - [ ] Frontend displays user-friendly error messages
 - [ ] Error messages available in Arabic and English
 - [ ] Error contract compliance verified via unit tests
