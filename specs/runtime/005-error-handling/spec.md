@@ -368,11 +368,90 @@ All API responses (success and error) MUST follow this format:
 
 ---
 
+## Clarifications
+
+### C1: Structured Logging Storage — RESOLVED ✅
+
+**Question:** Should logs be sent to external service (e.g., ELK stack) or kept in local files?
+
+**Decision:** **Local files with daily rotation** (no external service).
+
+**Rationale:** Simpler deployment model for early stages. Reduces operational complexity and external dependencies. Can be extended to ELK in future DevOps stage if needed.
+
+**Implementation Impact:**
+- Use Laravel's `daily` channel driver for general logs (`storage/logs/laravel.log`)
+- Use separate `audit` channel for financial/workflow logs (`storage/logs/audit.log`)
+- Configure file rotation via `config/logging.php`
+
+---
+
+### C2: Rate Limiting Strategy — RESOLVED ✅
+
+**Question:** Should rate limiting be global or per-endpoint?
+
+**Decision:** **Hybrid approach** — Global baseline + per-endpoint overrides.
+
+**Rationale:** Provides both simplicity (global floor) and flexibility (sensitive endpoints can be more restrictive).
+
+**Implementation Impact:**
+- Configure global rate limit middleware in `app/Http/Middleware/`
+- Allow per-route overrides via route group attributes or controller middleware
+- Example: Global 100 req/min; Auth endpoints 10 req/min
+
+---
+
+### C3: Rate Limiting Values — RESOLVED ✅
+
+**Question:** What are the concrete rate limit thresholds?
+
+**Decision:** **100 requests/minute globally; 10 requests/minute for authentication/payment endpoints.**
+
+**Rationale:** Conservative limits prioritize security for auth/payment in a construction marketplace. Prevents brute-force attacks and payment fraud while allowing normal API usage.
+
+**Technical Specification:**
+- Global middleware: `RateLimitMiddleware` — 100 req/min per user
+- Auth endpoints (login, register): 10 req/min per IP
+- Payment endpoints: 10 req/min per user
+- Error response: 429 `RATE_LIMIT_EXCEEDED` with `Retry-After` header
+- Redis preferred for distributed rate limiting; fallback to in-memory for single-instance
+
+---
+
+### C4: Error Message Localization — RESOLVED ✅
+
+**Question:** Should all error messages or only user-facing ones be translated to Arabic/English?
+
+**Decision:** **User-facing errors in both Arabic/English; technical errors in English only.**
+
+**Rationale:** User-facing messages (validation, auth, workflows) must be localized for Arabic users. Technical errors (server errors, stack traces) remain in English for debugging efficiency.
+
+**Translation Scope:**
+- ✅ Localized: Validation errors, auth errors, workflow state messages, payment errors, business rule violations
+- ❌ Not Localized: Stack traces, database query errors, internal system errors, correlation IDs
+- All user-facing messages keyed in `resources/lang/{ar,en}/` with dot notation
+- Examples: `validation.field_required`, `auth.invalid_credentials`, `workflow.invalid_transition`
+
+---
+
+### C5: Log Retention Policy — RESOLVED ✅
+
+**Question:** What should the log retention periods be?
+
+**Decision:** **30 days for general logs; 90 days for audit logs.**
+
+**Rationale:** Balanced approach: 30 days for general logs provides sufficient debugging history while controlling storage costs. 90 days for audit logs meets construction industry compliance expectations (financial audit trail).
+
+**Implementation Impact:**
+- `config/logging.php` — General channel: `'days' => 30`
+- `config/logging.php` — Audit channel: `'days' => 90`
+- Automated cleanup via Laravel schedule jobs
+- Monitoring alert if disk space exceeds 80% capacity
+
+---
+
 ## Open Questions
 
-1. **Structured Logging Storage** — Should logs be sent to external service (e.g., ELK stack) or kept in local files? [NEEDS CLARIFICATION]
-2. **Rate Limiting Strategy** — Should rate limiting be global or per-endpoint? What are the limits? [NEEDS CLARIFICATION]
-3. **Error Message Localization** — Should all error messages be translated or only user-facing ones?
+*(All clarified — stage ready for planning.)*
 
 ---
 

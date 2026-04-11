@@ -8,25 +8,28 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: LOW
 Last Updated: 2026-04-11T00:00:00Z
 
-Scope Defined:
+Scope Defined & Clarified:
 
 - Platform-wide error response contract (all API endpoints)
 - Backend exception handler layer
 - Error code registry (12 semantic codes)
-- Structured logging with correlation IDs
+- Structured logging: local files with daily rotation, 30-day retention
+- Rate limiting: hybrid model (100 req/min global, 10 req/min auth/payment endpoints)
+- Localization: user-facing errors in Arabic/English, technical in English
 - Frontend error boundary & toast system
 - Error pages (404, 403, 500)
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
-- RBAC patterns included
+- All clarifications resolved (5/5)
+- RBAC patterns verified
 - Service layer principles enforced
 - Error contract matches stage requirements
+- Planning authorization complete
 
 Notes:
 Specification complete. Clarification step pending. 3 open questions marked [NEEDS CLARIFICATION] (non-blocking).
