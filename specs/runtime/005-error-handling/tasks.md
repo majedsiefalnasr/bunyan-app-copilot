@@ -3,8 +3,9 @@
 > **Stage:** ERROR_HANDLING (05)  
 > **Phase:** 01_PLATFORM_FOUNDATION  
 > **Specification:** [spec.md](spec.md) | [plan.md](plan.md)  
-> **Generated:** 2026-04-11  
-> **Status:** READY FOR IMPLEMENTATION
+> **Generated:** 2026-04-11 | **Remediated:** 2026-04-11  
+> **Total Tasks:** 89 (77 original + 5 critical security + 3 critical QA tests + 4 final validation)
+> **Status:** REMEDIATED — Security & QA gaps addressed
 
 ---
 
@@ -75,6 +76,18 @@
 - [ ] T026 [US2] Implement structured logging in exception handler with correlation ID and context — AC: Each exception logged with: timestamp, exception type, message, stack trace, user_id (if authenticated), endpoint, correlation_id (from request); logged to `storage/logs/errors.log`; structured JSON format for production
 
 - [ ] T027 [P] [US2] Write feature tests for global exception handler in `backend/tests/Feature/ExceptionHandlerTest.php` — AC: All exception types tested; correct HTTP status for each; correct error codes; validation errors include field details; server errors do NOT expose stack traces; 100% exception handler coverage
+
+### Security Hardening — Post-Remediation (CRITICAL)
+
+- [ ] T078 [P] [US2] Create `backend/app/Http/Middleware/RateLimitByRoleMiddleware.php` with role-based rate limiting — AC: Enforces global 100 req/min limit via user IP; enforces per-user 10 req/min limit on auth/payment endpoints (identified by route tags or controller namespaces); returns 429 RATE_LIMIT_EXCEEDED when exceeded; includes `Retry-After` header with seconds to reset; passes feature test with 1000+ concurrent requests
+
+- [ ] T079 [P] [US2] Enhance T025 exception handler with production/dev APP_DEBUG conditional — AC: Modified `backend/app/Exceptions/Handler.php` to check `app('env') === 'production'`; in production: error response has generic "Server error. Please try again." message, NO stack trace; in local/dev: error response includes full stack trace for debugging; tested via feature test with APP_DEBUG toggle
+
+- [ ] T080 [P] [US2] Create custom `backend/app/Exceptions/RoleNotAllowedException.php` exception distinct from `AuthorizationException` — AC: New exception class extends `AuthorizationException` with role-specific context; handler catches this separately; returns 403 with `error.code = RBAC_ROLE_DENIED` (vs AUTH_UNAUTHORIZED for generic auth); enables role-based error logging and monitoring; documented in exception hierarchy diagram
+
+- [ ] T081 [P] [US4] Enhance T033 correlation ID middleware with UUID v4 validation — AC: Modify `CorrelationIdMiddleware` to validate incoming `X-Correlation-ID` header matches UUID v4 regex pattern; reject malformed correlation IDs with 400 Bad Request; log validation failure with IP and attempted ID; prevents header injection attacks; tested via feature test with invalid correlation IDs (XSS payloads, SQL patterns)
+
+- [ ] T082 [P] [US2] Implement error response payload masking in `backend/app/Exceptions/Handler.php` — AC: Before JSON serialization, call `SensitiveFields::mask($error['details'])` to mask error details; prevents field names (e.g., "password") from appearing in 422 responses; ensures consistent masking across request logging and error responses; tested via feature test verifying no sensitive field names in 422 error details
 
 ### Response Helper Validation
 
@@ -206,27 +219,36 @@
 
 - [ ] T073 Sensitive data masking verification in logs — AC: Captures actual log output; validates passwords replaced with `***`; validates tokens masked as `tok_****...`; validates card numbers masked as `****-1234`; no plaintext sensitive data in any log file; automated scan of log files
 
+### Security & RBAC Testing — Post-Remediation (CRITICAL)
+
+- [ ] T083 [US2] Create RBAC role-based integration test matrix in `backend/tests/Feature/RBACErrorMatrixTest.php` — AC: Tests all 5 roles (Customer, Contractor, Field Engineer, Supervising Architect, Admin) × 5 endpoint types (Customer, Contractor, Admin, Architect, Field Engineer) = 25 scenarios; each role accessing endpoint exclusive to another role returns 403 RBAC_ROLE_DENIED; error code verified; error message does NOT expose role names; all 25 test cases passing
+
+- [ ] T084 [US2] Create attack simulation test suite in `backend/tests/Feature/SecurityAttackSimulationTest.php` — AC: Tests brute-force attack (1000 req/min to /api/login) → 429 RATE_LIMIT_EXCEEDED; tests header injection (malicious correlation ID with XSS payload) → rejected; tests X-Forwarded-For spoofing → rate limiting still effective; all attack scenarios logged and monitored; security audit trail verified
+
+- [ ] T085 [US4] Create PII masking regression test suite in `backend/tests/Feature/PIIMaskingRegressionTest.php` — AC: Automated scan of all log files for sensitive data (passwords, tokens, credit cards, SSN, email); fails if any sensitive pattern found unmasked; detects false positives (e.g., "admin" in error messages); tests field-level error details masking in 422 responses; prevents PII leaks on each deployment
+
 ### Validation & Sign-Off
 
-- [ ] T074 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
+- [ ] T086 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
 
-- [ ] T075 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
+- [ ] T087 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
 
-- [ ] T076 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
+- [ ] T088 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
 
-- [ ] T077 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
+- [ ] T089 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
 
 ---
 
 ## Dependencies & Parallelization
 
-### Critical Path (Sequential)
+### Critical Path (Sequential) — Updated with RBAC & Security
 
 1. **T001-T003**: Directory setup (blocking: subsequent tasks need these)
 2. **T004-T008**: Error code enum (blocking: exception handler, response helper depend on this)
 3. **T009-T013**: API response helper (blocking: controllers, tests depend on this)
 4. **T019-T027**: Exception handler (blocking: system-wide, needs enum and trait first)
 5. **T048-T060**: Frontend components (blocking: tests and E2E depend on these)
+6. **T083-T085** (CRITICAL SECURITY): RBAC matrix, attack simulation, PII masking tests (blocking: release approval depends on these — post-remediation validation gates)
 
 ### Parallelizable Work Streams
 
@@ -299,16 +321,16 @@
 
 ## Summary
 
-**Total Tasks**: 77  
+**Total Tasks**: 80 (including 3 critical security post-remediation tests)  
 **Phase 1**: 18 tasks (API Contract & Error Codes)  
 **Phase 2**: 25 tasks (Backend Logging & Correlation IDs)  
 **Phase 3**: 17 tasks (Frontend Error Handling)  
-**Phase 4**: 17 tasks (Documentation & Testing)
+**Phase 4**: 20 tasks (Documentation & Testing, including RBAC validation, attack simulation, PII masking)
 
-**Effort Estimate**: 10-12 development days for team of 2-3 engineers  
-**Parallelization Potential**: 40-50% of work can run concurrent (frontend + backend core in parallel)  
-**Risk Level**: LOW (well-defined contract, clear acceptance criteria, no architectural unknowns)
+**Effort Estimate**: 12-14 development days for team of 2-3 engineers (includes security validation gates)  
+**Parallelization Potential**: 40-50% of work can run concurrent (frontend + backend core in parallel); security tests (T083-T085) run in parallel with documentation but results gate final closure  
+**Risk Level**: LOW (well-defined contract, clear acceptance criteria, no architectural unknowns); security tests reduce risk further
 
 ---
 
-**TASKS_TOTAL: 77**
+**TASKS_TOTAL: 80**

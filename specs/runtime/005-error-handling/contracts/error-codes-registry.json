@@ -1,0 +1,344 @@
+{
+  "errorCodes": [
+    {
+      "code": "AUTH_INVALID_CREDENTIALS",
+      "httpStatus": 401,
+      "description": "Invalid login credentials (wrong email/password combination)",
+      "scenario": "User attempts to login with incorrect credentials",
+      "resolution": "Check email and password; reset password if forgotten",
+      "example": {
+        "request": {
+          "method": "POST",
+          "uri": "/api/v1/auth/login",
+          "payload": {
+            "email": "user@example.com",
+            "password": "wrongpassword"
+          }
+        },
+        "response": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "AUTH_INVALID_CREDENTIALS",
+              "message": "Invalid email or password."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "AUTH_TOKEN_EXPIRED",
+      "httpStatus": 401,
+      "description": "Authentication token has expired",
+      "scenario": "Token was issued more than 24 hours ago; user session timed out",
+      "resolution": "Login again to obtain new token",
+      "example": {
+        "request": {
+          "method": "GET",
+          "uri": "/api/v1/projects",
+          "headers": {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "response": {
+          "status": 401,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "AUTH_TOKEN_EXPIRED",
+              "message": "Your authentication session has expired. Please login again."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "AUTH_UNAUTHORIZED",
+      "httpStatus": 403,
+      "description": "User lacks permission to perform this action",
+      "scenario": "Authenticated user attempts action they don't have permission for",
+      "resolution": "Request admin to grant required permissions",
+      "example": {
+        "request": {
+          "method": "POST",
+          "uri": "/api/v1/projects/1/approve",
+          "headers": {
+            "Authorization": "Bearer valid_token"
+          }
+        },
+        "response": {
+          "status": 403,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "AUTH_UNAUTHORIZED",
+              "message": "You do not have permission to perform this action."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "RBAC_ROLE_DENIED",
+      "httpStatus": 403,
+      "description": "User's role is not allowed to access this endpoint",
+      "scenario": "Customer attempts to access admin-only endpoint",
+      "resolution": "Use appropriate user role; contact admin if needed",
+      "example": {
+        "request": {
+          "method": "GET",
+          "uri": "/api/v1/admin/users",
+          "headers": {
+            "Authorization": "Bearer customer_token"
+          }
+        },
+        "response": {
+          "status": 403,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "RBAC_ROLE_DENIED",
+              "message": "This action is reserved for administrators."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "RESOURCE_NOT_FOUND",
+      "httpStatus": 404,
+      "description": "Requested resource does not exist",
+      "scenario": "GET /api/v1/projects/999 where project_id 999 doesn't exist",
+      "resolution": "Verify resource ID; check if resource was deleted",
+      "example": {
+        "request": {
+          "method": "GET",
+          "uri": "/api/v1/projects/999"
+        },
+        "response": {
+          "status": 404,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "RESOURCE_NOT_FOUND",
+              "message": "The requested project was not found."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "VALIDATION_ERROR",
+      "httpStatus": 422,
+      "description": "Input validation failed (missing/invalid fields)",
+      "scenario": "POST /api/v1/projects with missing required fields",
+      "resolution": "Correct field values according to error details; check field requirements",
+      "example": {
+        "request": {
+          "method": "POST",
+          "uri": "/api/v1/projects",
+          "payload": {
+            "name": "",
+            "budget": "not_a_number"
+          }
+        },
+        "response": {
+          "status": 422,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "VALIDATION_ERROR",
+              "message": "The given data was invalid.",
+              "details": {
+                "name": ["The name field is required."],
+                "budget": ["The budget must be a number."],
+                "location": ["The location field is required."]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "WORKFLOW_INVALID_TRANSITION",
+      "httpStatus": 422,
+      "description": "Cannot transition resource to requested state (workflow rules violated)",
+      "scenario": "Attempt to move phase directly from draft to archived (missing intermediate states)",
+      "resolution": "Follow workflow state machine; check current state",
+      "example": {
+        "request": {
+          "method": "PATCH",
+          "uri": "/api/v1/phases/1",
+          "payload": {
+            "status": "archived"
+          }
+        },
+        "response": {
+          "status": 422,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "WORKFLOW_INVALID_TRANSITION",
+              "message": "Cannot transition phase from draft to archived. Allowed transitions: draft → in_progress, draft → cancelled."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "WORKFLOW_PREREQUISITES_UNMET",
+      "httpStatus": 422,
+      "description": "Prerequisites for workflow step not satisfied",
+      "scenario": "Attempt to complete phase before all tasks are approved",
+      "resolution": "Ensure all prerequisites are met before retrying (e.g., all tasks approved)",
+      "example": {
+        "request": {
+          "method": "PATCH",
+          "uri": "/api/v1/phases/1",
+          "payload": {
+            "status": "complete"
+          }
+        },
+        "response": {
+          "status": 422,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "WORKFLOW_PREREQUISITES_UNMET",
+              "message": "Cannot complete phase. All tasks must be approved first. Pending approvals: 3."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "PAYMENT_FAILED",
+      "httpStatus": 422,
+      "description": "Payment processing failed (card declined, insufficient funds, etc.)",
+      "scenario": "Card declined during payment processing",
+      "resolution": "Check payment method; try different card; contact payment provider",
+      "example": {
+        "request": {
+          "method": "POST",
+          "uri": "/api/v1/payments",
+          "payload": {
+            "amount": 10000,
+            "currency": "SAR",
+            "card_token": "tok_visa"
+          }
+        },
+        "response": {
+          "status": 422,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "PAYMENT_FAILED",
+              "message": "Your card was declined. Please check your payment details and try again."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "RATE_LIMIT_EXCEEDED",
+      "httpStatus": 429,
+      "description": "Too many requests from user/IP",
+      "scenario": "More than 100 requests/minute from single user",
+      "resolution": "Wait before making more requests; check Retry-After header",
+      "example": {
+        "request": {
+          "method": "GET",
+          "uri": "/api/v1/projects",
+          "note": "101st request in 1-minute window"
+        },
+        "response": {
+          "status": 429,
+          "headers": {
+            "Retry-After": "45"
+          },
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "RATE_LIMIT_EXCEEDED",
+              "message": "You have exceeded the rate limit. Please try again in 45 seconds."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "CONFLICT_ERROR",
+      "httpStatus": 409,
+      "description": "Resource conflict (e.g., duplicate entry, uniqueness violation)",
+      "scenario": "Email already registered; username taken",
+      "resolution": "Use different value; check if resource already exists",
+      "example": {
+        "request": {
+          "method": "POST",
+          "uri": "/api/v1/auth/register",
+          "payload": {
+            "email": "existing@example.com",
+            "password": "password123"
+          }
+        },
+        "response": {
+          "status": 409,
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "CONFLICT_ERROR",
+              "message": "An account with this email already exists."
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "SERVER_ERROR",
+      "httpStatus": 500,
+      "description": "Internal server error (unhandled exception, database failure, etc.)",
+      "scenario": "Unexpected application error; database connection failure",
+      "resolution": "Report to support; include Correlation ID from response header",
+      "example": {
+        "request": {
+          "method": "GET",
+          "uri": "/api/v1/projects/1"
+        },
+        "response": {
+          "status": 500,
+          "headers": {
+            "X-Correlation-ID": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "SERVER_ERROR",
+              "message": "An unexpected error occurred. Please try again later. If the problem persists, contact support with ID: 550e8400-e29b-41d4-a716-446655440000"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "notes": {
+    "stability": "Error codes are stable and will never change. New error scenarios are handled via new codes only.",
+    "versioning": "Error code changes are API breaking changes; require API version bump (e.g., /api/v1 → /api/v2).",
+    "fieldLevelErrors": "Only VALIDATION_ERROR includes 'details' object with field-level messages.",
+    "correlationId": "All error responses include X-Correlation-ID header for request tracing. Include when reporting issues.",
+    "localization": "Error message is localized to user's Accept-Language header (Arabic or English).",
+    "stackTraces": "Stack traces are logged server-side only; never exposed to clients in production."
+  }
+}

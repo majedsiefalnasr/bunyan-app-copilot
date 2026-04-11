@@ -1,0 +1,238 @@
+{
+  "title": "Correlation ID Request Tracing Flow",
+  "description": "How correlation IDs flow through Bunyan's request lifecycle",
+  "flow": {
+    "step1": {
+      "name": "Client sends request",
+      "description": "Frontend or external client sends HTTP request",
+      "example": {
+        "method": "POST",
+        "uri": "/api/v1/projects",
+        "headers": {
+          "Authorization": "Bearer token",
+          "Accept-Language": "ar"
+        }
+      }
+    },
+    "step2": {
+      "name": "Correlation ID Middleware receives request",
+      "description": "Laravel CorrelationIdMiddleware checks for X-Correlation-ID header. If present, reuses it; if absent, generates new UUID v4.",
+      "logic": "IF request.header('X-Correlation-ID') THEN use_it ELSE generate_uuid()",
+      "example": {
+        "headers": {
+          "X-Correlation-ID": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      }
+    },
+    "step3": {
+      "name": "Share context across all layers",
+      "description": "Middleware shares correlation ID with Log context so all subsequent logs include it automatically",
+      "code": "Log::shareContext(['correlation_id' => 'uuid'])",
+      "result": "All logs from this request automatically include correlation_id"
+    },
+    "step4": {
+      "name": "Request flows through middleware stack",
+      "description": "Request processes through Authentication, RBAC, Rate Limiting, etc. Each middleware can log; correlation ID is automatically included:",
+      "middleware": [
+        "CorrelationIdMiddleware (generate/propagate)",
+        "RequestLoggingMiddleware (log entry point)",
+        "AuthenticateRequests (Sanctum)",
+        "RateLimitByRoleMiddleware (check limits)",
+        "Route Handler (business logic)"
+      ]
+    },
+    "step5": {
+      "name": "Services and repositories log events",
+      "description": "During business logic execution, services may log events (e.g., payment processed, task completed). All logs include correlation ID via context.",
+      "example": {
+        "log_entry": {
+          "timestamp": "2026-04-11T10:30:15Z",
+          "level": "info",
+          "message": "Payment processed successfully",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "user_id": 5,
+          "payment_id": 101,
+          "amount": 10000
+        }
+      }
+    },
+    "step6": {
+      "name": "Exception handler catches errors",
+      "description": "If exception occurs, global exception handler catches it, logs with correlation ID context, transforms to error response",
+      "result": {
+        "log_entry": {
+          "timestamp": "2026-04-11T10:30:16Z",
+          "level": "error",
+          "message": "ValidationException: Name field is required",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "user_id": 5,
+          "exception_class": "ValidationException",
+          "stack_trace": "..."
+        }
+      }
+    },
+    "step7": {
+      "name": "Response sent to client",
+      "description": "Response includes X-Correlation-ID header so client can include it when reporting issues",
+      "response": {
+        "status": 422,
+        "headers": {
+          "X-Correlation-ID": "550e8400-e29b-41d4-a716-446655440000"
+        },
+        "body": {
+          "success": false,
+          "error": {
+            "code": "VALIDATION_ERROR",
+            "message": "The given data was invalid."
+          }
+        }
+      }
+    },
+    "step8": {
+      "name": "Client logs correlation ID",
+      "description": "Frontend error handler extracts correlation ID from response header and displays to user or logs for support",
+      "frontend_code": "const correlationId = response.headers.get('X-Correlation-ID'); console.error('Error ID:', correlationId);",
+      "user_message": "An error occurred. Error ID: 550e8400-e29b-41d4-a716-446655440000. Contact support with this ID."
+    }
+  },
+  "request_tracing_example": {
+    "scenario": "Customer submits project creation form; validation fails",
+    "timeline": [
+      {
+        "time": "10:30:15.000",
+        "layer": "CorrelationIdMiddleware",
+        "action": "Generate UUID",
+        "log": {
+          "timestamp": "2026-04-11T10:30:15.000Z",
+          "level": "debug",
+          "message": "Generated correlation ID",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      {
+        "time": "10:30:15.010",
+        "layer": "RequestLoggingMiddleware",
+        "action": "Log incoming request",
+        "log": {
+          "timestamp": "2026-04-11T10:30:15.010Z",
+          "level": "info",
+          "message": "HTTP request received",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "method": "POST",
+          "uri": "/api/v1/projects",
+          "user_id": 5
+        }
+      },
+      {
+        "time": "10:30:15.050",
+        "layer": "ProjectController",
+        "action": "Validate form request",
+        "log": {
+          "timestamp": "2026-04-11T10:30:15.050Z",
+          "level": "debug",
+          "message": "Form validation started",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "form": "CreateProjectRequest"
+        }
+      },
+      {
+        "time": "10:30:15.075",
+        "layer": "Validator",
+        "action": "Validation fails",
+        "log": {
+          "timestamp": "2026-04-11T10:30:15.075Z",
+          "level": "warning",
+          "message": "Validation failed",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "errors": {
+            "name": ["The name field is required."],
+            "budget": ["The budget must be a positive number."]
+          }
+        }
+      },
+      {
+        "time": "10:30:15.100",
+        "layer": "ExceptionHandler",
+        "action": "Catch ValidationException",
+        "log": {
+          "timestamp": "2026-04-11T10:30:15.100Z",
+          "level": "error",
+          "message": "ValidationException caught",
+          "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+          "exception_class": "ValidationException",
+          "http_status": 422
+        }
+      },
+      {
+        "time": "10:30:15.105",
+        "layer": "Response",
+        "action": "Return 422 error with correlation ID header",
+        "response": {
+          "status": 422,
+          "headers": {
+            "X-Correlation-ID": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "body": {
+            "success": false,
+            "data": null,
+            "error": {
+              "code": "VALIDATION_ERROR",
+              "message": "The given data was invalid.",
+              "details": {
+                "name": ["The name field is required."],
+                "budget": ["The budget must be a positive number."]
+              }
+            }
+          }
+        }
+      }
+    ],
+    "debugging_support_scenario": {
+      "customer_report": "I can't create a project. Getting an error about required fields.",
+      "support_asks": "What's the error ID at the bottom of the screen?",
+      "customer_provides": "550e8400-e29b-41d4-a716-446655440000",
+      "support_queries_logs": "SELECT * FROM laravel.log WHERE correlation_id = '550e8400-e29b-41d4-a716-446655440000' ORDER BY timestamp",
+      "support_finds": "All logs for that request with timestamps, user, endpoint, validation errors, allowing quick root cause analysis"
+    }
+  },
+  "distributed_system_example": {
+    "scenario": "Request flows through multiple services (frontend → API → database)",
+    "flow": [
+      {
+        "service": "Frontend (Nuxt)",
+        "action": "Receive 422 response",
+        "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+        "code": "const id = response.headers.get('X-Correlation-ID'); toast.showError(message, id);"
+      },
+      {
+        "service": "API Layer (Laravel)",
+        "action": "Handle request with middleware stack",
+        "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+        "code": "Log::shareContext(['correlation_id' => $uuid]);"
+      },
+      {
+        "service": "Database Log (audit_logs table)",
+        "action": "Store audit event with correlation ID",
+        "correlation_id": "550e8400-e29b-41d4-a716-446655440000",
+        "query": "INSERT INTO audit_logs (correlation_id, ...) VALUES ('550e8400-e29b-41d4-a716-446655440000', ...)"
+      }
+    ]
+  },
+  "benefits": {
+    "debugging": "Trace entire request flow from frontend to backend by searching correlation ID",
+    "support": "Support agents can quickly find customer's request logs by correlation ID",
+    "monitoring": "Alerts can trigger when correlation ID appears in error logs",
+    "compliance": "Audit trail of who did what by tracing correlation ID through audit_logs",
+    "performance": "Track request performance from client to server using single identifier"
+  },
+  "implementation_checklist": [
+    "✅ CorrelationIdMiddleware generates/propagates UUID",
+    "✅ Log context shares correlation_id automatically",
+    "✅ Response header includes X-Correlation-ID",
+    "✅ RequestLoggingMiddleware captures correlation_id",
+    "✅ ExceptionHandler logs with correlation_id context",
+    "✅ All services/repositories use Log context",
+    "✅ Frontend extracts correlation_id from response",
+    "✅ Support dashboard displays correlation_id for easier debugging"
+  ]
+}
