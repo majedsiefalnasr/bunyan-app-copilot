@@ -12,6 +12,7 @@ main ← develop ← feature/* | fix/* | hotfix/*
 ```
 
 ### Branch Naming
+
 - Features: `feature/NNN-short-description`
 - Fixes: `fix/NNN-short-description`
 - Hotfixes: `hotfix/NNN-short-description`
@@ -21,6 +22,7 @@ main ← develop ← feature/* | fix/* | hotfix/*
 Format: `type(scope): description`
 
 ### Types
+
 - `feat` — New feature
 - `fix` — Bug fix
 - `refactor` — Code restructuring
@@ -32,6 +34,7 @@ Format: `type(scope): description`
 - `ci` — CI changes
 
 ### Scopes
+
 - `api` — Backend API
 - `frontend` — Nuxt.js frontend
 - `db` — Database/migrations
@@ -42,6 +45,7 @@ Format: `type(scope): description`
 - `i18n` — Translations
 
 ### Examples
+
 ```
 feat(api): add project creation endpoint
 fix(workflow): correct phase completion validation

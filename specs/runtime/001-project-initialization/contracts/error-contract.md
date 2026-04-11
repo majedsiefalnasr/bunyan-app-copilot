@@ -22,12 +22,12 @@ Every API response (whether successful or failed) must follow this exact JSON st
 
 **Fields:**
 
-| Field | Type | Description | Notes |
-|-------|------|-------------|-------|
-| `success` | boolean | `true` if operation succeeded, `false` if failed | Always present |
-| `data` | null\|object\|array | Operation result (null on error) | Populated on success only |
-| `message` | string | Human-readable message (success or error) | Always present |
-| `errors` | object | Detailed error information (empty on success) | Empty `{}` on success |
+| Field     | Type                | Description                                      | Notes                     |
+| --------- | ------------------- | ------------------------------------------------ | ------------------------- |
+| `success` | boolean             | `true` if operation succeeded, `false` if failed | Always present            |
+| `data`    | null\|object\|array | Operation result (null on error)                 | Populated on success only |
+| `message` | string              | Human-readable message (success or error)        | Always present            |
+| `errors`  | object              | Detailed error information (empty on success)    | Empty `{}` on success     |
 
 ---
 
@@ -62,6 +62,7 @@ Content-Type: application/json
 ```
 
 **Error Object Structure:**
+
 - Keys: field names (from request body)
 - Values: arrays of error messages (one or more)
 - Multiple messages possible if multiple validations fail
@@ -354,19 +355,19 @@ Content-Type: application/json
 
 ## HTTP Status Code Reference
 
-| Status | Meaning | When to Use | `success` | Data |
-|--------|---------|-----------|-----------|------|
-| `200` | OK | Successful GET/PATCH/PUT | `true` | populated |
-| `201` | Created | Successful POST (resource created) | `true` | populated |
-| `204` | No Content | Success with no response body | `true` | null |
-| `400` | Bad Request | Malformed request (invalid JSON) | `false` | null |
-| `401` | Unauthorized | Missing/invalid authentication | `false` | null |
-| `403` | Forbidden | Authenticated but insufficient role | `false` | null |
-| `404` | Not Found | Resource doesn't exist | `false` | null |
-| `409` | Conflict | Business rule violated | `false` | null |
-| `422` | Unprocessable Entity | Validation error | `false` | null |
-| `429` | Too Many Requests | Rate limit exceeded | `false` | null |
-| `500` | Internal Server Error | Unhandled exception | `false` | null |
+| Status | Meaning               | When to Use                         | `success` | Data      |
+| ------ | --------------------- | ----------------------------------- | --------- | --------- |
+| `200`  | OK                    | Successful GET/PATCH/PUT            | `true`    | populated |
+| `201`  | Created               | Successful POST (resource created)  | `true`    | populated |
+| `204`  | No Content            | Success with no response body       | `true`    | null      |
+| `400`  | Bad Request           | Malformed request (invalid JSON)    | `false`   | null      |
+| `401`  | Unauthorized          | Missing/invalid authentication      | `false`   | null      |
+| `403`  | Forbidden             | Authenticated but insufficient role | `false`   | null      |
+| `404`  | Not Found             | Resource doesn't exist              | `false`   | null      |
+| `409`  | Conflict              | Business rule violated              | `false`   | null      |
+| `422`  | Unprocessable Entity  | Validation error                    | `false`   | null      |
+| `429`  | Too Many Requests     | Rate limit exceeded                 | `false`   | null      |
+| `500`  | Internal Server Error | Unhandled exception                 | `false`   | null      |
 
 ---
 
@@ -520,7 +521,7 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        
+
         if (!$user) {
             return $this->error(
                 'User not found',
@@ -543,30 +544,28 @@ class UserController extends Controller
 **Location:** `frontend/composables/useApiError.ts`
 
 ```typescript
-import type { ApiResponse } from '~/types/api'
+import type { ApiResponse } from '~/types/api';
 
 export const useApiError = () => {
   const handleError = (error: any): string => {
     if (error.data?.errors) {
       // Collect all error messages
-      const messages = Object.values(error.data.errors)
-        .flat()
-        .join('; ')
-      return messages || error.data.message || 'An error occurred'
+      const messages = Object.values(error.data.errors).flat().join('; ');
+      return messages || error.data.message || 'An error occurred';
     }
 
-    return error.message || 'An unexpected error occurred'
-  }
+    return error.message || 'An unexpected error occurred';
+  };
 
   const getFieldError = (error: any, field: string): string[] => {
-    return error?.data?.errors?.[field] || []
-  }
+    return error?.data?.errors?.[field] || [];
+  };
 
   return {
     handleError,
     getFieldError,
-  }
-}
+  };
+};
 ```
 
 **Usage in Component:**
@@ -574,35 +573,31 @@ export const useApiError = () => {
 ```vue
 <template>
   <form @submit.prevent="submitForm">
-    <UInput
-      v-model="form.email"
-      label="Email"
-      :error="fieldErrors.email?.[0]"
-    />
+    <UInput v-model="form.email" label="Email" :error="fieldErrors.email?.[0]" />
     <UButton type="submit">Submit</UButton>
     <UAlert v-if="globalError" :title="globalError" color="red" />
   </form>
 </template>
 
 <script setup lang="ts">
-import { useApiError } from '~/composables/useApiError'
+import { useApiError } from '~/composables/useApiError';
 
-const { handleError, getFieldError } = useApiError()
-const form = ref({ email: '' })
-const globalError = ref('')
-const fieldErrors = ref({})
+const { handleError, getFieldError } = useApiError();
+const form = ref({ email: '' });
+const globalError = ref('');
+const fieldErrors = ref({});
 
 const submitForm = async () => {
   try {
-    await $fetch('/api/v1/submit', { 
-      method: 'POST', 
-      body: form.value 
-    })
+    await $fetch('/api/v1/submit', {
+      method: 'POST',
+      body: form.value,
+    });
   } catch (error) {
-    globalError.value = handleError(error)
-    fieldErrors.value = error?.data?.errors || {}
+    globalError.value = handleError(error);
+    fieldErrors.value = error?.data?.errors || {};
   }
-}
+};
 </script>
 ```
 
@@ -632,4 +627,3 @@ For each new endpoint, document:
 - [ ] HTTP status codes match error type (not all errors are 400)
 - [ ] Error messages are user-friendly (no SQL, no internal paths)
 - [ ] Arabic messages supported (no hardcoded English-only)
-

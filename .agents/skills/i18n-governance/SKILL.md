@@ -14,6 +14,7 @@ description: Arabic/English, RTL layout, translation keys
 ## Translation File Structure
 
 ### Backend (Laravel)
+
 ```
 backend/resources/lang/
 ├── ar/
@@ -33,6 +34,7 @@ backend/resources/lang/
 ```
 
 ### Frontend (Nuxt)
+
 ```
 frontend/locales/
 ├── ar.json
@@ -61,6 +63,7 @@ frontend/locales/
 ## Validation Messages
 
 All validation error messages must be provided in Arabic:
+
 ```php
 'name.required' => 'حقل الاسم مطلوب',
 'email.email' => 'البريد الإلكتروني غير صالح',

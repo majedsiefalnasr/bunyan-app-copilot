@@ -1,4 +1,5 @@
 # STAGE_01 — Project Initialization
+
 ## Requirements Checklist
 
 ---
@@ -292,7 +293,7 @@ export default defineNuxtConfig({
     defaultLocale: 'ar',
     strategy: 'prefix_except_default',
   },
-})
+});
 ```
 
 - [ ] `@nuxt/ui` module configured
@@ -331,7 +332,7 @@ export default {
     extend: {},
   },
   plugins: [],
-}
+};
 ```
 
 - [ ] Tailwind CSS v4 integrated
@@ -549,14 +550,14 @@ services:
       MYSQL_DATABASE: bunyan
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
 
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
   node:
     image: node:18-alpine
@@ -565,7 +566,7 @@ services:
       - .:/app
     command: npm run dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
 
 volumes:
   mysql_data:
@@ -649,6 +650,7 @@ bunyan-app/
 **File:** `README.md`
 
 Sections:
+
 1. Project Overview
 2. Tech Stack
 3. Quick Start (Installation & Setup)

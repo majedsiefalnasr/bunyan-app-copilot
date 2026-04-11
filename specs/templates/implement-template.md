@@ -1,7 +1,6 @@
 # Implementation Notes — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Implemented:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Implemented:** {{ISO_TIMESTAMP}}
 
 ## Implementation Summary
 

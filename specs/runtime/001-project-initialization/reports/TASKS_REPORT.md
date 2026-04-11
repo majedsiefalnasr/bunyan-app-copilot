@@ -3,7 +3,7 @@
 **Stage:** Project Initialization  
 **Phase:** 01_PLATFORM_FOUNDATION  
 **Branch:** spec/001-project-initialization  
-**Completed:** 2026-04-10T00:00:00Z  
+**Completed:** 2026-04-10T00:00:00Z
 
 ---
 
@@ -17,25 +17,27 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 
 ## Task Overview
 
-| Category | Count | IDs | Effort |
-|----------|-------|-----|--------|
-| **Backend** | 14 | T001–T014 | 85 min |
-| **Frontend** | 10 | T015–T024 | 60 min |
-| **DevOps** | 6 | T025–T030 | 35 min |
-| **Integration** | 2 | T031–T032 | 20 min |
-| **TOTAL** | **36** | T001–T032 | **155 min** (serial) / **80 min** (parallel) |
+| Category        | Count  | IDs       | Effort                                       |
+| --------------- | ------ | --------- | -------------------------------------------- |
+| **Backend**     | 14     | T001–T014 | 85 min                                       |
+| **Frontend**    | 10     | T015–T024 | 60 min                                       |
+| **DevOps**      | 6      | T025–T030 | 35 min                                       |
+| **Integration** | 2      | T031–T032 | 20 min                                       |
+| **TOTAL**       | **36** | T001–T032 | **155 min** (serial) / **80 min** (parallel) |
 
 ---
 
 ## Wave-Based Parallelization Strategy
 
 ### **Wave 1: Scaffolding (5 min parallel)**
+
 - `[P] T001` — Create Laravel 11 project
 - `[P] T002` — Create Nuxt 3 project
 - **Status:** Sequential start, independent execution
 - **Blocker:** None (fresh project)
 
 ### **Wave 2: Configuration (12 min parallel)**
+
 - `[P] T003` — Configure MySQL database (.env, migrations)
 - `[P] T004` — Install Laravel Sanctum
 - `[P] T005` — Configure Tailwind v4
@@ -46,6 +48,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** Wave 1 complete
 
 ### **Wave 3: Backend Core (50 min sequential)**
+
 - `T009` — Create User model with $role enum
 - `T010` — Create users table migration
 - `T011` — Create base ExceptionHandler
@@ -56,6 +59,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** Wave 2 complete
 
 ### **Wave 4: Frontend Core (30 min parallel)**
+
 - `[P] T015` — Configure RTL support (Tailwind logical properties)
 - `[P] T016` — Create Pinia stores (user, theme)
 - `[P] T017` — Create API composable
@@ -65,6 +69,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** Wave 2 complete
 
 ### **Wave 5: Backend Advanced (40 min sequential)**
+
 - `T020` — Create Repository pattern starter
 - `T021` — Create RBAC Policies (5 roles)
 - `T022` — Create Auth controller (register, login, logout, me)
@@ -73,6 +78,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** Wave 3 complete
 
 ### **Wave 6: Testing & Validation (25 min parallel)**
+
 - `[P] T024` — Configure PHPUnit + Feature test example
 - `[P] T025` — Configure PHPStan + PHP-CS-Fixer
 - `[P] T026` — Configure Vitest + Vue Test Utils
@@ -81,6 +87,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** Wave 3, 4, 5 complete
 
 ### **Wave 7: DevOps & Infrastructure (20 min parallel)**
+
 - `[P] T028` — Create docker-compose.yml
 - `[P] T029` — Create Dockerfiles + .dockerignore
 - `[P] T030` — Install Husky + lint-staged
@@ -90,6 +97,7 @@ All implementation tasks are now defined, estimated, dependent-ordered, and read
 - **Blocker:** None (config files independent)
 
 ### **Wave 8: Integration & Validation (20 min sequential)**
+
 - `T033` — Smoke test: Frontend calls Backend API
 - `T034` — Final validation: All tests pass, lint passes
 - **Status:** Sequential; final checkpoints
@@ -122,6 +130,7 @@ CRITICAL PATH: 72 minutes (serial)
 ```
 
 **Parallel Acceleration:**
+
 - Wave 1: Backend ∥ Frontend (no blocker)
 - Wave 2: All config tasks parallel (12m total, not 60m)
 - Wave 4: Frontend tasks parallel (30m total, not 120m)
@@ -129,6 +138,7 @@ CRITICAL PATH: 72 minutes (serial)
 - Wave 7: All DevOps parallel (20m total, not 100m)
 
 **With 4-person team (1 senior backend, 1 senior frontend, 1 junior, 1 devops):**
+
 - Parallel time: **~80 minutes** (from 155 serial)
 - Time saved: **47%** faster delivery
 
@@ -138,28 +148,28 @@ CRITICAL PATH: 72 minutes (serial)
 
 ### HIGH-RISK Tasks (Security-Critical, RBAC)
 
-| Task | Risk | Mitigation |
-|------|------|-----------|
-| **T004** — Sanctum setup | HIGH | Use official Laravel templates; test token lifecycle |
-| **T021** — RBAC Policies | HIGH | Review policy code with security checklist |
+| Task                       | Risk | Mitigation                                           |
+| -------------------------- | ---- | ---------------------------------------------------- |
+| **T004** — Sanctum setup   | HIGH | Use official Laravel templates; test token lifecycle |
+| **T021** — RBAC Policies   | HIGH | Review policy code with security checklist           |
 | **T022** — Auth controller | HIGH | Test register/login/logout flows with multiple roles |
 
 ### MEDIUM-RISK Tasks (Architecture-Critical)
 
-| Task | Risk | Mitigation |
-|------|------|-----------|
+| Task                          | Risk   | Mitigation                              |
+| ----------------------------- | ------ | --------------------------------------- |
 | **T012** — Base ApiController | MEDIUM | Establish error response format in code |
-| **T014** — Service class | MEDIUM | Enforce no direct DB access in services |
+| **T014** — Service class      | MEDIUM | Enforce no direct DB access in services |
 | **T020** — Repository pattern | MEDIUM | Verify all queries in repositories only |
-| **T019** — RTL support | MEDIUM | Test with LTR + RTL switching |
+| **T019** — RTL support        | MEDIUM | Test with LTR + RTL switching           |
 
 ### LOW-RISK Tasks (Config, Tooling)
 
-| Task | Risk | Mitigation |
-|------|------|-----------|
-| **T003** — MySQL config | LOW | Use docker-compose provided |
-| **T028** — docker-compose.yml | LOW | Pre-written template available |
-| **T030** — Husky hooks | LOW | Copy from template repo |
+| Task                          | Risk | Mitigation                     |
+| ----------------------------- | ---- | ------------------------------ |
+| **T003** — MySQL config       | LOW  | Use docker-compose provided    |
+| **T028** — docker-compose.yml | LOW  | Pre-written template available |
+| **T030** — Husky hooks        | LOW  | Copy from template repo        |
 
 ---
 
@@ -168,16 +178,19 @@ CRITICAL PATH: 72 minutes (serial)
 ### Backend Tasks (T001–T014)
 
 - **T001: Create Laravel 11 Project**
+
   - [ ] `composer create-project laravel/laravel` succeeds
   - [ ] PHP 8.2+ enforced in composer.json
   - [ ] `.env` template created with DB/Redis/API_URL
 
 - **T002: Create Nuxt 3 Project**
+
   - [ ] `npx nuxi@latest init` succeeds
   - [ ] Node 18+ verified
   - [ ] TypeScript enabled
 
 - **T003–T008: Configuration Tasks**
+
   - [ ] .env populated (MySQL, Redis, API_URL)
   - [ ] Sanctum installed and tokens table created
   - [ ] Tailwind v4 compiles with CSS
@@ -196,11 +209,13 @@ CRITICAL PATH: 72 minutes (serial)
 ### Frontend Tasks (T015–T024)
 
 - **T015: RTL Support**
+
   - [ ] Tailwind logical properties active (ps, pe, ms, me instead of left, right)
   - [ ] `dir="rtl"` attribute toggles with locale
   - [ ] Layouts render correctly in both directions
 
 - **T016–T019: State & UI**
+
   - [ ] Pinia stores (user, theme) initialize
   - [ ] API composable wraps `$fetch`
   - [ ] Layouts (default, auth, admin) render
@@ -215,6 +230,7 @@ CRITICAL PATH: 72 minutes (serial)
 ### DevOps Tasks (T025–T032)
 
 - **T025–T027: Docker & Hooks**
+
   - [ ] `docker-compose up -d` starts MySQL + Redis
   - [ ] Backend container maps port 8000
   - [ ] Frontend container maps port 3000
@@ -228,6 +244,7 @@ CRITICAL PATH: 72 minutes (serial)
 ### Integration Tasks (T033–T034)
 
 - **T033: Smoke Test (Frontend → Backend)**
+
   - [ ] Frontend Login page calls `POST /api/v1/auth/login`
   - [ ] Backend returns 200 + token
   - [ ] Frontend stores token in Pinia
@@ -272,23 +289,24 @@ T033 (SMoke test) → T034 (final validation)
 
 ## Task Estimation Accuracy
 
-| Phase | Tasks | Serial | Parallel | Per-Task Avg |
-|-------|-------|--------|----------|-------------|
-| Scaffolding | 2 | 10m | 5m | 5m each |
-| Configuration | 6 | 60m | 12m | 10m each |
-| Backend Core | 6 | 60m | 50m | 10m sequential |
-| Frontend Core | 5 | 50m | 30m | 10m each |
-| Backend Advanced | 4 | 50m | 40m | 10m sequential |
-| Testing | 4 | 100m | 25m | 25m parallel |
-| DevOps | 5 | 100m | 20m | 20m parallel |
-| Integration | 2 | 25m | 20m | 10m sequential |
-| **TOTAL** | **36** | **155m** | **80m** | **4.3m avg** |
+| Phase            | Tasks  | Serial   | Parallel | Per-Task Avg   |
+| ---------------- | ------ | -------- | -------- | -------------- |
+| Scaffolding      | 2      | 10m      | 5m       | 5m each        |
+| Configuration    | 6      | 60m      | 12m      | 10m each       |
+| Backend Core     | 6      | 60m      | 50m      | 10m sequential |
+| Frontend Core    | 5      | 50m      | 30m      | 10m each       |
+| Backend Advanced | 4      | 50m      | 40m      | 10m sequential |
+| Testing          | 4      | 100m     | 25m      | 25m parallel   |
+| DevOps           | 5      | 100m     | 20m      | 20m parallel   |
+| Integration      | 2      | 25m      | 20m      | 10m sequential |
+| **TOTAL**        | **36** | **155m** | **80m**  | **4.3m avg**   |
 
 ---
 
 ## Quality Gates Before Implement
 
 All 36 tasks are:
+
 - ✅ Estimated (5m–30m each)
 - ✅ Dependency-ordered
 - ✅ Parallelizable (26/36 marked `[P]`)
@@ -301,17 +319,20 @@ All 36 tasks are:
 ## Next Workflow Steps
 
 ### 5. **`speckit.analyze`** — Drift Detection
+
 - Scans spec.md, plan.md, tasks.md for architecture violations
 - Checks: RBAC enforcement, error contract compliance, service layer boundaries
 - **Gate:** PASS = proceed to implement | BLOCKED = remediate
 
 ### 6. **`speckit.implement`** — Code Execution
+
 - Executes tasks sequentially/parallel per wave
 - Marks completed tasks as `[X]` (uppercase)
 - Validates tests pass before advancing waves
 - Auto-commits per-wave progress
 
 ### 7. **`orchestrator.closure`** — Verification & Merge
+
 - Final validation: All tests pass, lint passes, type checks pass
 - Generate PR summary and testing guide
 - Merge to `develop` branch

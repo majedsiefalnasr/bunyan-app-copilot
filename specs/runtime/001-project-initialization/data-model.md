@@ -21,11 +21,11 @@ STAGE_01 establishes the foundational data model: the `users` table with role-ba
 ```sql
 CREATE TABLE `users` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  
+
   `name` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
-  
+
   `role` ENUM(
     'customer',
     'contractor',
@@ -33,13 +33,13 @@ CREATE TABLE `users` (
     'field_engineer',
     'admin'
   ) NOT NULL DEFAULT 'customer',
-  
+
   `email_verified_at` TIMESTAMP NULL,
   `remember_token` VARCHAR(100) NULL,
-  
+
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
   INDEX `idx_email` (`email`),
   INDEX `idx_role` (`role`),
   INDEX `idx_created_at` (`created_at`)
@@ -48,17 +48,17 @@ CREATE TABLE `users` (
 
 **Columns Explained:**
 
-| Column | Type | Constraints | Purpose |
-|--------|------|-------------|---------|
-| `id` | BIGINT UNSIGNED | PK, auto-increment | Unique user identifier |
-| `name` | VARCHAR(255) | NOT NULL | User full name (supports Arabic characters) |
-| `email` | VARCHAR(255) | UNIQUE, NOT NULL | Unique email for login |
-| `password` | VARCHAR(255) | NOT NULL | Bcrypt hash (never plaintext) |
-| `role` | ENUM | NOT NULL, DEFAULT='customer' | RBAC role classification |
-| `email_verified_at` | TIMESTAMP | NULL | Email verification timestamp (future) |
-| `remember_token` | VARCHAR(100) | NULL | Session token (future) |
-| `created_at` | TIMESTAMP | NOT NULL | Record creation time (UTC) |
-| `updated_at` | TIMESTAMP | NOT NULL | Record last modification time (UTC) |
+| Column              | Type            | Constraints                  | Purpose                                     |
+| ------------------- | --------------- | ---------------------------- | ------------------------------------------- |
+| `id`                | BIGINT UNSIGNED | PK, auto-increment           | Unique user identifier                      |
+| `name`              | VARCHAR(255)    | NOT NULL                     | User full name (supports Arabic characters) |
+| `email`             | VARCHAR(255)    | UNIQUE, NOT NULL             | Unique email for login                      |
+| `password`          | VARCHAR(255)    | NOT NULL                     | Bcrypt hash (never plaintext)               |
+| `role`              | ENUM            | NOT NULL, DEFAULT='customer' | RBAC role classification                    |
+| `email_verified_at` | TIMESTAMP       | NULL                         | Email verification timestamp (future)       |
+| `remember_token`    | VARCHAR(100)    | NULL                         | Session token (future)                      |
+| `created_at`        | TIMESTAMP       | NOT NULL                     | Record creation time (UTC)                  |
+| `updated_at`        | TIMESTAMP       | NOT NULL                     | Record last modification time (UTC)         |
 
 **Indexes:**
 
@@ -73,26 +73,27 @@ CREATE TABLE `users` (
 ```sql
 CREATE TABLE `personal_access_tokens` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  
+
   `tokenable_type` VARCHAR(255) NOT NULL,
   `tokenable_id` BIGINT UNSIGNED NOT NULL,
-  
+
   `name` VARCHAR(255) NOT NULL,
   `token` VARCHAR(80) NOT NULL UNIQUE,
   `abilities` LONGTEXT NULL,
-  
+
   `last_used_at` TIMESTAMP NULL,
   `expires_at` TIMESTAMP NULL,
-  
+
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  
+
   INDEX `idx_tokenable` (`tokenable_type`, `tokenable_id`),
   INDEX `idx_token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 **Purpose:**
+
 - Stores API access tokens for Sanctum authentication
 - `token` column: The bearer token (sent by client in `Authorization: Bearer` header)
 - `abilities`: JSON array of token-specific permissions (future)
@@ -237,7 +238,7 @@ export interface User {
   updated_at: string;
 }
 
-export type UserRole = 
+export type UserRole =
   | 'customer'
   | 'contractor'
   | 'supervising_architect'
@@ -492,7 +493,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            
+
             $table->enum('role', [
                 'customer',
                 'contractor',
@@ -500,10 +501,10 @@ return new class extends Migration
                 'field_engineer',
                 'admin',
             ])->default('customer');
-            
+
             $table->rememberToken();
             $table->timestamps();
-            
+
             $table->index('email');
             $table->index('role');
         });
@@ -730,4 +731,3 @@ php artisan tinker
 - ✅ Seeder for test data
 
 **Ready for:** STAGE_02 (extended schema), STAGE_03 (authentication logic)
-

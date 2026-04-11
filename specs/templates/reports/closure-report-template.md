@@ -1,8 +1,6 @@
 # Closure Report — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Generated:** {{ISO_TIMESTAMP}}
-> **Status:** PRODUCTION READY
+> **Phase:** {{PHASE_NAME}} > **Generated:** {{ISO_TIMESTAMP}} > **Status:** PRODUCTION READY
 
 ## Stage Summary
 

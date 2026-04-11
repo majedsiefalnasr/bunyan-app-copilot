@@ -2,17 +2,10 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.app.json",
   "compilerOptions": {
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "vueCompilerOptions": {
     "plugins": []
   },
-  "include": [
-    ".nuxt/**/*",
-    "types/**/*.d.ts",
-    "**/*.ts",
-    "**/*.vue"
-  ]
+  "include": [".nuxt/**/*", "types/**/*.d.ts", "**/*.ts", "**/*.vue"]
 }

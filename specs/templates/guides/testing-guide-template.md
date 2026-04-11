@@ -1,7 +1,6 @@
 # Testing Guide — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Generated:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Generated:** {{ISO_TIMESTAMP}}
 
 ## Prerequisites
 

@@ -1797,25 +1797,25 @@ Modifications require a new stage.
   "deferred_tasks": [],
   "session_started_at": "<preserve from initialization>",
   "step_timings": {
-    "specify": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "clarify": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "plan": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "tasks": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "analyze": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "implement": {"started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>"},
-    "closure": {"started_at": "<ISO_TIMESTAMP of 7.1 start>", "completed_at": "<ISO_TIMESTAMP>"}
+    "specify": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "clarify": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "plan": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "tasks": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "analyze": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "implement": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
+    "closure": { "started_at": "<ISO_TIMESTAMP of 7.1 start>", "completed_at": "<ISO_TIMESTAMP>" }
   },
   "last_updated": "<ISO_TIMESTAMP>",
   "history": [
-    {"event": "branch_created", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "specify_complete", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "clarifications_locked", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "plan_complete", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "tasks_complete", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "drift_analysis_passed", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "stage_backend_closed", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "pre_closure_review_approved", "timestamp": "<ISO_TIMESTAMP>"},
-    {"event": "stage_production_ready", "timestamp": "<ISO_TIMESTAMP>"}
+    { "event": "branch_created", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "specify_complete", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "clarifications_locked", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "plan_complete", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "tasks_complete", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "drift_analysis_passed", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "stage_backend_closed", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "pre_closure_review_approved", "timestamp": "<ISO_TIMESTAMP>" },
+    { "event": "stage_production_ready", "timestamp": "<ISO_TIMESTAMP>" }
   ]
 }
 ```

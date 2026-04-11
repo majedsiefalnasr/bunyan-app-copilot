@@ -13,6 +13,7 @@ Project → Phases → Tasks → Reports
 ## Workflow States
 
 ### Project Status
+
 ```
 Draft → Active → OnHold → Active → Completed
   ↓                                      ↓
@@ -20,6 +21,7 @@ Cancelled                           Archived
 ```
 
 ### Phase Status
+
 ```
 Pending → InProgress → Review → Approved
   ↓          ↓          ↓
@@ -27,6 +29,7 @@ Rejected  Paused    Rejected → InProgress
 ```
 
 ### Task Status
+
 ```
 Todo → InProgress → WaitingApproval → Approved → Done
   ↓       ↓              ↓
@@ -71,16 +74,16 @@ class ProjectStateMachine
 
 ## Role-Based Workflow Rules
 
-| Action | Customer | Contractor | Architect | Field Eng. | Admin |
-|--------|----------|------------|-----------|------------|-------|
-| Create Project | ✅ | ❌ | ❌ | ❌ | ✅ |
-| Assign Contractor | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Create Phase | ❌ | ✅ | ✅ | ❌ | ✅ |
-| Create Task | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Update Task Progress | ❌ | ✅ | ❌ | ✅ | ✅ |
-| Approve Task | ❌ | ❌ | ✅ | ❌ | ✅ |
-| Approve Phase | ✅ | ❌ | ✅ | ❌ | ✅ |
-| Upload Report | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Action               | Customer | Contractor | Architect | Field Eng. | Admin |
+| -------------------- | -------- | ---------- | --------- | ---------- | ----- |
+| Create Project       | ✅       | ❌         | ❌        | ❌         | ✅    |
+| Assign Contractor    | ❌       | ❌         | ❌        | ❌         | ✅    |
+| Create Phase         | ❌       | ✅         | ✅        | ❌         | ✅    |
+| Create Task          | ❌       | ✅         | ✅        | ✅         | ✅    |
+| Update Task Progress | ❌       | ✅         | ❌        | ✅         | ✅    |
+| Approve Task         | ❌       | ❌         | ✅        | ❌         | ✅    |
+| Approve Phase        | ✅       | ❌         | ✅        | ❌         | ✅    |
+| Upload Report        | ❌       | ✅         | ✅        | ✅         | ✅    |
 
 ## Workflow Integrity Rules
 

@@ -27,13 +27,13 @@
   "session_started_at": "2026-04-10T00:00:00Z",
   "last_updated": "2026-04-10T23:59:59Z",
   "step_timings": {
-    "specify": {"started_at": "2026-04-10T00:05:00Z", "completed_at": "2026-04-10T01:00:00Z"},
-    "clarify": {"started_at": "2026-04-10T01:05:00Z", "completed_at": "2026-04-10T02:00:00Z"},
-    "plan": {"started_at": "2026-04-10T02:05:00Z", "completed_at": "2026-04-10T03:00:00Z"},
-    "tasks": {"started_at": "2026-04-10T03:05:00Z", "completed_at": "2026-04-10T04:00:00Z"},
-    "analyze": {"started_at": "2026-04-10T04:05:00Z", "completed_at": "2026-04-10T08:00:00Z"},
-    "implement": {"started_at": "2026-04-10T08:05:00Z", "completed_at": "2026-04-10T09:00:00Z"},
-    "closure": {"started_at": "2026-04-10T10:30:00Z", "completed_at": "2026-04-10T11:00:00Z"}
+    "specify": { "started_at": "2026-04-10T00:05:00Z", "completed_at": "2026-04-10T01:00:00Z" },
+    "clarify": { "started_at": "2026-04-10T01:05:00Z", "completed_at": "2026-04-10T02:00:00Z" },
+    "plan": { "started_at": "2026-04-10T02:05:00Z", "completed_at": "2026-04-10T03:00:00Z" },
+    "tasks": { "started_at": "2026-04-10T03:05:00Z", "completed_at": "2026-04-10T04:00:00Z" },
+    "analyze": { "started_at": "2026-04-10T04:05:00Z", "completed_at": "2026-04-10T08:00:00Z" },
+    "implement": { "started_at": "2026-04-10T08:05:00Z", "completed_at": "2026-04-10T09:00:00Z" },
+    "closure": { "started_at": "2026-04-10T10:30:00Z", "completed_at": "2026-04-10T11:00:00Z" }
   },
   "external_step_timings": {
     "clarify": "immediate",
@@ -58,14 +58,14 @@
       "branch": "spec/001-project-initialization",
       "timestamp": "2026-04-10T00:00:00Z"
     },
-    {"event": "specify_complete", "timestamp": "2026-04-10T01:00:00Z"},
+    { "event": "specify_complete", "timestamp": "2026-04-10T01:00:00Z" },
     {
       "event": "clarify_completed",
       "step": "CLARIFY",
       "verdict": "PASS",
       "timestamp": "2026-04-10T06:00:00Z"
     },
-    {"event": "clarifications_locked", "timestamp": "2026-04-10T02:00:00Z"},
+    { "event": "clarifications_locked", "timestamp": "2026-04-10T02:00:00Z" },
     {
       "event": "plan_completed",
       "step": "PLAN",
@@ -73,8 +73,8 @@
       "verdict": "PASS",
       "timestamp": "2026-04-10T08:00:00Z"
     },
-    {"event": "plan_complete", "timestamp": "2026-04-10T03:00:00Z"},
-    {"event": "tasks_complete", "tasks_total": 36, "timestamp": "2026-04-10T04:00:00Z"},
+    { "event": "plan_complete", "timestamp": "2026-04-10T03:00:00Z" },
+    { "event": "tasks_complete", "tasks_total": 36, "timestamp": "2026-04-10T04:00:00Z" },
     {
       "event": "analyze_completed",
       "step": "ANALYZE",
@@ -82,7 +82,7 @@
       "verdicts": ["PASS", "PASS", "PASS", "PASS"],
       "timestamp": "2026-04-10T12:00:00Z"
     },
-    {"event": "drift_analysis_passed", "timestamp": "2026-04-10T08:00:00Z"},
+    { "event": "drift_analysis_passed", "timestamp": "2026-04-10T08:00:00Z" },
     {
       "event": "implement_completed",
       "step": "IMPLEMENT",
@@ -91,7 +91,7 @@
       "verdict": "PASS",
       "timestamp": "2026-04-10T22:00:00Z"
     },
-    {"event": "stage_backend_closed", "timestamp": "2026-04-10T09:00:00Z"},
+    { "event": "stage_backend_closed", "timestamp": "2026-04-10T09:00:00Z" },
     {
       "event": "validate_completed",
       "step": "VALIDATE",
@@ -102,7 +102,7 @@
       "verdict": "PASS",
       "timestamp": "2026-04-10T23:00:00Z"
     },
-    {"event": "pre_closure_review_approved", "timestamp": "2026-04-10T10:30:00Z"},
+    { "event": "pre_closure_review_approved", "timestamp": "2026-04-10T10:30:00Z" },
     {
       "event": "closure_completed",
       "step": "CLOSURE",
@@ -113,7 +113,7 @@
       "scope_deferred": "None",
       "timestamp": "2026-04-10T23:59:59Z"
     },
-    {"event": "stage_production_ready", "timestamp": "2026-04-10T11:00:00Z"},
+    { "event": "stage_production_ready", "timestamp": "2026-04-10T11:00:00Z" },
     {
       "event": "merge_note",
       "note": "Merged external workflow-state from bunyan-app-cursor AI",

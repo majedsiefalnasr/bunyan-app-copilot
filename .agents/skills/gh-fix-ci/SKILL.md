@@ -20,24 +20,28 @@ Debug and fix failing GitHub PR checks in GitHub Actions.
 ## Common Failure Categories
 
 ### Lint Failures
+
 ```bash
 gh run view <id> --log-failed | grep -A5 "error"
 # Fix: Run lint:fix locally, commit changes
 ```
 
 ### Test Failures
+
 ```bash
 gh run view <id> --log-failed | grep -A10 "FAIL"
 # Fix: Run failing test locally, debug, fix
 ```
 
 ### Build Failures
+
 ```bash
 gh run view <id> --log-failed | grep -A5 "error\|Error"
 # Fix: Usually dependency or type issues
 ```
 
 ### Type Errors
+
 ```bash
 gh run view <id> --log-failed | grep "TS[0-9]"
 # Fix: Add missing types, fix type mismatches

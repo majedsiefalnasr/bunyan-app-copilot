@@ -21,19 +21,23 @@ You are updating the project constitution at `.specify/memory/constitution.md`.
 Follow this execution flow:
 
 1. Load the existing constitution at `.specify/memory/constitution.md`.
+
    - Identify every placeholder token of the form `[ALL_CAPS_IDENTIFIER]`.
 
 2. Collect/derive values for placeholders:
+
    - If user input supplies a value, use it.
    - Otherwise infer from existing repo context.
    - `CONSTITUTION_VERSION` must increment according to semantic versioning.
 
 3. Draft the updated constitution content:
+
    - Replace every placeholder with concrete text.
    - Ensure each Principle section has: succinct name, rules, rationale.
    - Ensure Governance section lists amendment procedure, versioning, compliance.
 
 4. Consistency propagation checklist:
+
    - Read `.specify/templates/plan-template.md` for alignment
    - Read `.specify/templates/spec-template.md` for scope alignment
    - Read `.specify/templates/tasks-template.md` for task categorization

@@ -22,19 +22,19 @@ All API responses MUST follow this format:
 
 ## Error Code Registry
 
-| Code | HTTP | Description |
-|------|------|-------------|
-| `AUTH_INVALID_CREDENTIALS` | 401 | Invalid login credentials |
-| `AUTH_TOKEN_EXPIRED` | 401 | Authentication token expired |
-| `AUTH_UNAUTHORIZED` | 403 | Insufficient permissions |
-| `RBAC_ROLE_DENIED` | 403 | Role not allowed for this action |
-| `RESOURCE_NOT_FOUND` | 404 | Requested resource not found |
-| `VALIDATION_ERROR` | 422 | Input validation failed |
-| `WORKFLOW_INVALID_TRANSITION` | 422 | Invalid state transition |
-| `WORKFLOW_PREREQUISITES_UNMET` | 422 | Prerequisites not satisfied |
-| `PAYMENT_FAILED` | 422 | Payment processing failed |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `SERVER_ERROR` | 500 | Internal server error |
+| Code                           | HTTP | Description                      |
+| ------------------------------ | ---- | -------------------------------- |
+| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials        |
+| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired     |
+| `AUTH_UNAUTHORIZED`            | 403  | Insufficient permissions         |
+| `RBAC_ROLE_DENIED`             | 403  | Role not allowed for this action |
+| `RESOURCE_NOT_FOUND`           | 404  | Requested resource not found     |
+| `VALIDATION_ERROR`             | 422  | Input validation failed          |
+| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition         |
+| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites not satisfied      |
+| `PAYMENT_FAILED`               | 422  | Payment processing failed        |
+| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests                |
+| `SERVER_ERROR`                 | 500  | Internal server error            |
 
 ## Laravel Exception Handler
 

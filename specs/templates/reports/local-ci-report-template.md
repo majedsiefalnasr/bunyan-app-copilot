@@ -1,7 +1,6 @@
 # Local CI Report — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Generated:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Generated:** {{ISO_TIMESTAMP}}
 
 ## CI Simulation Results
 

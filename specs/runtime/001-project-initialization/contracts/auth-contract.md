@@ -39,12 +39,12 @@ Content-Type: application/json
 
 **Request Fields:**
 
-| Field | Type | Required | Constraints | Example |
-|-------|------|----------|-------------|---------|
-| `name` | string | Yes | Max 255 characters, supports Arabic | "محمد علي" |
-| `email` | string | Yes | Valid email, must be unique | "user@example.com" |
-| `password` | string | Yes | Min 8 chars, uppercase + digit | "SecurePass123!" |
-| `password_confirmation` | string | Yes | Must match `password` | "SecurePass123!" |
+| Field                   | Type   | Required | Constraints                         | Example            |
+| ----------------------- | ------ | -------- | ----------------------------------- | ------------------ |
+| `name`                  | string | Yes      | Max 255 characters, supports Arabic | "محمد علي"         |
+| `email`                 | string | Yes      | Valid email, must be unique         | "user@example.com" |
+| `password`              | string | Yes      | Min 8 chars, uppercase + digit      | "SecurePass123!"   |
+| `password_confirmation` | string | Yes      | Must match `password`               | "SecurePass123!"   |
 
 ### Response (Success)
 
@@ -72,13 +72,13 @@ Content-Type: application/json
 
 **Response Fields:**
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | boolean | Always `true` on success |
-| `data.user` | User object | Newly created user |
-| `data.token` | string | Bearer token for future requests |
-| `message` | string | Human-readable success message |
-| `errors` | object | Empty on success |
+| Field        | Type        | Description                      |
+| ------------ | ----------- | -------------------------------- |
+| `success`    | boolean     | Always `true` on success         |
+| `data.user`  | User object | Newly created user               |
+| `data.token` | string      | Bearer token for future requests |
+| `message`    | string      | Human-readable success message   |
+| `errors`     | object      | Empty on success                 |
 
 ### Response (Validation Error)
 
@@ -141,10 +141,10 @@ Content-Type: application/json
 
 **Request Fields:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `email` | string | Yes | Registered user email |
-| `password` | string | Yes | Account password (plaintext, HTTPS only) |
+| Field      | Type   | Required | Description                              |
+| ---------- | ------ | -------- | ---------------------------------------- |
+| `email`    | string | Yes      | Registered user email                    |
+| `password` | string | Yes      | Account password (plaintext, HTTPS only) |
 
 ### Response (Success)
 
@@ -224,10 +224,10 @@ Content-Type: application/json
 
 **Headers Required:**
 
-| Header | Value | Required |
-|--------|-------|----------|
-| `Authorization` | `Bearer {token}` | Yes |
-| `Content-Type` | `application/json` | Yes |
+| Header          | Value              | Required |
+| --------------- | ------------------ | -------- |
+| `Authorization` | `Bearer {token}`   | Yes      |
+| `Content-Type`  | `application/json` | Yes      |
 
 ### Response (Success)
 
@@ -366,6 +366,7 @@ Content-Type: application/json
 ### Token Storage (Frontend)
 
 **Recommended (localStorage):**
+
 ```javascript
 // After login
 localStorage.setItem('token', response.data.token);
@@ -374,9 +375,9 @@ localStorage.setItem('token', response.data.token);
 const token = localStorage.getItem('token');
 fetch('/api/v1/me', {
   headers: {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/json'
-  }
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+  },
 });
 
 // On logout
@@ -384,6 +385,7 @@ localStorage.removeItem('token');
 ```
 
 **Note:** For production, consider:
+
 - `sessionStorage` for shorter-lived tokens
 - Secure cookies (HttpOnly, SameSite) for token storage
 - Refresh token rotation
@@ -393,6 +395,7 @@ localStorage.removeItem('token');
 In STAGE_01, tokens do not expire by default (Sanctum allows indefinite tokens).
 
 **Future enhancement (STAGE_03+):**
+
 ```php
 $token = $user->createToken('auth', ['*'], now()->addHours(24));
 ```
@@ -412,13 +415,13 @@ Example: `1|UgF6K7Jx8nL3Qz9pM2vB5aS8tR4yW1xH`
 
 **Authentication-specific errors:**
 
-| HTTP Status | Error Code | Message | Example |
-|-------------|-----------|---------|---------|
-| 401 | `AUTH_INVALID` | Invalid credentials | "Email or password is incorrect" |
-| 401 | `AUTH_EXPIRED` | Token expired | "Token has expired" |
-| 401 | `AUTH_MISSING` | Missing token | "Authorization header missing" |
-| 403 | `RBAC_DENIED` | Insufficient role | "This action requires admin role" |
-| 422 | `VALIDATION_FAILED` | Validation error | Field-specific errors in `errors` object |
+| HTTP Status | Error Code          | Message             | Example                                  |
+| ----------- | ------------------- | ------------------- | ---------------------------------------- |
+| 401         | `AUTH_INVALID`      | Invalid credentials | "Email or password is incorrect"         |
+| 401         | `AUTH_EXPIRED`      | Token expired       | "Token has expired"                      |
+| 401         | `AUTH_MISSING`      | Missing token       | "Authorization header missing"           |
+| 403         | `RBAC_DENIED`       | Insufficient role   | "This action requires admin role"        |
+| 422         | `VALIDATION_FAILED` | Validation error    | Field-specific errors in `errors` object |
 
 **See `error-contract.md` for full error handling contract.**
 
@@ -429,6 +432,7 @@ Example: `1|UgF6K7Jx8nL3Qz9pM2vB5aS8tR4yW1xH`
 **Not implemented in STAGE_01** — deferred to STAGE_05+
 
 **Future configuration (STAGE_05):**
+
 ```php
 // Limit login attempts to 5 per minute per IP
 Route::post('/auth/login', [AuthController::class, 'login'])
@@ -456,15 +460,16 @@ Route::post('/auth/register', [AuthController::class, 'register'])
 ```
 
 **Client must include credentials:**
+
 ```javascript
 fetch('/api/v1/auth/login', {
   method: 'POST',
-  credentials: 'include',  // Include cookies if using cookie-based auth
+  credentials: 'include', // Include cookies if using cookie-based auth
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   },
-  body: JSON.stringify({ email, password })
+  body: JSON.stringify({ email, password }),
 });
 ```
 
@@ -507,12 +512,14 @@ curl -X POST http://localhost:8000/api/v1/auth/logout \
 ### Postman
 
 **Environment Variables:**
+
 ```
 base_url = http://localhost:8000
 token = (auto-set after login)
 ```
 
 **Collection:**
+
 ```json
 {
   "info": { "name": "Authentication" },
@@ -547,10 +554,10 @@ token = (auto-set after login)
 **API Version:** v1 (in URL: `/api/v1/`)
 
 **Breaking Changes Policy:**
+
 - New endpoints → new version or flag parameter
 - Removing endpoints → major version bump
 - Adding optional fields → no version bump
 - Changing response structure → major version bump
 
 **Future versions:** `/api/v2/`, `/api/v3/`, etc.
-

@@ -24,17 +24,20 @@ You **MUST** consider the user input before proceeding (if not empty).
 1. Run `.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list.
 
 2. **Check checklists status** (if FEATURE_DIR/checklists/ exists):
+
    - Scan all checklist files and count Total / Completed / Incomplete items
    - If any checklist is incomplete: STOP and ask user to proceed or halt
    - If all checklists are complete: proceed automatically
 
 3. Load and analyze the implementation context:
+
    - **REQUIRED**: Read tasks.md and plan.md
    - **IF EXISTS**: Read data-model.md, contracts/, research.md, quickstart.md
 
 4. **Project Setup Verification**: Create/verify ignore files based on project setup.
 
 5. **Task Execution Loop**: For each task in tasks.md:
+
    - Parse task requirements
    - Implement using TDD (Red-Green-Refactor)
    - Run tests after each task
@@ -42,6 +45,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Commit after logical groups of tasks
 
 6. **Post-Implementation**:
+
    - Run full test suite
    - Run lint checks
    - Verify all tasks marked complete

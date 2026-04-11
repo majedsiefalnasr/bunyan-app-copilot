@@ -34,18 +34,21 @@ Bunyan follows a **Clean Architecture** pattern with clear layer separation.
 ## Domain Separation
 
 ### Construction Management Domain
+
 - Projects, Phases, Tasks
 - Workflow engine + state machines
 - Reports, documents, progress tracking
 - Role-based access control
 
 ### E-Commerce Domain
+
 - Products, Categories
 - Cart, Orders, Payments
 - Inventory management
 - Delivery tracking
 
 ### Shared Domain
+
 - Authentication (Laravel Sanctum)
 - User management + RBAC
 - Notifications
@@ -55,6 +58,7 @@ Bunyan follows a **Clean Architecture** pattern with clear layer separation.
 ## Module Registration
 
 New modules must be documented in:
+
 1. `docs/architecture/ARCHITECTURE_MAP.json`
 2. Relevant ADR if new patterns introduced
 3. Updated AGENTS.md if new governance rules

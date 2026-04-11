@@ -12,6 +12,7 @@
 Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization) with full AUTOPILOT mode. Generated 7 comprehensive planning artifacts totaling 50+ pages of architectural and implementation guidance.
 
 **Planning Coverage:**
+
 - ✅ Phase 0 — Research & Context (technical foundation complete)
 - ✅ Phase 1 — Design & Specification (interfaces & contracts finalized)
 - ✅ Phase 2 — Detailed Technical Tasks (34+ concrete tasks with sequencing)
@@ -26,6 +27,7 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 **Status:** ✅ Complete
 
 **Contents:**
+
 - Executive summary with key design decisions
 - Phase 0: Monorepo structure rationale, tech stack justification, architecture diagrams, dependency graphs
 - Phase 1: Backend layer design (controllers, services, repositories, models, middleware)
@@ -40,6 +42,7 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 - Validation checklist (18 items)
 
 **Key Decisions Captured:**
+
 - Service→Repository→Model layering enforced
 - Default-protected RBAC (all routes protected by default)
 - Monorepo atomic commits
@@ -55,22 +58,23 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Contents:**
 
-| Topic | Coverage | Detail Level |
-|-------|----------|--------------|
-| Laravel 11 Installation | Full | System requirements, scaffolding, environment setup |
-| Sanctum Installation | Full | Package installation, middleware registration |
-| Nuxt 3 + Nuxt UI | Full | Module installation, Tailwind v4 configuration |
-| RTL Support | Full | Logical properties, HTML dir attribute, i18n integration |
-| Docker Compose | Full | MySQL, Redis services, health checks, networking |
-| GitHub Actions | Full | Pre-commit guard workflow, matrix testing |
-| Husky + lint-staged | Full | Installation, configuration, pre-commit hooks |
-| Sanctum Auth Flow | Full | Token generation, CORS, client integration |
-| RBAC Authorization | Full | Policy classes, middleware, gate checking |
-| Vitest Testing | Full | Configuration, unit tests, coverage |
-| Playwright E2E | Full | Configuration, smoke test example |
-| Nuxt i18n | Full | Module setup, translation files, composables |
+| Topic                   | Coverage | Detail Level                                             |
+| ----------------------- | -------- | -------------------------------------------------------- |
+| Laravel 11 Installation | Full     | System requirements, scaffolding, environment setup      |
+| Sanctum Installation    | Full     | Package installation, middleware registration            |
+| Nuxt 3 + Nuxt UI        | Full     | Module installation, Tailwind v4 configuration           |
+| RTL Support             | Full     | Logical properties, HTML dir attribute, i18n integration |
+| Docker Compose          | Full     | MySQL, Redis services, health checks, networking         |
+| GitHub Actions          | Full     | Pre-commit guard workflow, matrix testing                |
+| Husky + lint-staged     | Full     | Installation, configuration, pre-commit hooks            |
+| Sanctum Auth Flow       | Full     | Token generation, CORS, client integration               |
+| RBAC Authorization      | Full     | Policy classes, middleware, gate checking                |
+| Vitest Testing          | Full     | Configuration, unit tests, coverage                      |
+| Playwright E2E          | Full     | Configuration, smoke test example                        |
+| Nuxt i18n               | Full     | Module setup, translation files, composables             |
 
 **Research Quality:**
+
 - All 10 topics fully resolved (zero "TBD" items)
 - Installation commands verified against latest docs
 - Code examples provided for each topic
@@ -85,20 +89,21 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Contents:**
 
-| Artifact | Coverage | Status |
-|----------|----------|--------|
-| users table schema | Complete | Column definitions, indexes, constraints |
-| personal_access_tokens | Complete | Sanctum token storage |
-| Eloquent User model | Complete | Methods, scopes, relationships (future) |
-| TypeScript types | Complete | User, UserRole, request/response interfaces |
-| Form Requests | Complete | RegisterRequest, LoginRequest validation |
-| API Resources | Complete | UserResource formatting |
-| UserRole enum | Complete | 5 roles with labels and methods |
-| Migration file | Complete | Forward + rollback SQL |
-| User factory | Complete | Test data generation |
-| Database seeder | Complete | Sample data setup |
+| Artifact               | Coverage | Status                                      |
+| ---------------------- | -------- | ------------------------------------------- |
+| users table schema     | Complete | Column definitions, indexes, constraints    |
+| personal_access_tokens | Complete | Sanctum token storage                       |
+| Eloquent User model    | Complete | Methods, scopes, relationships (future)     |
+| TypeScript types       | Complete | User, UserRole, request/response interfaces |
+| Form Requests          | Complete | RegisterRequest, LoginRequest validation    |
+| API Resources          | Complete | UserResource formatting                     |
+| UserRole enum          | Complete | 5 roles with labels and methods             |
+| Migration file         | Complete | Forward + rollback SQL                      |
+| User factory           | Complete | Test data generation                        |
+| Database seeder        | Complete | Sample data setup                           |
 
 **Database Design Quality:**
+
 - UTF-8MB4 collation for Arabic support
 - Proper indexing (email, role, created_at)
 - Role enum with 5 predefined values
@@ -113,14 +118,15 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Endpoints Documented:**
 
-| Route | Method | Purpose | Auth | Status |
-|-------|--------|---------|------|--------|
-| /api/v1/auth/register | POST | Create user | Public | ✅ Documented |
-| /api/v1/auth/login | POST | Authenticate | Public | ✅ Documented |
-| /api/v1/auth/logout | POST | Revoke token | Required | ✅ Documented |
-| /api/v1/me | GET | Current user | Required | ✅ Documented |
+| Route                 | Method | Purpose      | Auth     | Status        |
+| --------------------- | ------ | ------------ | -------- | ------------- |
+| /api/v1/auth/register | POST   | Create user  | Public   | ✅ Documented |
+| /api/v1/auth/login    | POST   | Authenticate | Public   | ✅ Documented |
+| /api/v1/auth/logout   | POST   | Revoke token | Required | ✅ Documented |
+| /api/v1/me            | GET    | Current user | Required | ✅ Documented |
 
 **Contract Quality:**
+
 - Request/response examples for success + error cases
 - Field validation constraints documented
 - HTTP status codes specified
@@ -149,18 +155,19 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Error Scenarios with Examples:**
 
-| HTTP Status | Scenario | Example Included |
-|-------------|----------|------------------|
-| 422 | Validation failed | ✅ Email + password validation |
-| 401 | Missing/invalid token | ✅ Auth + token invalid |
-| 403 | Insufficient role | ✅ RBAC denial |
-| 404 | Resource not found | ✅ User not found |
-| 409 | Business rule conflict | ✅ Duplicate email |
-| 500 | Server error | ✅ No stack trace exposure |
-| 429 | Rate limited | ✅ Retry-After header |
-| 400 | Malformed request | ✅ Invalid JSON |
+| HTTP Status | Scenario               | Example Included               |
+| ----------- | ---------------------- | ------------------------------ |
+| 422         | Validation failed      | ✅ Email + password validation |
+| 401         | Missing/invalid token  | ✅ Auth + token invalid        |
+| 403         | Insufficient role      | ✅ RBAC denial                 |
+| 404         | Resource not found     | ✅ User not found              |
+| 409         | Business rule conflict | ✅ Duplicate email             |
+| 500         | Server error           | ✅ No stack trace exposure     |
+| 429         | Rate limited           | ✅ Retry-After header          |
+| 400         | Malformed request      | ✅ Invalid JSON                |
 
 **Implementation Provided:**
+
 - Global exception handler (Laravel)
 - Base response trait (responses)
 - Frontend composable for error handling
@@ -186,6 +193,7 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 10. **Common Commands** — Reference for 25+ frequently used commands
 
 **Developer Experience:**
+
 - Time estimate: ~30 minutes for full setup
 - Step-by-step instructions with expected outputs
 - Multiple OS support (macOS, Linux, Windows/WSL)
@@ -220,12 +228,14 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 ## Governance Alignment
 
 **Bunyan Architecture Compliance:**
+
 - ✅ **AGENTS.md** → All rules enforced (RBAC non-negotiable, error contract binding)
 - ✅ **DESIGN.md** → Geist fonts, shadow-as-border, RTL Tailwind logical properties
 - ✅ **AI_ENGINEERING_RULES.md** → Layering pattern enforced, service discipline
 - ✅ **STAGE_LIFECYCLE_POLICY.md** → Stage status progressed OPEN → PLAN_COMPLETE
 
 **ADR Compliance:**
+
 - ✅ Service layer instantiation via constructor injection
 - ✅ Repository pattern prevents N+1 queries
 - ✅ RBAC middleware default-protected
@@ -235,16 +245,16 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 ## Key Design Decisions
 
-| Decision | Rationale | Implementation Impact |
-|----------|-----------|----------------------|
-| **Monorepo Structure** | Atomic commits, unified CI/CD | +1 setup step, shared .github/workflows |
-| **Service→Repo→Model** | SOLID principles, testability | +1 file per feature, -50% defects |
-| **Default-Protected RBAC** | Fail-safe security | Explicit allow-list required |
-| **Nuxt UI + Tailwind v4** | RTL-native, fast iteration | Pre-built components, consistent UX |
-| **Docker Compose local dev** | No manual service setup | One `docker-compose up -d` command |
-| **Husky pre-commit** | CI shifts left | 1-2% slow down on git commit |
-| **Bearer tokens (Sanctum)** | Stateless API | No cookie compatibility (SPA OK) |
-| **UTF-8MB4 collation** | Arabic character support | All tables inherit, future emoji-ready |
+| Decision                     | Rationale                     | Implementation Impact                   |
+| ---------------------------- | ----------------------------- | --------------------------------------- |
+| **Monorepo Structure**       | Atomic commits, unified CI/CD | +1 setup step, shared .github/workflows |
+| **Service→Repo→Model**       | SOLID principles, testability | +1 file per feature, -50% defects       |
+| **Default-Protected RBAC**   | Fail-safe security            | Explicit allow-list required            |
+| **Nuxt UI + Tailwind v4**    | RTL-native, fast iteration    | Pre-built components, consistent UX     |
+| **Docker Compose local dev** | No manual service setup       | One `docker-compose up -d` command      |
+| **Husky pre-commit**         | CI shifts left                | 1-2% slow down on git commit            |
+| **Bearer tokens (Sanctum)**  | Stateless API                 | No cookie compatibility (SPA OK)        |
+| **UTF-8MB4 collation**       | Arabic character support      | All tables inherit, future emoji-ready  |
 
 ---
 
@@ -252,14 +262,14 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Implementation Timeline:**
 
-| Phase | Tasks | Estimated Time | Parallel | Total |
-|-------|-------|-----------------|----------|-------|
-| **INIT** | 3 scaffold tasks | 15-20m each | ✅ Yes | ~20m |
-| **CONFIG** | 9 config tasks | 10-15m each | ✅ Yes (per layer) | ~40m |
-| **BUILD** | 12 implementation tasks | 15-30m each | ✅ Yes (backend ↔ frontend) | ~60m |
-| **VALIDATE** | 10 test + verification tasks | 10-30m each | ❌ Sequential | ~45m |
-| **COMMIT** | Git + CI checks | 10-15m | ❌ Sequential | ~15m |
-| **Total (Parallelized)** | — | — | — | **~80 minutes** |
+| Phase                    | Tasks                        | Estimated Time | Parallel                    | Total           |
+| ------------------------ | ---------------------------- | -------------- | --------------------------- | --------------- |
+| **INIT**                 | 3 scaffold tasks             | 15-20m each    | ✅ Yes                      | ~20m            |
+| **CONFIG**               | 9 config tasks               | 10-15m each    | ✅ Yes (per layer)          | ~40m            |
+| **BUILD**                | 12 implementation tasks      | 15-30m each    | ✅ Yes (backend ↔ frontend) | ~60m            |
+| **VALIDATE**             | 10 test + verification tasks | 10-30m each    | ❌ Sequential               | ~45m            |
+| **COMMIT**               | Git + CI checks              | 10-15m         | ❌ Sequential               | ~15m            |
+| **Total (Parallelized)** | —                            | —              | —                           | **~80 minutes** |
 
 **Team Configuration:** 2-3 developers (one per layer: backend, frontend, DevOps)
 
@@ -271,26 +281,26 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 
 **Downstream Dependencies:**
 
-| Stage | Title | Dependency | Impact |
-|-------|-------|-----------|--------|
-| STAGE_02 | Database Schema | Migration structure, Eloquent patterns | Extends users table |
-| STAGE_03 | Authentication | Sanctum scaffold, User model | Email verification, password reset |
-| STAGE_04 | RBAC System | Middleware, policies from this stage | Permission definitions per role |
-| STAGE_06 | API Foundation | Base controller, response format | All API endpoints inherit |
-| STAGE_12–34 | All Features | Models, services, repos | Extension points ready |
+| Stage       | Title           | Dependency                             | Impact                             |
+| ----------- | --------------- | -------------------------------------- | ---------------------------------- |
+| STAGE_02    | Database Schema | Migration structure, Eloquent patterns | Extends users table                |
+| STAGE_03    | Authentication  | Sanctum scaffold, User model           | Email verification, password reset |
+| STAGE_04    | RBAC System     | Middleware, policies from this stage   | Permission definitions per role    |
+| STAGE_06    | API Foundation  | Base controller, response format       | All API endpoints inherit          |
+| STAGE_12–34 | All Features    | Models, services, repos                | Extension points ready             |
 
 ---
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|-----------|
-| PHP/Node version mismatch | Medium | HIGH | .nvmrc + php-version in Composer |
-| Docker networking issues | Low | MEDIUM | Docker Compose v2.0+ health checks |
-| CORS misconfiguration | Medium | MEDIUM | Documented in error-contract.md |
-| Missing dependent packages | Low | MEDIUM | composer.lock + package-lock.json committed |
-| TypeScript strict mode failures | Medium | LOW | gradual adoption, tsconfig baseUrl |
-| RTL CSS bugs with Tailwind v4 | Low | MEDIUM | Logical properties testing on ci |
+| Risk                            | Likelihood | Impact | Mitigation                                  |
+| ------------------------------- | ---------- | ------ | ------------------------------------------- |
+| PHP/Node version mismatch       | Medium     | HIGH   | .nvmrc + php-version in Composer            |
+| Docker networking issues        | Low        | MEDIUM | Docker Compose v2.0+ health checks          |
+| CORS misconfiguration           | Medium     | MEDIUM | Documented in error-contract.md             |
+| Missing dependent packages      | Low        | MEDIUM | composer.lock + package-lock.json committed |
+| TypeScript strict mode failures | Medium     | LOW    | gradual adoption, tsconfig baseUrl          |
+| RTL CSS bugs with Tailwind v4   | Low        | MEDIUM | Logical properties testing on ci            |
 
 ---
 
@@ -344,6 +354,7 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 **Ready for:** `speckit.tasks` (generate GitHub issues) → `speckit.implement` (execution)
 
 **Quality Metrics:**
+
 - 0 "TBD" items (100% specification complete)
 - 50+ pages of documentation
 - 6 production-grade artifacts
@@ -355,4 +366,3 @@ Successfully executed speckit.plan workflow for STAGE_01 (Project Initialization
 **Report Prepared By:** speckit.plan (AUTOPILOT)  
 **Report Generated:** 2026-04-10T11:00:00Z  
 **Next Workflow Step:** `speckit.tasks` (Task Generation)
-

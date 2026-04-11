@@ -1,9 +1,6 @@
 # Tasks — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Based on:** `specs/runtime/{{STAGE_DIR_NAME}}/plan.md`
-> **Created:** {{ISO_TIMESTAMP}}
-> **Total Tasks:** {{TASKS_TOTAL}}
+> **Phase:** {{PHASE_NAME}} > **Based on:** `specs/runtime/{{STAGE_DIR_NAME}}/plan.md` > **Created:** {{ISO_TIMESTAMP}} > **Total Tasks:** {{TASKS_TOTAL}}
 
 ## Legend
 

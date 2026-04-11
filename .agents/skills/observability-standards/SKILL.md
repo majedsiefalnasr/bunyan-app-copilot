@@ -8,6 +8,7 @@ description: Structured logging, correlation IDs, monitoring
 ## Structured Logging
 
 ### Backend (Laravel)
+
 ```php
 use Illuminate\Support\Facades\Log;
 
@@ -27,6 +28,7 @@ Log::error('Payment failed', [
 ```
 
 ### Log Channels
+
 ```php
 // config/logging.php
 'channels' => [

@@ -25,19 +25,20 @@ Before starting, ensure you have:
 
 ### System Requirements
 
-| Tool | Version | Installation |
-|------|---------|--------------|
-| Git | Latest | `git --version` |
-| PHP | 8.2+ | `php -v` |
-| Composer | Latest | `composer --version` |
-| Node.js | 18+ | `node -v` |
-| npm | 9+ | `npm -v` |
-| Docker | Latest | `docker --version` |
-| Docker Compose | 2.0+ | `docker-compose --version` |
+| Tool           | Version | Installation               |
+| -------------- | ------- | -------------------------- |
+| Git            | Latest  | `git --version`            |
+| PHP            | 8.2+    | `php -v`                   |
+| Composer       | Latest  | `composer --version`       |
+| Node.js        | 18+     | `node -v`                  |
+| npm            | 9+      | `npm -v`                   |
+| Docker         | Latest  | `docker --version`         |
+| Docker Compose | 2.0+    | `docker-compose --version` |
 
 ### Installation Guides
 
 **macOS:**
+
 ```bash
 # Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -53,6 +54,7 @@ brew install node
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 # Update package manager
 sudo apt update && sudo apt upgrade -y
@@ -75,6 +77,7 @@ sudo usermod -aG docker $USER
 ```
 
 **Windows (WSL2 recommended):**
+
 ```powershell
 # Enable WSL2
 wsl --install
@@ -255,7 +258,7 @@ npm list @nuxt/ui
 
 cat nuxt.config.ts | grep -i "runtimeConfig\|apiBaseUrl"
 
-# Expected: 
+# Expected:
 #   runtimeConfig: {
 #     public: {
 #       apiBaseUrl: 'http://localhost:8000'
@@ -324,7 +327,7 @@ docker-compose ps
 
 # Expected:
 # NAME          STATUS
-# bunyan-mysql  Up  
+# bunyan-mysql  Up
 # bunyan-redis  Up
 
 # Test database connection
@@ -437,6 +440,7 @@ curl -X GET http://localhost:8000/api/v1/me \
 **Error:** `Address already in use (cannot bind to 127.0.0.1:8000)`
 
 **Solution:**
+
 ```bash
 # Find process using port
 lsof -i :8000
@@ -453,6 +457,7 @@ php artisan serve --port=8001
 **Error:** `SQLSTATE[HY000]: General error: 2002 No such file or directory`
 
 **Solution:**
+
 ```bash
 # 1. Verify MySQL is running
 docker-compose ps mysql
@@ -472,6 +477,7 @@ php artisan migrate:refresh --seed
 **Error:** `ERR! code ERESOLVE, ERR! ERESOLVE unable to resolve dependency tree`
 
 **Solution:**
+
 ```bash
 # Use legacy peer deps flag
 npm install --legacy-peer-deps
@@ -487,6 +493,7 @@ npm install
 **Error:** `Class not found` or `Cannot redeclare`
 
 **Solution:**
+
 ```bash
 # Regenerate autoload
 cd backend
@@ -502,6 +509,7 @@ composer install
 **Error:** `Access to XMLHttpRequest from origin 'http://localhost:3000' has been blocked by CORS policy`
 
 **Solution:**
+
 ```bash
 # 1. Verify backend .env includes frontend URL:
 grep SANCTUM_STATEFUL_DOMAINS backend/.env
@@ -519,6 +527,7 @@ grep SANCTUM_STATEFUL_DOMAINS backend/.env
 **Error:** `Cannot find module '@nuxt/ui' or its corresponding type declarations`
 
 **Solution:**
+
 ```bash
 # 1. Verify installation
 npm list @nuxt/ui
@@ -538,6 +547,7 @@ npm run typecheck
 **Error:** `Error: Cannot connect to Docker daemon`
 
 **Solution:**
+
 ```bash
 # 1. On macOS, start Docker Desktop app
 # Then retry:
@@ -558,6 +568,7 @@ docker --version
 ### Making Changes
 
 1. Create feature branch:
+
    ```bash
    git checkout -b feature/my-feature
    ```
@@ -565,15 +576,17 @@ docker --version
 2. Make changes to `backend/` or `frontend/`
 
 3. Run tests and linters:
+
    ```bash
    # Backend
    cd backend && composer run lint && composer run test
-   
+
    # Frontend
    cd frontend && npm run lint && npm run test
    ```
 
 4. Commit changes:
+
    ```bash
    git add .
    git commit -m "feat: add feature"
@@ -587,11 +600,13 @@ docker --version
 ### Git Hooks (Pre-commit)
 
 Husky hooks automatically run before each commit:
+
 - PHP-CS-Fixer (backend)
 - ESLint (frontend)
 - TypeScript (frontend)
 
 If hooks fail, fix issues and retry:
+
 ```bash
 npm run lint:fix  # Auto-fix linting issues
 composer run lint:fix  # Auto-fix PHP issues
@@ -606,22 +621,26 @@ git commit -m "fix: resolve linting"
 After successful setup:
 
 1. **Read the Documentation:**
+
    - [DESIGN.md](../../DESIGN.md) — Visual design system
    - [AGENTS.md](../../AGENTS.md) — AI-backed development workflow
    - [specs/phases/](../../specs/phases/) — Stage-by-stage plan
 
 2. **Explore the Codebase:**
+
    - Backend: `backend/app/` — Controllers, Services, Models
    - Frontend: `frontend/pages/`, `frontend/components/` — Vue components
    - Tests: `backend/tests/`, `frontend/tests/` — Test examples
 
 3. **Run Your First Test:**
+
    ```bash
    cd backend && composer run test
    cd frontend && npm run test
    ```
 
 4. **Start Development:**
+
    - Create a feature branch
    - Follow the architecture guidelines in [AGENTS.md](../../AGENTS.md)
    - Leverage **GitHub Copilot** for code generation
@@ -704,17 +723,20 @@ docker-compose up -d
 ## Support & Resources
 
 **Documentation:**
+
 - [PROJECT_CONTEXT_PRIMER.md](../../docs/PROJECT_CONTEXT_PRIMER.md)
 - [AI_BOOTSTRAP.md](../../docs/ai/AI_BOOTSTRAP.md)
 - [DESIGN.md](../../DESIGN.md)
 
 **Tools:**
+
 - Laravel: https://laravel.com/docs
 - Nuxt: https://nuxt.com/docs
 - Nuxt UI: https://ui.nuxt.com
 - Tailwind CSS: https://tailwindcss.com/docs
 
 **Getting Help:**
+
 - Check [Troubleshooting](#troubleshooting) section
 - Review GitHub Issues
 - Ask in #bunyan-dev Slack channel
@@ -722,4 +744,3 @@ docker-compose up -d
 ---
 
 **Happy coding! 🚀**
-

@@ -8,17 +8,18 @@ description: Vue 3 Composition API patterns
 ## Vue 3 Composition API Patterns
 
 ### Component Template
+
 ```vue
 <script setup lang="ts">
 interface Props {
-  title: string
-  status: ProjectStatus
+  title: string;
+  status: ProjectStatus;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 const emit = defineEmits<{
-  statusChange: [newStatus: ProjectStatus]
-}>()
+  statusChange: [newStatus: ProjectStatus];
+}>();
 </script>
 
 <template>
@@ -30,35 +31,37 @@ const emit = defineEmits<{
 ```
 
 ### Composable Pattern
+
 ```typescript
 export function useProject(projectId: Ref<number>) {
-  const { apiFetch } = useApi()
-  const project = ref<Project | null>(null)
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const { apiFetch } = useApi();
+  const project = ref<Project | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
 
   async function fetchProject() {
-    loading.value = true
-    error.value = null
+    loading.value = true;
+    error.value = null;
     try {
-      const response = await apiFetch(`/api/v1/projects/${projectId.value}`)
-      project.value = response.data
+      const response = await apiFetch(`/api/v1/projects/${projectId.value}`);
+      project.value = response.data;
     } catch (e) {
-      error.value = (e as Error).message
+      error.value = (e as Error).message;
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }
 
-  watch(projectId, fetchProject, { immediate: true })
+  watch(projectId, fetchProject, { immediate: true });
 
-  return { project, loading, error, refetch: fetchProject }
+  return { project, loading, error, refetch: fetchProject };
 }
 ```
 
 ### Reactive Destructuring (Vue 3.5+)
+
 ```typescript
-const { title, status } = defineProps<Props>()
+const { title, status } = defineProps<Props>();
 // title and status are reactive refs
 ```
 

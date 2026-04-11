@@ -1,7 +1,6 @@
 # Requirements Checklist — {{STAGE_NAME}}
 
-> **Phase:** {{PHASE_NAME}}
-> **Created:** {{ISO_TIMESTAMP}}
+> **Phase:** {{PHASE_NAME}} > **Created:** {{ISO_TIMESTAMP}}
 
 ## Architecture Compliance
 

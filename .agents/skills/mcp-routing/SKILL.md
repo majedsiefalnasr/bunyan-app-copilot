@@ -8,21 +8,25 @@ description: MCP tool routing and selection policy
 ## Auto-Trigger Rules
 
 ### Context7 MCP
+
 **When**: Querying third-party library documentation
 **Trigger**: Laravel docs, Nuxt.js docs, Vue 3 docs, Bootstrap docs, Eloquent docs, VeeValidate, Zod, Pinia
 **Action**: Auto-invoke for accurate, versioned documentation
 
 ### GitHub MCP
+
 **When**: PR/issue/branch state checks
 **Trigger**: PR creation, issue references, branch management
 **Action**: Auto-invoke for repository operations
 
 ### GitNexus MCP
+
 **When**: Internal codebase context, impact analysis, refactors
 **Trigger**: Dependency tracing, blast radius analysis, architectural discovery
 **Action**: Auto-invoke for knowledge graph queries
 
 ### Database MCP (if configured)
+
 **When**: Schema inspection, query validation
 **Trigger**: Schema verification, query plan analysis
 **Action**: Read-first, no destructive SQL

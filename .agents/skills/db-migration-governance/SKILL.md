@@ -8,6 +8,7 @@ description: MySQL migration governance, naming, safety
 ## Database: MySQL 8.x
 
 ### Migration Naming Convention
+
 ```
 YYYY_MM_DD_HHMMSS_verb_noun_table.php
 ```
@@ -15,6 +16,7 @@ YYYY_MM_DD_HHMMSS_verb_noun_table.php
 **Verbs**: `create`, `add`, `modify`, `drop`, `rename`
 
 ### Examples
+
 ```
 2024_01_15_100000_create_users_table.php
 2024_01_15_100001_create_projects_table.php
@@ -68,15 +70,15 @@ return new class extends Migration
 
 Before generating a migration, AI must assess:
 
-| Operation | Risk Level | Lock Duration |
-|-----------|-----------|---------------|
-| CREATE TABLE | Low | Minimal |
-| ADD COLUMN (nullable) | Low | Minimal |
-| ADD COLUMN (default) | Medium | Table copy on MySQL < 8 |
-| ADD INDEX | Medium | Can be slow on large tables |
-| MODIFY COLUMN | High | Full table rewrite |
-| DROP COLUMN | Medium | Table rewrite |
-| RENAME COLUMN | Medium | Brief lock |
+| Operation             | Risk Level | Lock Duration               |
+| --------------------- | ---------- | --------------------------- |
+| CREATE TABLE          | Low        | Minimal                     |
+| ADD COLUMN (nullable) | Low        | Minimal                     |
+| ADD COLUMN (default)  | Medium     | Table copy on MySQL < 8     |
+| ADD INDEX             | Medium     | Can be slow on large tables |
+| MODIFY COLUMN         | High       | Full table rewrite          |
+| DROP COLUMN           | Medium     | Table rewrite               |
+| RENAME COLUMN         | Medium     | Brief lock                  |
 
 For **High risk** operations on production tables with >100k rows, AI must flag and suggest online schema change or batching strategy.
 

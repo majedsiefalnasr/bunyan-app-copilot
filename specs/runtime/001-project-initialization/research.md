@@ -27,6 +27,7 @@
 
 **PHP Version:** 8.2+  
 **Extensions Required:**
+
 - PDO (database abstraction)
 - OpenSSL (encryption)
 - Tokenizer (code parsing)
@@ -36,6 +37,7 @@
 - BCMath (arbitrary precision)
 
 **Installation verification:**
+
 ```bash
 php -v       # Should show PHP 8.2 or higher
 php -m       # Should contain: pdo_mysql, openssl, tokenizer, xml, ctype, json
@@ -61,6 +63,7 @@ php artisan migrate:status
 ### 1.3 Environment Configuration
 
 **`.env.example` template:**
+
 ```env
 APP_NAME=Bunyan
 APP_ENV=local
@@ -108,6 +111,7 @@ php artisan migrate
 ```
 
 **Sanctum middleware registration** (`app/Http/Kernel.php`):
+
 ```php
 protected $middlewareGroups = [
     'api' => [
@@ -257,11 +261,7 @@ npm run dev
 ```javascript
 // tailwind.config.js
 export default {
-  content: [
-    './components/**/*.{vue,js}',
-    './pages/**/*.{vue,js}',
-    './layouts/**/*.{vue,js}',
-  ],
+  content: ['./components/**/*.{vue,js}', './pages/**/*.{vue,js}', './layouts/**/*.{vue,js}'],
   theme: {
     extend: {
       fontFamily: {
@@ -274,7 +274,7 @@ export default {
     },
   },
   plugins: [],
-}
+};
 ```
 
 ### 2.4 Nuxt Config with Modules
@@ -282,28 +282,24 @@ export default {
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/ui',
-    '@nuxtjs/i18n',
-    '@pinia/nuxt',
-  ],
-  
+  modules: ['@nuxt/ui', '@nuxtjs/i18n', '@pinia/nuxt'],
+
   imports: {
     autoImport: true,
   },
-  
+
   typescript: {
     strict: true,
   },
-  
+
   css: ['~/assets/styles/globals.css'],
-  
+
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000',
     },
   },
-})
+});
 ```
 
 ---
@@ -313,33 +309,31 @@ export default defineNuxtConfig({
 ### 3.1 Tailwind Logical Properties
 
 **What are logical properties?**
+
 - Instead of `left`, `right`, `margin-left`, etc., use directional-agnostic properties
 - `margin-inline-start` = `margin-left` in LTR, `margin-right` in RTL
 - `padding-block` = vertical padding (works same in both directions)
 
 **Core logical properties:**
 
-| Physical (LTR) | Logical | Behavior |
-|---|---|---|
-| `margin-left` | `margin-inline-start` | Start edge (left in LTR, right in RTL) |
-| `margin-right` | `margin-inline-end` | End edge (right in LTR, left in RTL) |
-| `padding-left` | `padding-inline-start` | Start padding |
-| `padding-right` | `padding-inline-end` | End padding |
-| `top` | `inset-block-start` | Block start (top always) |
-| `width` | `inline-size` | Width (horizontal) |
-| `height` | `block-size` | Height (vertical) |
+| Physical (LTR)  | Logical                | Behavior                               |
+| --------------- | ---------------------- | -------------------------------------- |
+| `margin-left`   | `margin-inline-start`  | Start edge (left in LTR, right in RTL) |
+| `margin-right`  | `margin-inline-end`    | End edge (right in LTR, left in RTL)   |
+| `padding-left`  | `padding-inline-start` | Start padding                          |
+| `padding-right` | `padding-inline-end`   | End padding                            |
+| `top`           | `inset-block-start`    | Block start (top always)               |
+| `width`         | `inline-size`          | Width (horizontal)                     |
+| `height`        | `block-size`           | Height (vertical)                      |
 
 **Tailwind v4 updates:**
+
 ```html
 <!-- BEFORE (LTR-hardcoded) ❌ -->
-<div class="ml-4 pl-8 text-left border-r-2">
-  Content
-</div>
+<div class="ml-4 pl-8 text-left border-r-2">Content</div>
 
 <!-- AFTER (RTL-compatible) ✅ -->
-<div class="ms-4 ps-8 text-start border-e-2">
-  Content
-</div>
+<div class="ms-4 ps-8 text-start border-e-2">Content</div>
 
 <!-- Tailwind v4 mapping:
   - ml → ms (margin-start)
@@ -362,10 +356,10 @@ export default defineNuxtConfig({
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+  import { useI18n } from 'vue-i18n';
 
-const { locale } = useI18n()
-const isArabic = computed(() => locale.value === 'ar')
+  const { locale } = useI18n();
+  const isArabic = computed(() => locale.value === 'ar');
 </script>
 ```
 
@@ -375,31 +369,27 @@ const isArabic = computed(() => locale.value === 'ar')
 // tailwind.config.ts
 export default {
   // Support both LTR and RTL
-  content: [
-    './components/**/*.{vue,js}',
-    './pages/**/*.{vue,js}',
-    './layouts/**/*.{vue,js}',
-  ],
-  
+  content: ['./components/**/*.{vue,js}', './pages/**/*.{vue,js}', './layouts/**/*.{vue,js}'],
+
   // Logical properties plugin (auto-convert LTR → RTL)
   plugins: [],
-  
+
   // Ensure logical properties work
   safelist: [
     // Force include logical property variants if needed
     // Usually not required - Tailwind handles automatically
   ],
-  
+
   theme: {
     extend: {
       spacing: {
         // Use for both directions
-        'inline-4': '1rem',      // margin/padding horizontal
-        'block-4': '1rem',       // margin/padding vertical
+        'inline-4': '1rem', // margin/padding horizontal
+        'block-4': '1rem', // margin/padding vertical
       },
     },
   },
-}
+};
 ```
 
 ### 3.4 i18n Integration for RTL
@@ -408,7 +398,7 @@ export default {
 // nuxt.config.ts
 export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
-  
+
   i18n: {
     locales: [
       { code: 'ar', iso: 'ar-SA', name: 'العربية', dir: 'rtl' },
@@ -416,9 +406,9 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'ar',
     langDir: '~/locales/',
-    strategy: 'prefix_except_default',  // /en/page but /page for ar
+    strategy: 'prefix_except_default', // /en/page but /page for ar
   },
-})
+});
 ```
 
 ---
@@ -443,14 +433,14 @@ services:
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/docker/mysql/my.cnf:/etc/mysql/my.cnf:ro
     networks:
       - bunyan
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 20s
       retries: 10
 
@@ -458,13 +448,13 @@ services:
     image: redis:7-alpine
     container_name: bunyan-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
       - bunyan
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       timeout: 20s
       retries: 10
 
@@ -552,9 +542,9 @@ name: Pre-Commit Guard
 
 on:
   push:
-    branches: [ develop, main ]
+    branches: [develop, main]
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
   backend:
@@ -696,21 +686,11 @@ chmod +x .husky/pre-push
 ```javascript
 // ./lint-staged.config.js
 export default {
-  '*.php': [
-    'vendor/bin/pint --test',
-    'vendor/bin/phpstan analyse'
-  ],
-  '*.vue': [
-    'eslint --fix',
-    'prettier --write'
-  ],
-  '*.{js,ts}': [
-    'eslint --fix'
-  ],
-  '*.json': [
-    'prettier --write'
-  ]
-}
+  '*.php': ['vendor/bin/pint --test', 'vendor/bin/phpstan analyse'],
+  '*.vue': ['eslint --fix', 'prettier --write'],
+  '*.{js,ts}': ['eslint --fix'],
+  '*.json': ['prettier --write'],
+};
 ```
 
 ### 6.3 Package.json Scripts
@@ -735,6 +715,7 @@ export default {
 ### 7.1 Sanctum Token Generation
 
 **Architecture:**
+
 1. Client sends credentials (email + password) to POST `/api/v1/auth/login`
 2. Server validates credentials against `users` table (using Laravel's `Hash::check()`)
 3. Server generates personal access token via `$user->createToken('token-name')`
@@ -746,18 +727,19 @@ export default {
 ### 7.2 Implementation Example
 
 **Backend:**
+
 ```php
 // app/Http/Controllers/Api/AuthController.php
 public function login(LoginRequest $request)
 {
     $user = User::where('email', $request->email)->first();
-    
+
     if (!$user || !Hash::check($request->password, $user->password)) {
         throw new AuthenticationException('Invalid credentials');
     }
-    
+
     $token = $user->createToken('auth-token')->plainTextToken;
-    
+
     return response()->json([
         'success' => true,
         'data' => [
@@ -769,6 +751,7 @@ public function login(LoginRequest $request)
 ```
 
 **Frontend:**
+
 ```typescript
 // composables/useApi.ts
 export const useAuth = () => {
@@ -777,15 +760,15 @@ export const useAuth = () => {
       method: 'POST',
       body: { email, password },
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-      }
+      },
     });
-    
+
     localStorage.setItem('token', res.data.token);
     return res.data.user;
   };
-  
+
   return { login };
 };
 ```
@@ -809,6 +792,7 @@ export const useAuth = () => {
 ### 8.1 Laravel Policy Pattern
 
 **Define policy:**
+
 ```php
 // app/Policies/ProjectPolicy.php
 namespace App\Policies;
@@ -822,7 +806,7 @@ class ProjectPolicy
     {
         return $user->hasRole('customer') || $user->hasRole('admin');
     }
-    
+
     public function update(User $user, Project $project): bool
     {
         return $user->id === $project->user_id || $user->hasRole('admin');
@@ -831,12 +815,13 @@ class ProjectPolicy
 ```
 
 **Use in controller:**
+
 ```php
 // app/Http/Controllers/Api/ProjectController.php
 public function update(Project $project, UpdateProjectRequest $request)
 {
     $this->authorize('update', $project);  // Gate check
-    
+
     // If reaches here, authorization passed
     $project->update($request->validated());
     return response()->json(['success' => true]);
@@ -859,13 +844,14 @@ class CheckRole
                 'message' => 'Insufficient role privileges',
             ], 403);
         }
-        
+
         return $next($request);
     }
 }
 ```
 
 **Usage in routes:**
+
 ```php
 Route::middleware(['auth:sanctum', 'role:admin,contractor'])->group(function () {
     Route::post('/projects', [ProjectController::class, 'store']);
@@ -880,9 +866,9 @@ Route::middleware(['auth:sanctum', 'role:admin,contractor'])->group(function () 
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
 export default defineConfig({
   plugins: [vue()],
@@ -892,54 +878,50 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'dist/',
-        '.nuxt/',
-      ]
-    }
+      exclude: ['node_modules/', 'dist/', '.nuxt/'],
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),
       '~': path.resolve(__dirname, './'),
-    }
-  }
-})
+    },
+  },
+});
 ```
 
 ### 9.2 Sample Unit Test
 
 ```typescript
 // tests/unit/stores/user.test.ts
-import { describe, it, expect, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
-import { useUserStore } from '~/stores/user'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { setActivePinia, createPinia } from 'pinia';
+import { useUserStore } from '~/stores/user';
 
 describe('User Store', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
-  })
+    setActivePinia(createPinia());
+  });
 
   it('initializes with no user', () => {
-    const store = useUserStore()
-    expect(store.user).toBeNull()
-  })
+    const store = useUserStore();
+    expect(store.user).toBeNull();
+  });
 
   it('sets user on login', () => {
-    const store = useUserStore()
-    store.setUser({ id: 1, email: 'test@example.com', role: 'customer' })
-    expect(store.user?.email).toBe('test@example.com')
-    expect(store.isAuthenticated).toBe(true)
-  })
-})
+    const store = useUserStore();
+    store.setUser({ id: 1, email: 'test@example.com', role: 'customer' });
+    expect(store.user?.email).toBe('test@example.com');
+    expect(store.isAuthenticated).toBe(true);
+  });
+});
 ```
 
 ### 9.3 Playwright E2E Configuration
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -965,29 +947,29 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
-})
+});
 ```
 
 ### 9.4 Sample E2E Test
 
 ```typescript
 // tests/e2e/auth.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('Authentication', () => {
   test('Register flow', async ({ page }) => {
-    await page.goto('/auth/register')
-    
-    await page.fill('input[name="email"]', 'new@example.com')
-    await page.fill('input[name="password"]', 'password123')
-    await page.fill('input[name="password_confirmation"]', 'password123')
-    
-    await page.click('button:has-text("Register")')
-    
-    await expect(page).toHaveURL('/dashboard')
-    await expect(page.locator('text=Welcome')).toBeVisible()
-  })
-})
+    await page.goto('/auth/register');
+
+    await page.fill('input[name="email"]', 'new@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="password_confirmation"]', 'password123');
+
+    await page.click('button:has-text("Register")');
+
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.locator('text=Welcome')).toBeVisible();
+  });
+});
 ```
 
 ---
@@ -1013,27 +995,28 @@ export default defineNuxtConfig({
         code: 'ar',
         iso: 'ar-SA',
         name: 'العربية',
-        file: 'ar.json'
+        file: 'ar.json',
       },
       {
         code: 'en',
         iso: 'en-US',
         name: 'English',
-        file: 'en.json'
-      }
+        file: 'en.json',
+      },
     ],
     defaultLocale: 'ar',
     langDir: 'locales/',
-    strategy: 'prefix_except_default',  // /en/page but /page for ar
+    strategy: 'prefix_except_default', // /en/page but /page for ar
     lazy: false,
     skipSettingLocaleOnNavigate: false,
-  }
-})
+  },
+});
 ```
 
 ### 10.3 Translation Files
 
 **locales/ar.json:**
+
 ```json
 {
   "common": {
@@ -1056,6 +1039,7 @@ export default defineNuxtConfig({
 ```
 
 **locales/en.json:**
+
 ```json
 {
   "common": {
@@ -1089,13 +1073,13 @@ export default defineNuxtConfig({
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
-const { t, locale } = useI18n()
+const { t, locale } = useI18n();
 
 const switchLocale = () => {
-  locale.value = locale.value === 'ar' ? 'en' : 'ar'
-}
+  locale.value = locale.value === 'ar' ? 'en' : 'ar';
+};
 </script>
 ```
 
@@ -1103,29 +1087,29 @@ const switchLocale = () => {
 
 ```typescript
 // composables/useLocale.ts
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
 export const useLocale = () => {
-  const { locale, availableLocales } = useI18n()
-  
-  const currentLocale = computed(() => locale.value)
-  
+  const { locale, availableLocales } = useI18n();
+
+  const currentLocale = computed(() => locale.value);
+
   const switchLocale = (newLocale: string) => {
-    locale.value = newLocale
-    localStorage.setItem('locale', newLocale)
-  }
-  
-  const isArabic = computed(() => locale.value === 'ar')
-  const isEnglish = computed(() => locale.value === 'en')
-  
+    locale.value = newLocale;
+    localStorage.setItem('locale', newLocale);
+  };
+
+  const isArabic = computed(() => locale.value === 'ar');
+  const isEnglish = computed(() => locale.value === 'en');
+
   return {
     currentLocale,
     switchLocale,
     isArabic,
     isEnglish,
     availableLocales,
-  }
-}
+  };
+};
 ```
 
 ---
@@ -1146,4 +1130,3 @@ export const useLocale = () => {
 ✅ Nuxt i18n module setup — Locale configuration, translation files, composables
 
 **Next steps:** Use this research to scaffold the actual implementation tasks.
-

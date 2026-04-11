@@ -88,6 +88,7 @@ class CreateProjectTest extends TestCase
 ## RBAC Testing Matrix
 
 Every protected endpoint must have tests for:
+
 1. ✅ Authorized role — success
 2. ❌ Unauthorized role — 403
 3. ❌ Unauthenticated — 401
