@@ -1,0 +1,22 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.env.*.local
+.cache/
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# Build outputs
+build/
+**/build/
+public/build/
+backend/build/
+backend/public/build/
+
+# Frontend (Nuxt/Vite) outputs
+frontend/.nuxt/
+frontend/.output/
+frontend/dist/
