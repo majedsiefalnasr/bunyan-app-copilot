@@ -151,47 +151,47 @@
 
 ### Setup & Components
 
-- [ ] T048 [P] [US5] Create error boundary component `frontend/components/errors/GlobalErrorBoundary.vue` — AC: Catches component render errors via `onErrorCaptured`; displays user-friendly fallback UI; provides "Reload" and "Back" buttons; logs error with correlation ID; RTL-safe using Tailwind logical properties
+- [X] T048 [P] [US5] Create error boundary component `frontend/components/errors/GlobalErrorBoundary.vue` — AC: Catches component render errors via `onErrorCaptured`; displays user-friendly fallback UI; provides "Reload" and "Back" buttons; logs error with correlation ID; RTL-safe using Tailwind logical properties
 
-- [ ] T049 [P] [US5] Wrap root app in error boundary in `frontend/app.vue` — AC: Error boundary component wraps router-view or page content; catches all descendant component errors; does NOT block normal app rendering; tested via snapshot test
+- [X] T049 [P] [US5] Wrap root app in error boundary in `frontend/app.vue` — AC: Error boundary component wraps router-view or page content; catches all descendant component errors; does NOT block normal app rendering; tested via snapshot test
 
-- [ ] T050 [P] [US5] Create `frontend/composables/useToast.ts` composable for toast notifications — AC: `showToast(message, type, duration)` method; supports error, warning, success, info types; auto-dismisses after duration (default 5 seconds); accessible via `useToast()`; Pinia store integration
+- [X] T050 [P] [US5] Create `frontend/composables/useToast.ts` composable for toast notifications — AC: `showToast(message, type, duration)` method; supports error, warning, success, info types; auto-dismisses after duration (default 5 seconds); accessible via `useToast()`; Pinia store integration
 
-- [ ] T051 [P] [US5] Create `frontend/components/errors/ErrorToast.vue` component displaying toast notifications — AC: Displays notification from Pinia store; auto-dismisses; positioned top-right; supports all types (error, warning, success, info); RTL-safe; Geist design system styling (shadow-as-border)
+- [X] T051 [P] [US5] Create `frontend/components/errors/ErrorToast.vue` component displaying toast notifications — AC: Displays notification from Pinia store; auto-dismisses; positioned top-right; supports all types (error, warning, success, info); RTL-safe; Geist design system styling (shadow-as-border)
 
-- [ ] T052 [P] [US5] Create `frontend/stores/errorStore.ts` Pinia store for error state management — AC: State: toasts array, currentError object; actions: `addToast()`, `removeToast()`, `setError()`, `clearError()`; reactive and properly typed with TypeScript; mounted in `nuxt.config.ts`
+- [X] T052 [P] [US5] Create `frontend/stores/errorStore.ts` Pinia store for error state management — AC: State: toasts array, currentError object; actions: `addToast()`, `removeToast()`, `setError()`, `clearError()`; reactive and properly typed with TypeScript; mounted in `nuxt.config.ts`
 
 ### API Error Interceptor
 
-- [ ] T053 [P] [US5] Modify `frontend/composables/useApi.ts` to add error interceptor for API responses — AC: Interceptor detects response.success=false or 4xx/5xx status; extracts error code and message from response; handles special cases: 401 (redirect to /login), 403 (navigate to /error-403), 5xx (show retry); preserves correlation ID
+- [X] T053 [P] [US5] Modify `frontend/composables/useApi.ts` to add error interceptor for API responses — AC: Interceptor detects response.success=false or 4xx/5xx status; extracts error code and message from response; handles special cases: 401 (redirect to /login), 403 (navigate to /error-403), 5xx (show retry); preserves correlation ID
 
-- [ ] T054 [P] [US5] Implement error message transformation in `useApi.ts` using `useErrorHandler` — AC: Maps error codes to user-friendly messages via i18n; calls `useToast().showToast()` for error display; does NOT expose internal error details; handles missing/malformed responses gracefully
+- [X] T054 [P] [US5] Implement error message transformation in `useApi.ts` using `useErrorHandler` — AC: Maps error codes to user-friendly messages via i18n; calls `useToast().showToast()` for error display; does NOT expose internal error details; handles missing/malformed responses gracefully
 
-- [ ] T055 [P] [US5] Create `frontend/composables/useErrorHandler.ts` for centralized error handling logic — AC: `handleError(error, context)` method transforms backend error to UI action; maps error codes to messages, toast types, navigation actions; supports Arabic/English localization; reusable across pages/components
+- [X] T055 [P] [US5] Create `frontend/composables/useErrorHandler.ts` for centralized error handling logic — AC: `handleError(error, context)` method transforms backend error to UI action; maps error codes to messages, toast types, navigation actions; supports Arabic/English localization; reusable across pages/components
 
 ### Error Pages
 
-- [ ] T056 [P] [US5] Create `frontend/pages/error-404.vue` not found error page — AC: Displays "Resource Not Found" message; includes icon or illustration; has "Back to Home" button; RTL-safe; uses i18n for text; matches Geist design system
+- [X] T056 [P] [US5] Create `frontend/pages/error-404.vue` not found error page — AC: Displays "Resource Not Found" message; includes icon or illustration; has "Back to Home" button; RTL-safe; uses i18n for text; matches Geist design system
 
-- [ ] T057 [P] [US5] Create `frontend/pages/error-403.vue` access denied error page — AC: Displays "Access Denied" message; shows contact admin link; includes explanation; RTL-safe; uses i18n for text; matches Geist design system
+- [X] T057 [P] [US5] Create `frontend/pages/error-403.vue` access denied error page — AC: Displays "Access Denied" message; shows contact admin link; includes explanation; RTL-safe; uses i18n for text; matches Geist design system
 
-- [ ] T058 [P] [US5] Create `frontend/pages/error-500.vue` server error page — AC: Displays "Something Went Wrong" message; has "Retry" button and "Back" button; includes correlation ID display (for support reference); RTL-safe; uses i18n for text; matches Geist design system
+- [X] T058 [P] [US5] Create `frontend/pages/error-500.vue` server error page — AC: Displays "Something Went Wrong" message; has "Retry" button and "Back" button; includes correlation ID display (for support reference); RTL-safe; uses i18n for text; matches Geist design system
 
 ### i18n Localization
 
-- [ ] T059 [P] [US5] Update `frontend/locales/ar.json` with Arabic error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages user-friendly and RTL-compliant; uses i18n dot notation (e.g., `errors.validation_error`); tested via snapshot
+- [X] T059 [P] [US5] Update `frontend/locales/ar.json` with Arabic error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages user-friendly and RTL-compliant; uses i18n dot notation (e.g., `errors.validation_error`); tested via snapshot
 
-- [ ] T060 [P] [US5] Update `frontend/locales/en.json` with English error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages match Arabic semantics; tested via snapshot
+- [X] T060 [P] [US5] Update `frontend/locales/en.json` with English error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages match Arabic semantics; tested via snapshot
 
 ### Frontend Tests
 
-- [ ] T061 [US5] Write unit tests for error boundary in `frontend/tests/unit/GlobalErrorBoundary.test.ts` — AC: Tests error capture; fallback UI rendering; reload/back button functionality; error logging; 100% component coverage
+- [X] T061 [US5] Write unit tests for error boundary in `frontend/tests/unit/GlobalErrorBoundary.test.ts` — AC: Tests error capture; fallback UI rendering; reload/back button functionality; error logging; 100% component coverage
 
-- [ ] T062 [US5] Write unit tests for toast system in `frontend/tests/unit/useToast.test.ts` — AC: Tests `useToast()` composable; adding/removing toasts; auto-dismiss timer; multi-toast stacking; persistence across time
+- [X] T062 [US5] Write unit tests for toast system in `frontend/tests/unit/useToast.test.ts` — AC: Tests `useToast()` composable; adding/removing toasts; auto-dismiss timer; multi-toast stacking; persistence across time
 
-- [ ] T063 [US5] Write feature tests for API error interceptor in `frontend/tests/unit/useApi.test.ts` — AC: Tests 401/403/4xx/5xx response handling; error message extraction; toast display; special case redirects; correlation ID preservation
+- [X] T063 [US5] Write feature tests for API error interceptor in `frontend/tests/unit/useApi.test.ts` — AC: Tests 401/403/4xx/5xx response handling; error message extraction; toast display; special case redirects; correlation ID preservation
 
-- [ ] T064 [US5] Write E2E tests for error pages in `frontend/tests/e2e/errorPages.test.ts` (Playwright) — AC: 404 page renders correctly; 403 page renders correctly; 500 page renders correctly; buttons functional; text localized (en/ar); RTL layout verified
+- [X] T064 [US5] Write E2E tests for error pages in `frontend/tests/e2e/errorPages.test.ts` (Playwright) — AC: 404 page renders correctly; 403 page renders correctly; 500 page renders correctly; buttons functional; text localized (en/ar); RTL layout verified
 
 ---
 
@@ -211,7 +211,7 @@
 
 - [ ] T069 [US1-US6] Write comprehensive integration test `backend/tests/Feature/ErrorHandlingIntegrationTest.php` — AC: Tests end-to-end error flow: client request → backend handling → error response → client reception; covers all 6 user stories; authentication flow tested; workflow errors tested; payment errors tested; rate limiting tested
 
-- [ ] T070 [US1-US6] Write E2E test suite for complete error workflows in `frontend/tests/e2e/errorWorkflows.test.ts` — AC: E2E tests for: validation error display, auth error redirect, not found page, access denied page, server error with retry, rate limit feedback; screenshots captured for each state; tested in both Arabic and English locales
+- [X] T070 [US1-US6] Write E2E test suite for complete error workflows in `frontend/tests/e2e/errorWorkflows.test.ts` — AC: E2E tests for: validation error display, auth error redirect, not found page, access denied page, server error with retry, rate limit feedback; screenshots captured for each state; tested in both Arabic and English locales
 
 - [ ] T071 Arabic/RTL accessibility verification test — AC: All error messages display correctly in RTL mode; text alignment proper (right-aligned for Arabic); component layouts RTL-safe using Tailwind logical properties; tested with manual RTL toggle; verified in both Firefox and Chrome
 

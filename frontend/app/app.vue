@@ -1,4 +1,7 @@
 <template>
   <NuxtRouteAnnouncer />
-  <NuxtPage />
+  <GlobalErrorBoundary>
+    <NuxtPage />
+  </GlobalErrorBoundary>
+  <ErrorToast />
 </template>
