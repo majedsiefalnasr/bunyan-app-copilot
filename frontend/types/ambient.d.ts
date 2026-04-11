@@ -1,17 +1,17 @@
 // Ambient declarations to satisfy typecheck until Nuxt auto-generated types are available
-declare function defineNuxtConfig<T = any>(config: T): T;
-declare function useRoute(): any;
-declare function useAsyncData<T = any>(
+declare function defineNuxtConfig<T = unknown>(config: T): T;
+declare function useRoute(): unknown;
+declare function useAsyncData<T = unknown>(
   key: string,
   fetcher: () => Promise<T> | T,
-  opts?: any
-): Promise<{ data: any }>;
-declare function queryCollection(name: string): any;
-declare function createError(opts: any): any;
-declare const ref: any;
+  opts?: unknown
+): Promise<{ data: T }>;
+declare function queryCollection(name: string): unknown;
+declare function createError(opts: unknown): unknown;
+declare function ref<T = unknown>(value?: T): { value: T | undefined };
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';
-  const component: DefineComponent<{}, {}, any>;
+  const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;
   export default component;
 }
