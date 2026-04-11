@@ -6,7 +6,7 @@
   "branch": "spec/005-error-handling",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "analyze",
+  "current_step": "implement",
   "stage_status": "IN PROGRESS",
   "clarifications_resolved": true,
   "drift_passed": true,
