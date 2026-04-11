@@ -1,6 +1,9 @@
 {
   "name": "frontend",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "scripts": {
     "build": "nuxt build",
@@ -24,8 +27,8 @@
     "@nuxt/eslint-config": "^1.15.2",
     "@nuxt/test-utils": "^3.10.0",
     "@playwright/test": "^1.43.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@vitest/ui": "^3.2.4",
     "@vue/test-utils": "^2.4.4",
     "eslint": "^9.11.0",
