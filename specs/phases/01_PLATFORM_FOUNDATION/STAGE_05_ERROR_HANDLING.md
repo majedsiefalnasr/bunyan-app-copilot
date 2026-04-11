@@ -8,31 +8,34 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: LOW
-Last Updated: 2026-04-11T00:00:00Z
+Last Updated: 2026-04-11T14:45:00Z
 
-Scope Defined & Clarified:
+Scope Planned:
 
-- Platform-wide error response contract (all API endpoints)
-- Backend exception handler layer
-- Error code registry (12 semantic codes)
-- Structured logging: local files with daily rotation, 30-day retention
-- Rate limiting: hybrid model (100 req/min global, 10 req/min auth/payment endpoints)
-- Localization: user-facing errors in Arabic/English, technical in English
-- Frontend error boundary & toast system
-- Error pages (404, 403, 500)
+- Phase 1: Error response contract + exception handler + API helpers (2 weeks)
+- Phase 2: Backend logging + correlation IDs + sensitive data masking (2 weeks)
+- Phase 3: Frontend error boundary + API interceptor + toast system (2 weeks)
+- Phase 4: Documentation + testing + API reference (1 week)
+
+Deferred Scope:
+
+- Advanced metrics collection (Phase 2 optional; may be Stage 25 post-launch)
+- Custom rate limiting dashboard (defer to admin panel stage)
 
 Architecture Governance Compliance:
 
-- All clarifications resolved (5/5)
-- RBAC patterns verified
-- Service layer principles enforced
-- Error contract matches stage requirements
-- Planning authorization complete
+- Technical plan compliant — task generation authorized
+- Both Architecture Guardian and API Designer gates PASS (post-remediation)
+- All 11 violations resolved (5 arch + 6 API)
+- 96-item verification checklists generated
+- Correlation IDs positioned in 3 places (header, message text, body)
+- Sensitive data masking strategy locked (passwords, tokens, PII, cards)
+- Async logging with < 50ms overhead target verified
 
 Notes:
-Specification complete. Clarification step pending. 3 open questions marked [NEEDS CLARIFICATION] (non-blocking).
+Technical plan complete. 4-phase delivery roadmap established. All governance gates PASS. Ready for task breakdown.
 
 ## Objective
 
