@@ -61,7 +61,12 @@ jobs:
         working-directory: backend
 
       - name: Copy environment file
-        run: cp .env.ci .env
+        run: |
+          if [ -f .env.ci ]; then
+            cp .env.ci .env
+          else
+            cp .env.example .env
+          fi
         working-directory: backend
 
       - name: Generate application key
@@ -175,7 +180,11 @@ jobs:
 
       - name: Setup backend environment
         run: |
-          cp .env.ci .env
+          if [ -f .env.ci ]; then
+            cp .env.ci .env
+          else
+            cp .env.example .env
+          fi
           php artisan key:generate
           php artisan migrate --force
           php artisan db:seed --class=E2ESeeder --force
