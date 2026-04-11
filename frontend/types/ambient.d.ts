@@ -6,7 +6,11 @@ declare function useAsyncData<T = unknown>(
   fetcher: () => Promise<T> | T,
   opts?: unknown
 ): Promise<{ data: T }>;
-declare function queryCollection(name: string): unknown;
+declare function queryCollection<T = unknown>(name: string): {
+  path: (p: string) => {
+    first: () => Promise<T> | T;
+  };
+};
 declare function createError(opts: unknown): unknown;
 declare function ref<T = unknown>(value?: T): { value: T | undefined };
 
