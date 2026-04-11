@@ -1,0 +1,11 @@
+/.nuxt
+node_modules
+dist
+build
+.output
+public
+.vite
+.turbo
+coverage
+*.lock
+.DS_Store
