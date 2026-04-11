@@ -8,34 +8,34 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: LOW
-Last Updated: 2026-04-11T14:45:00Z
+Last Updated: 2026-04-11T15:30:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- Phase 1: Error response contract + exception handler + API helpers (2 weeks)
-- Phase 2: Backend logging + correlation IDs + sensitive data masking (2 weeks)
-- Phase 3: Frontend error boundary + API interceptor + toast system (2 weeks)
-- Phase 4: Documentation + testing + API reference (1 week)
+- Total: 77 atomic tasks
+- Parallelizable: 41 tasks (53%)
+- Sequential (blocking): 36 tasks (47%)
+- Phase 1 (Foundation): 18 tasks
+- Phase 2 (Core): 25 tasks
+- Phase 3 (Integration): 17 tasks
+- Phase 4 (Quality): 17 tasks
+- Effort Estimate: 40–160 hours, 6–8 weeks with 43% avg parallelism
 
 Deferred Scope:
 
-- Advanced metrics collection (Phase 2 optional; may be Stage 25 post-launch)
-- Custom rate limiting dashboard (defer to admin panel stage)
+- None: All scope items captured in 77 tasks
 
 Architecture Governance Compliance:
 
-- Technical plan compliant — task generation authorized
-- Both Architecture Guardian and API Designer gates PASS (post-remediation)
-- All 11 violations resolved (5 arch + 6 API)
-- 96-item verification checklists generated
-- Correlation IDs positioned in 3 places (header, message text, body)
-- Sensitive data masking strategy locked (passwords, tokens, PII, cards)
-- Async logging with < 50ms overhead target verified
+- Task set compliant — drift analysis required before implementation
+- All 96 checklist items mapped to task acceptance criteria
+- Phase sequencing aligned with technical dependencies
+- Performance budgets (<50ms logging) enforced in Phase 2 tasks
 
 Notes:
-Technical plan complete. 4-phase delivery roadmap established. All governance gates PASS. Ready for task breakdown.
+Atomic task set generated. Drift analysis gate pending.
 
 ## Objective
 
