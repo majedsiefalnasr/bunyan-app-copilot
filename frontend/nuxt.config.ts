@@ -4,9 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2024-04-03',
   i18n: {
-    locales: ['ar', 'en'],
     defaultLocale: 'ar',
     strategy: 'prefix',
-    rtl: { ar: true },
+    locales: [
+      { code: 'ar', language: 'ar-SA', dir: 'rtl', file: 'ar.json' },
+      { code: 'en', language: 'en-US', dir: 'ltr', file: 'en.json' },
+    ],
   },
 });

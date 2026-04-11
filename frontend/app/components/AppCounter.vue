@@ -7,7 +7,9 @@
 </template>
 
 <script setup lang="ts">
-const count = ref(0);
+import { ref } from 'vue';
+
+const count = ref<number>(0);
 
 const increment = () => {
   count.value++;
