@@ -6,7 +6,7 @@
   "branch": "spec/005-error-handling",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "clarifications_resolved": false,
   "drift_passed": false,
@@ -21,11 +21,18 @@
   "auto_advance": true,
   "session_started_at": "2026-04-11T00:00:00Z",
   "last_updated": "2026-04-11T00:00:00Z",
-  "step_timings": {},
+  "step_timings": {
+    "specify": 1200000
+  },
   "history": [
     {
       "event": "branch_created",
       "branch": "spec/005-error-handling",
+      "timestamp": "2026-04-11T00:00:00Z"
+    },
+    {
+      "event": "spec_generated",
+      "files": ["spec.md", "checklists/requirements.md"],
       "timestamp": "2026-04-11T00:00:00Z"
     }
   ]

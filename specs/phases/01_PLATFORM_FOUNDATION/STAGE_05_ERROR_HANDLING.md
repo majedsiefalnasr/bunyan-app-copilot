@@ -8,20 +8,28 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: LOW
 Last Updated: 2026-04-11T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- Platform-wide error response contract (all API endpoints)
+- Backend exception handler layer
+- Error code registry (12 semantic codes)
+- Structured logging with correlation IDs
+- Frontend error boundary & toast system
+- Error pages (404, 403, 500)
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
+- RBAC patterns included
+- Service layer principles enforced
+- Error contract matches stage requirements
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending. 3 open questions marked [NEEDS CLARIFICATION] (non-blocking).
 
 ## Objective
 
