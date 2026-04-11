@@ -1,0 +1,32 @@
+{
+  "stage": "DATABASE_SCHEMA",
+  "phase": "01_PLATFORM_FOUNDATION",
+  "stage_dir": "specs/runtime/002-database-schema",
+  "stage_file": "specs/phases/01_PLATFORM_FOUNDATION/STAGE_02_DATABASE_SCHEMA.md",
+  "branch": "spec/002-database-schema",
+  "base_branch": "develop",
+  "pkg_manager": "composer",
+  "current_step": "pre_step",
+  "stage_status": "DRAFT",
+  "auto_advance": true,
+  "clarifications_resolved": false,
+  "drift_passed": false,
+  "implementation_allowed": false,
+  "plan_completed": false,
+  "tasks_total": null,
+  "tasks_completed": null,
+  "deferred_tasks": [],
+  "guardian_verdicts": {},
+  "parallel_task_groups": [],
+  "current_parallel_group": null,
+  "session_started_at": "2026-04-11T00:00:00Z",
+  "last_updated": "2026-04-11T00:00:00Z",
+  "step_timings": {},
+  "history": [
+    {
+      "event": "branch_created",
+      "branch": "spec/002-database-schema",
+      "timestamp": "2026-04-11T00:00:00Z"
+    }
+  ]
+}
