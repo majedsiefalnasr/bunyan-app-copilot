@@ -118,7 +118,7 @@ As a test engineer, I need `UserFactory` state methods per role so that PHPUnit 
 - **FR-008**: The `User` model MUST hide `password` and `remember_token` from serialization.
 - **FR-009**: The `User` model MUST cast `email_verified_at` as `datetime`, `password` as `hashed`, and `is_active` as `boolean`.
 - **FR-010**: The `User` model MUST use `SoftDeletes` and expose an `active()` local scope.
-- **FR-011**: `BaseRepository` MUST define interface methods: `find`, `findAll`, `create`, `update`, `delete`, `paginate`.
+- **FR-011**: `BaseRepository` MUST define interface methods: `find`, `findAll`, `findBy` (accepts pre-validated array criteria), `create`, `update`, `delete`, `paginate`.
 - **FR-012**: `RoleSeeder` MUST insert exactly 5 roles matching the Bunyan domain model with both English slug and Arabic `display_name`.
 - **FR-013**: `UserFactory` MUST provide state methods: `admin()`, `customer()`, `contractor()`, `supervisingArchitect()`, `fieldEngineer()`.
 - **FR-014**: All migrations MUST be forward-only (no modification of existing migration files permitted).
@@ -128,7 +128,7 @@ As a test engineer, I need `UserFactory` state methods per role so that PHPUnit 
 
 - **User**: Platform account holder. Has `name`, `email` (unique), `phone` (nullable), hashed `password`, `email_verified_at`, `is_active` flag, `avatar` (nullable path), timestamps, and soft-delete. Belongs-to-many `Role`.
 - **Role**: Platform role definition. Has slug `name` (unique), `display_name` (English), `display_name_ar` (Arabic), optional `description`, timestamps. Belongs-to-many `User` and `Permission`.
-- **Permission**: Granular capability. Has slug `name` (unique), `display_name`, `group` (domain category), optional `description`, timestamps. Belongs-to-many `Role`.
+- **Permission**: Granular capability. Has slug `name` (unique), `display_name`, `group` (domain category), optional `description`, timestamps. Belongs-to-many `Role`. Note: `display_name_ar` is intentionally omitted from the permissions table — permissions use technical dot-notation slugs; Arabic display is deferred to the API response/frontend translation layer (i18n concern, not schema concern).
 - **role_user** (pivot): Links `User` ↔ `Role`. Timestamps included.
 - **permission_role** (pivot): Links `Permission` ↔ `Role`. Timestamps included.
 

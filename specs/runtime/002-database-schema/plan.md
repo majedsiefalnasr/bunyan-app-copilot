@@ -159,15 +159,15 @@ Phase 0 (Verification)
 **Dependencies**: Migration 1 (adds `phone`, `is_active`, `avatar`, `deleted_at`)
 
 **Implementation Notes**:
-- Convert `#[Fillable]` attribute to explicit `$fillable` array property: `['name', 'email', 'phone', 'password', 'is_active', 'avatar', 'role']`
-  - Keep `role` in fillable for UserSeeder compatibility
+- Convert `#[Fillable]` attribute to explicit `$fillable` array property: `['name', 'email', 'phone', 'password', 'is_active', 'avatar']`
+  - **Do NOT add `role` to `$fillable`** (SEC-FINDING-A: privilege escalation vector — `role` is an enum column assigned only via explicit `$user->role = UserRole::X; $user->save()` in seeders/factories, never via mass assignment)
 - Convert `#[Hidden]` attribute to explicit `$hidden` array property: `['password', 'remember_token']`
 - Add `use SoftDeletes;` (import `Illuminate\Database\Eloquent\SoftDeletes`)
 - Add `$casts` property, updating to include `'is_active' => 'boolean'`
 - Add `roles()` relationship: `belongsToMany(Role::class, 'role_user')->withTimestamps()`
 - Add `scopeActive(Builder $query): Builder` — `return $query->where('is_active', true)`
 - Add `scopeByRole(Builder $query, string $role): Builder` — `return $query->whereHas('roles', fn ($q) => $q->where('name', $role))`
-- Keep existing `hasRole(UserRole $role)` and `hasAnyRole(UserRole ...$roles)` methods (enum-based, used by STAGE_03)
+- Rename existing `hasRole(UserRole $role)` → `hasEnumRole(UserRole $role)` (preserve enum-based logic; used by STAGE_03 after update); add new `hasRole(string $roleSlug): bool` checking `roles` pivot relationship — PHP does not support method overloading so both cannot share the same name
 - Keep `HasApiTokens`, `HasFactory`, `Notifiable` traits
 - Import: `App\Models\Role`, `Illuminate\Database\Eloquent\Builder`, `Illuminate\Database\Eloquent\SoftDeletes`
 
@@ -537,11 +537,11 @@ public function inactive(): static
 **Dependencies**: Task 2.1
 
 **Test cases**:
-- `test_fillable_contains_expected_fields()` — asserts `$fillable` contains `name`, `email`, `phone`, `is_active`, `avatar`
-- `test_hidden_contains_password_and_remember_token()` — asserts `$hidden`
-- `test_casts_include_is_active_as_boolean()` — asserts cast config
-- `test_active_scope_filters_inactive_users()` — creates active + inactive users, asserts `User::active()->get()` excludes inactive
-- `test_soft_deleted_user_excluded_from_default_query()` — creates user, soft-deletes, asserts `User::find()` returns null but `User::withTrashed()` returns record
+- `fillable_contains_expected_fields()` — asserts `$fillable` contains `name`, `email`, `phone`, `is_active`, `avatar`
+- `hidden_contains_password_and_remember_token()` — asserts `$hidden`
+- `casts_include_is_active_as_boolean()` — asserts cast config
+- `active_scope_filters_inactive_users()` — creates active + inactive users, asserts `User::active()->get()` excludes inactive
+- `soft_deleted_user_excluded_from_default_query()` — creates user, soft-deletes, asserts `User::find()` returns null but `User::withTrashed()` returns record
 
 **Acceptance Criteria**: US2-AC4, US2-AC5, FR-008, FR-009, FR-010
 
@@ -554,9 +554,9 @@ public function inactive(): static
 **Dependencies**: Task 2.2
 
 **Test cases**:
-- `test_fillable_contains_expected_fields()` — asserts `$fillable`
-- `test_users_relationship_is_declared()` — asserts `users()` method exists and returns `BelongsToMany`
-- `test_permissions_relationship_is_declared()` — asserts `permissions()` method exists and returns `BelongsToMany`
+- `fillable_contains_expected_fields()` — asserts `$fillable`
+- `users_relationship_is_declared()` — asserts `users()` method exists and returns `BelongsToMany`
+- `permissions_relationship_is_declared()` — asserts `permissions()` method exists and returns `BelongsToMany`
 
 **Acceptance Criteria**: US2-AC1, US2-AC2
 
@@ -569,9 +569,9 @@ public function inactive(): static
 **Dependencies**: Task 2.3
 
 **Test cases**:
-- `test_fillable_contains_expected_fields()` — asserts `$fillable`
-- `test_scope_by_group_filters_correctly()` — creates permissions in different groups, asserts `Permission::byGroup('users')->get()` returns only that group
-- `test_roles_relationship_is_declared()` — asserts `roles()` returns `BelongsToMany`
+- `fillable_contains_expected_fields()` — asserts `$fillable`
+- `scope_by_group_filters_correctly()` — creates permissions in different groups, asserts `Permission::byGroup('users')->get()` returns only that group
+- `roles_relationship_is_declared()` — asserts `roles()` returns `BelongsToMany`
 
 **Acceptance Criteria**: US2-AC2, FR-003
 
@@ -584,12 +584,12 @@ public function inactive(): static
 **Dependencies**: All Phase 1 migrations
 
 **Test cases**:
-- `test_all_tables_exist_after_migration()` — asserts `Schema::hasTable()` for all 5 tables
-- `test_users_table_has_new_columns()` — asserts `phone`, `is_active`, `avatar`, `deleted_at` columns exist
-- `test_roles_table_has_correct_columns()` — asserts all column names
-- `test_permissions_table_has_correct_columns()` — asserts all column names
-- `test_role_user_pivot_has_no_id_column()` — asserts `Schema::hasColumn('role_user', 'id')` returns false
-- `test_permission_role_pivot_has_no_id_column()` — same for `permission_role`
+- `all_tables_exist_after_migration()` — asserts `Schema::hasTable()` for all 5 tables
+- `users_table_has_new_columns()` — asserts `phone`, `is_active`, `avatar`, `deleted_at` columns exist
+- `roles_table_has_correct_columns()` — asserts all column names
+- `permissions_table_has_correct_columns()` — asserts all column names
+- `role_user_pivot_has_no_id_column()` — asserts `Schema::hasColumn('role_user', 'id')` returns false
+- `permission_role_pivot_has_no_id_column()` — same for `permission_role`
 
 **Acceptance Criteria**: US1-AC1, US1-AC3, US1-AC4
 
@@ -602,11 +602,11 @@ public function inactive(): static
 **Dependencies**: Phase 1 (migrations), Phase 2 (models), Phase 4 (RoleSeeder for setup)
 
 **Test cases**:
-- `test_user_can_access_roles_relationship()` — create user, seed role, attach, assert `$user->roles` contains role (US2-AC1)
-- `test_role_can_access_permissions_relationship()` — seed role + permission, attach, assert `$role->permissions` returns collection (US2-AC2)
-- `test_user_has_role_method_returns_true_for_assigned_role()` — US2-AC3 (enum-based `hasRole`)
-- `test_user_password_is_hashed()` — create user, assert password is hashed (US2-AC4)
-- `test_soft_deleted_user_excluded_from_default_query()` — US2-AC5
+- `user_can_access_roles_relationship()` — create user, seed role, attach, assert `$user->roles` contains role (US2-AC1)
+- `role_can_access_permissions_relationship()` — seed role + permission, attach, assert `$role->permissions` returns collection (US2-AC2)
+- `user_has_role_method_returns_true_for_assigned_role()` — US2-AC3 (enum-based `hasRole`)
+- `user_password_is_hashed()` — create user, assert password is hashed (US2-AC4)
+- `soft_deleted_user_excluded_from_default_query()` — US2-AC5
 
 **Acceptance Criteria**: US2-AC1 through US2-AC5
 
@@ -619,13 +619,13 @@ public function inactive(): static
 **Dependencies**: Phase 4 (all seeders)
 
 **Test cases**:
-- `test_role_seeder_creates_exactly_five_roles()` — run RoleSeeder, assert `Role::count() === 5` (US3-AC1)
-- `test_roles_have_correct_arabic_display_names()` — assert each role has correct `display_name_ar`
-- `test_permission_seeder_creates_at_least_twenty_permissions()` — run PermissionSeeder, assert `Permission::count() >= 20` (US3-AC2)
-- `test_permissions_grouped_by_correct_domains()` — assert permissions exist for all 7 groups
-- `test_admin_user_has_admin_role()` — run full seeder, find admin user, assert role attached (US3-AC3)
-- `test_each_role_has_one_test_user()` — run full seeder, assert one user per role email (US3-AC4)
-- `test_seeder_is_idempotent()` — run seeder twice, assert counts unchanged
+- `role_seeder_creates_exactly_five_roles()` — run RoleSeeder, assert `Role::count() === 5` (US3-AC1)
+- `roles_have_correct_arabic_display_names()` — assert each role has correct `display_name_ar`
+- `permission_seeder_creates_at_least_twenty_permissions()` — run PermissionSeeder, assert `Permission::count() >= 20` (US3-AC2)
+- `permissions_grouped_by_correct_domains()` — assert permissions exist for all 7 groups
+- `admin_user_has_admin_role()` — run full seeder, find admin user, assert role attached (US3-AC3)
+- `each_role_has_one_test_user()` — run full seeder, assert one user per role email (US3-AC4)
+- `seeder_is_idempotent()` — run seeder twice, assert counts unchanged
 
 **Acceptance Criteria**: US3-AC1 through US3-AC4
 
@@ -638,15 +638,15 @@ public function inactive(): static
 **Dependencies**: Phase 4 (RoleSeeder — must be called in setUp), Phase 5 (factories)
 
 **Test cases**:
-- `test_factory_creates_user_without_role()` — `User::factory()->make()` produces valid User (US4-AC3)
-- `test_admin_state_attaches_admin_role()` — `User::factory()->admin()->create()`, assert `$user->roles->first()->name === 'admin'` (US4-AC1)
-- `test_customer_state_attaches_customer_role()` — US4-AC1 for customer
-- `test_contractor_state_attaches_contractor_role()` — US4-AC1 for contractor
-- `test_supervising_architect_state_attaches_role()` — US4-AC1 for supervising_architect
-- `test_field_engineer_state_attaches_role()` — US4-AC1 for field_engineer
-- `test_factory_count_with_role_state()` — `User::factory()->count(10)->customer()->create()`, assert 10 users all bearing customer role (US4-AC2)
-- `test_inactive_state_sets_is_active_false()` — assert `is_active === false`
-- `test_unverified_state_sets_email_verified_at_null()` — assert `email_verified_at === null`
+- `factory_creates_user_without_role()` — `User::factory()->make()` produces valid User (US4-AC3)
+- `admin_state_attaches_admin_role()` — `User::factory()->admin()->create()`, assert `$user->roles->first()->name === 'admin'` (US4-AC1)
+- `customer_state_attaches_customer_role()` — US4-AC1 for customer
+- `contractor_state_attaches_contractor_role()` — US4-AC1 for contractor
+- `supervising_architect_state_attaches_role()` — US4-AC1 for supervising_architect
+- `field_engineer_state_attaches_role()` — US4-AC1 for field_engineer
+- `factory_count_with_role_state()` — `User::factory()->count(10)->customer()->create()`, assert 10 users all bearing customer role (US4-AC2)
+- `inactive_state_sets_is_active_false()` — assert `is_active === false`
+- `unverified_state_sets_email_verified_at_null()` — assert `email_verified_at === null`
 
 **Note**: All tests in this file call `$this->seed(RoleSeeder::class)` in `setUp()`.
 
