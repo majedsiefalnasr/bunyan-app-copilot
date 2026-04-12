@@ -25,14 +25,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
-
-      - name: Debug Node/NPM versions
-        run: |
-          node -v
-          npm -v
 
       - name: Install Dependencies
         working-directory: frontend
@@ -41,15 +36,11 @@ jobs:
 
       - name: Run ESLint
         working-directory: frontend
-        env:
-          NODE_OPTIONS: -r ./scripts/polyfill-groupby.cjs
         run: npm run lint
 
       - name: Check Formatting with Prettier
         working-directory: frontend
-        run: |
-          npx prettier --version
-          npm run format:check
+        run: npx prettier --check .
 
   typecheck:
     runs-on: ubuntu-latest
@@ -61,7 +52,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
@@ -84,7 +75,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
@@ -113,7 +104,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
