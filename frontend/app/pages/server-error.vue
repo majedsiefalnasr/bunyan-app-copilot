@@ -5,42 +5,43 @@ import { useLocaleRoute } from '../../composables/useLocaleRoute';
 const localeRoute = useLocaleRoute();
 const { t } = useI18n();
 
-function goHome() {
+function handleRetry() {
   localeRoute.push('/');
 }
 
-function contactAdmin() {
-  // You can implement this to send an email or open a contact form
-  // For now, just show a notification
-  alert(t('errors.contact_admin_message', 'Please contact the administrator for help.'));
+function goBack() {
+  localeRoute.back();
 }
 </script>
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-white px-4">
     <div class="max-w-md w-full">
-      <!-- 403 Icon -->
+      <!-- 500 Icon -->
       <div class="flex justify-center mb-6">
-        <div class="text-6xl font-bold text-gray-200">403</div>
+        <div class="w-16 h-16 rounded-lg bg-red-50 flex items-center justify-center">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4v2m0 0v2m0-2v2m-6-7h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"
+            />
+          </svg>
+        </div>
       </div>
 
       <!-- Heading -->
       <h1 class="text-2xl font-semibold text-center mb-2 text-[#171717] tracking-tight">
-        {{ t('errors.access_denied_title', 'Access Denied') }}
+        {{ t('errors.server_error_title', 'Something Went Wrong') }}
       </h1>
 
       <!-- Description -->
-      <p class="text-sm text-[#666] text-center mb-2">
-        {{
-          t('errors.access_denied_message', 'You do not have permission to access this resource.')
-        }}
-      </p>
-
       <p class="text-sm text-[#666] text-center mb-8">
         {{
           t(
-            'errors.contact_admin_info',
-            'If you believe this is a mistake, please contact the administrator.'
+            'errors.server_error_message',
+            'We encountered an unexpected error. Please try again later.'
           )
         }}
       </p>
@@ -48,16 +49,16 @@ function contactAdmin() {
       <!-- Buttons -->
       <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <UButton
-          :label="t('errors.go_home', 'Go to Home')"
+          :label="t('errors.retry', 'Retry')"
           class="rounded-[6px]"
           color="neutral"
-          @click="goHome"
+          @click="handleRetry"
         />
         <UButton
-          :label="t('errors.contact_admin', 'Contact Admin')"
+          :label="t('errors.go_back', 'Go Back')"
           class="rounded-[6px]"
           variant="outline"
-          @click="contactAdmin"
+          @click="goBack"
         />
       </div>
     </div>

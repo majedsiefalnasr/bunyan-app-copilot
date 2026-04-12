@@ -29,7 +29,7 @@
     "not_found_title": "الصفحة غير موجودة",
     "not_found_message": "المورد الذي تبحث عنه غير موجود أو تم حذفه.",
     "go_home": "الذهاب للصفحة الرئيسية",
-    "access_denied_title": "وصول مرفوض",
+    "access_denied_title": "تم الرفض",
     "access_denied_message": "ليس لديك الإذن للوصول إلى هذا المورد.",
     "contact_admin_info": "إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع المسؤول.",
     "contact_admin": "الاتصال بالمسؤول",

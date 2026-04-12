@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { useLocaleRoute } from '../../composables/useLocaleRoute';
 
-const localeRoute = useLocaleRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 function goHome() {
-  localeRoute.push('/');
+  if (import.meta.client) {
+    window.location.assign(`/${locale.value}`);
+  }
 }
 
 function contactAdmin() {
-  // You can implement this to send an email or open a contact form
-  // For now, just show a notification
   alert(t('errors.contact_admin_message', 'Please contact the administrator for help.'));
 }
 </script>

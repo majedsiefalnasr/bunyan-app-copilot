@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useLocaleRoute } from '../../composables/useLocaleRoute';
 
-const router = useRouter();
+const localeRoute = useLocaleRoute();
 const { t } = useI18n();
 
 function goHome() {
-  router.push('/');
+  localeRoute.push('/');
 }
 
 function goBack() {
-  router.back();
+  localeRoute.back();
 }
 </script>
 
