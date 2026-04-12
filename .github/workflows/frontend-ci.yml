@@ -47,7 +47,9 @@ jobs:
 
       - name: Check Formatting with Prettier
         working-directory: frontend
-        run: npx prettier --check .
+        run: |
+          npx prettier --version
+          npm run format:check
 
   typecheck:
     runs-on: ubuntu-latest
