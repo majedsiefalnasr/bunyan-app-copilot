@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.output/
+.nuxt/
+.next/
+coverage/
+.DS_Store
+*.lock
