@@ -8,20 +8,29 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: MEDIUM
-Initiated: 2026-04-12T00:00:00Z
+Last Updated: 2026-04-12T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- Default, auth, and public layouts
+- Role-based navigation for all 5 roles
+- RTL/LTR + dark mode + language switcher
+- Core composables: useAuth, useApi, useNotification, useBreadcrumb, useDirection
+- Toast, breadcrumb, mobile drawer, loading, skeleton, error page
+
+Deferred Scope:
+
+- Business-domain pages
+- Auth login/register pages (STAGE_30)
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 

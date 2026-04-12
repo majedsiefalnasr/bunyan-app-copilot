@@ -6,7 +6,7 @@
   "branch": "spec/029-nuxt-shell",
   "base_branch": "develop",
   "pkg_manager": "npm",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "auto_advance": true,
   "clarifications_resolved": false,
@@ -21,12 +21,18 @@
   "current_parallel_group": null,
   "session_started_at": "2026-04-12T00:00:00Z",
   "last_updated": "2026-04-12T00:00:00Z",
-  "step_timings": {},
+  "step_timings": {
+    "specify": { "started_at": "2026-04-12T00:01:00Z", "completed_at": "2026-04-12T00:05:00Z" }
+  },
   "history": [
     {
       "event": "branch_created",
       "branch": "spec/029-nuxt-shell",
       "timestamp": "2026-04-12T00:00:00Z"
+    },
+    {
+      "event": "specify_complete",
+      "timestamp": "2026-04-12T00:05:00Z"
     }
   ]
 }
