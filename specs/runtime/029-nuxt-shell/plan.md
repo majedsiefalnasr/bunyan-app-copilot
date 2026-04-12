@@ -294,13 +294,13 @@ export function useNotification() {
 - If `route.meta.breadcrumb` is defined, use it directly
 - If not, return the manual override (if set) or empty array
 
-**Shared State Pattern (Module-Level):**
+**Shared State Pattern (Nuxt `useState` for SSR safety):**
 
 ```typescript
-// MUST be declared at MODULE LEVEL (outside the composable function)
-// so all call sites (AppBreadcrumb.vue reading items, page calling setBreadcrumbs)
-// share the SAME reactive ref — not separate instances.
-const _manualBreadcrumbs = ref<BreadcrumbItem[] | null>(null);
+// Declared at MODULE LEVEL using Nuxt's useState — provides per-request isolation
+// on SSR (no state bleed across concurrent requests) while maintaining shared
+// cross-instance reactivity on the client (same reactive ref for all call sites).
+const _manualBreadcrumbs = useState<BreadcrumbItem[] | null>('breadcrumbs.manual', () => null);
 
 export function useBreadcrumb() {
   const route = useRoute();
@@ -323,7 +323,7 @@ export function useBreadcrumb() {
 }
 ```
 
-**Key Decision:** `_manualBreadcrumbs` is declared at module level so every call site (one in `AppBreadcrumb.vue`, one in each page) shares the **same reactive reference**. Without module-level state, separate `useBreadcrumb()` calls create independent refs — `setBreadcrumbs()` from a page would not be visible to `AppBreadcrumb.vue`. Route meta remains the default source of truth; manual override is only needed for dynamic route labels.
+**Key Decision:** `useState('breadcrumbs.manual', ...)` is used instead of a plain `ref()` at module level. This gives per-request state on the server (preventing breadcrumb data leaking between concurrent SSR requests) while still sharing the same reactive ref across all client-side call sites. `setBreadcrumbs()` called from any page is visible to `AppBreadcrumb.vue` reading from the same `useState` key.
 
 **Dependencies:** `types/index.ts` (BreadcrumbItem)
 
@@ -685,18 +685,20 @@ const userMenuItems = computed<DropdownMenuGroup[]>(() => [
 **File:** `frontend/app/components/navigation/MobileDrawer.vue`
 **Action:** Create new file
 
-**Purpose:** Mobile navigation using `UDrawer`. Opens from start (inline-start = right in RTL, left in LTR). Controlled by `useUiStore().isDrawerOpen`.
+**Purpose:** Mobile navigation using `UDrawer`. Opens from the inline-start direction — right in RTL, left in LTR. Controlled by `useUiStore().isDrawerOpen`.
 
 **Nuxt UI Components:**
 
-- `UDrawer` with `v-model:open="isDrawerOpen"` and `side="start"`
+- `UDrawer` with `v-model:open="isDrawerOpen"` and `:direction="direction === 'rtl' ? 'right' : 'left'"`
+  - **Note:** `UDrawer` in Nuxt UI v4.6.1 uses `direction` prop (not `side`), accepting `'left' | 'right' | 'top' | 'bottom'` only. `side="start"` does not exist and is silently ignored.
+  - `direction` is read from `useDirection().direction` to react to RTL/LTR toggles.
 - `UNavigationMenu` orientation="vertical" inside the drawer
 
 **Props:**
 
 - `items: NavItem[]` — resolved nav items
 
-**Key Decision:** `UDrawer side="start"` uses the logical `start` side — automatically flips between left (LTR) and right (RTL) based on `document.dir`. No manual RTL handling needed.
+**Key Decision:** `:direction="direction === 'rtl' ? 'right' : 'left'"` binds UDrawer position reactively to the current direction, achieving the logical-start effect without relying on a non-existent `side` prop.
 
 **Dependencies:** `stores/ui.ts`, `types/index.ts`
 
