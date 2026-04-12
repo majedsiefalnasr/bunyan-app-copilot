@@ -21,7 +21,7 @@
     "lint:frontend": "cd frontend && npm run lint",
     "lint:frontend:fix": "cd frontend && npm run lint:fix",
     "lint:staged": "lint-staged",
-    "check": "npm run lint && npm run typecheck && npm run test",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run analyze",
     "format": "prettier --write \"**/*.{js,ts,vue,css,scss,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,ts,vue,css,scss,json,md}\"",
     "format:staged": "prettier --write",
@@ -37,14 +37,14 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:build": "docker-compose build",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "dependencies": {},
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "husky": "^8.0.0",
-    "lint-staged": "^14.0.0",
-    "prettier": "^2.8.8"
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.3.0"
   },
   "engines": {
     "node": ">=18.0.0",
