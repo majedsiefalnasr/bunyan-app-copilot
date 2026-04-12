@@ -1,12 +1,19 @@
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
-import GlobalErrorBoundary from '~/app/components/errors/GlobalErrorBoundary.vue';
+import GlobalErrorBoundary from '../../app/components/errors/GlobalErrorBoundary.vue';
 
 describe('GlobalErrorBoundary', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
+
+  type GEBInstance = {
+    $data: { hasError: boolean };
+    $nextTick: () => Promise<void> | void;
+    handleReload?: () => void;
+    handleBack?: () => void;
+  };
 
   it('renders slot when no error', () => {
     const wrapper = mount(GlobalErrorBoundary, {
@@ -58,8 +65,9 @@ describe('GlobalErrorBoundary', () => {
     });
 
     // Manually set error state for testing
-    wrapper.vm.$data.hasError = true;
-    await wrapper.vm.$nextTick();
+    const vm = wrapper.vm as unknown as GEBInstance;
+    vm.$data.hasError = true;
+    await vm.$nextTick();
 
     expect(wrapper.find('.error-boundary-ui').exists()).toBe(false); // Component structure test
   });
@@ -75,7 +83,8 @@ describe('GlobalErrorBoundary', () => {
     });
 
     // Check if component has reload functionality
-    expect(wrapper.vm.handleReload).toBeDefined();
+    const vm2 = wrapper.vm as unknown as GEBInstance;
+    expect(vm2.handleReload).toBeDefined();
   });
 
   it('provides back button', () => {
@@ -89,6 +98,7 @@ describe('GlobalErrorBoundary', () => {
     });
 
     // Check if component has back functionality
-    expect(wrapper.vm.handleBack).toBeDefined();
+    const vm3 = wrapper.vm as unknown as GEBInstance;
+    expect(vm3.handleBack).toBeDefined();
   });
 });

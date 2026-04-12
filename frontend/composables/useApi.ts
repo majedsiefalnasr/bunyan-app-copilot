@@ -1,11 +1,16 @@
-import { useErrorHandler } from '~/composables/useErrorHandler';
+import { useErrorHandler } from './useErrorHandler';
 
 export function useApi() {
   const config = useRuntimeConfig();
   const errorHandler = useErrorHandler();
 
+  const baseURL =
+    typeof config.public.apiBaseUrl === 'string' && config.public.apiBaseUrl
+      ? config.public.apiBaseUrl
+      : 'http://localhost:8000';
+
   const apiFetch = $fetch.create({
-    baseURL: config.public.apiBaseUrl || 'http://localhost:8000',
+    baseURL,
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -22,8 +27,8 @@ export function useApi() {
       options.headers.set('Accept-Language', locale || 'ar');
     },
     onResponseError({ response }) {
-      // Get correlation ID from response headers
-      const correlationId = response.headers.get('x-correlation-id');
+      // Get correlation ID from response headers (convert null -> undefined)
+      const correlationId = response.headers.get('x-correlation-id') || undefined;
 
       // Handle different status codes
       if (response.status === 401) {

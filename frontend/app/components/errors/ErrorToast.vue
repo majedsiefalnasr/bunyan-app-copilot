@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useErrorStore } from '~/stores/errorStore';
+import { useErrorStore, type Toast } from '../../../stores/errorStore';
 
 const errorStore = useErrorStore();
 const { t } = useI18n();
 
-const toasts = computed(() => errorStore.toasts);
+const toasts = computed<Toast[]>(() => errorStore.toasts);
 
 const toastStyles = {
   error: {

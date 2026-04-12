@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useToast } from '~/composables/useToast';
+import { useToast } from '../../composables/useToast';
 
 describe('useToast composable', () => {
   beforeEach(() => {
@@ -61,7 +61,7 @@ describe('useToast composable', () => {
 
     removeToast(id1);
     expect(toasts.value).toHaveLength(1);
-    expect(toasts.value[0].message).toBe('Toast 2');
+    expect(toasts.value[0]?.message).toBe('Toast 2');
   });
 
   it('auto-dismisses toasts after duration', async () => {

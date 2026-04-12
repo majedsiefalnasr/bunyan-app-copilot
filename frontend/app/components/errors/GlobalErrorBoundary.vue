@@ -2,7 +2,7 @@
 import { onErrorCaptured, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useToast } from '~/composables/useToast';
+import { useToast } from '../../../composables/useToast';
 
 interface CaughtError {
   message: string;

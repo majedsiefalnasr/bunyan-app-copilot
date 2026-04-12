@@ -1,19 +1,12 @@
 import { computed } from 'vue';
-import { useErrorStore } from '~/stores/errorStore';
+import { type Toast, useErrorStore } from '../stores/errorStore';
 
 export type ToastType = 'error' | 'warning' | 'success' | 'info';
-
-export interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
-  duration: number;
-}
 
 export function useToast() {
   const errorStore = useErrorStore();
 
-  const toasts = computed(() => errorStore.toasts);
+  const toasts = computed<Toast[]>(() => errorStore.toasts);
 
   /**
    * Show a toast notification

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { useErrorStore } from '~/stores/errorStore';
+import { useErrorStore } from '../../stores/errorStore';
 
 const router = useRouter();
 const { t } = useI18n();

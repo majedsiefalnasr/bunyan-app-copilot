@@ -1,6 +1,6 @@
 import { useI18n } from 'vue-i18n';
-import { useToast } from '~/composables/useToast';
-import { useErrorStore } from '~/stores/errorStore';
+import { useToast } from './useToast';
+import { useErrorStore } from '../stores/errorStore';
 
 interface ErrorContext {
   code?: string;
@@ -83,7 +83,7 @@ export function useErrorHandler() {
    */
   function getLocalizedMessage(code: string, fallback?: string): string {
     const key = `errors.${code.toLowerCase()}`;
-    const message = t(key, null, { missingWarn: false });
+    const message = t(key);
 
     // If translation not found, use fallback or code as message
     if (message === key) {
@@ -98,7 +98,8 @@ export function useErrorHandler() {
    */
   function handleError(error: ErrorContext & { originalError?: Error }) {
     const code = error.code || 'SERVER_ERROR';
-    const mapping = ERROR_CODE_MAP[code] || ERROR_CODE_MAP.SERVER_ERROR;
+    const mapping: ErrorMapEntry = (ERROR_CODE_MAP[code] ??
+      ERROR_CODE_MAP.SERVER_ERROR) as ErrorMapEntry;
 
     // Get localized message
     let message = error.message || getLocalizedMessage(code);
