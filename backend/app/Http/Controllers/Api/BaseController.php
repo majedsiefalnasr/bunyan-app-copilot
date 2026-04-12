@@ -2,28 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
+use App\Traits\ApiResponseTrait;
+use Illuminate\Routing\Controller;
 
+/**
+ * BaseController — API Base Class
+ *
+ * All API controllers inherit from this base class to ensure
+ * consistent response formatting via ApiResponseTrait.
+ *
+ * Enforces the unified error contract across all API endpoints.
+ *
+ * @see App\Traits\ApiResponseTrait
+ * @see specs/runtime/005-error-handling/contracts/error-response.json
+ */
 class BaseController extends Controller
 {
-    protected function success($data = null, string $message = 'Success', int $code = 200): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'data' => $data,
-            'message' => $message,
-            'errors' => [],
-        ], $code);
-    }
-
-    protected function error(string $message, array $errors = [], int $code = 400): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'data' => null,
-            'message' => $message,
-            'errors' => $errors,
-        ], $code);
-    }
+    use ApiResponseTrait;
 }

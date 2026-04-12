@@ -1,0 +1,41 @@
+{
+  "stage": "005-ERROR_HANDLING",
+  "phase": "01_PLATFORM_FOUNDATION",
+  "branch": "spec/005-error-handling",
+  "status": "IN_PROGRESS",
+  "tasks_total": 89,
+  "tasks_completed": 0,
+  "current_task": "T001",
+  "current_phase": 1,
+  "package_managers": {
+    "backend": "composer",
+    "frontend": "npm"
+  },
+  "phases": {
+    "1": {
+      "name": "API Contract & Error Code Enum",
+      "tasks": "T001-T018",
+      "status": "NOT_STARTED",
+      "completed": 0
+    },
+    "2": {
+      "name": "Backend Logging & Correlation IDs",
+      "tasks": "T019-T047",
+      "status": "NOT_STARTED",
+      "completed": 0
+    },
+    "3": {
+      "name": "Frontend Error Handling",
+      "tasks": "T048-T070",
+      "status": "NOT_STARTED",
+      "completed": 0
+    },
+    "4": {
+      "name": "Documentation & Testing",
+      "tasks": "T071-T089",
+      "status": "NOT_STARTED",
+      "completed": 0
+    }
+  },
+  "last_update": "2026-04-11T00:00:00Z"
+}

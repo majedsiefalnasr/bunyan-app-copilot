@@ -96,27 +96,67 @@ Language: Arabic-first (Full RTL support), multi-language ready.
 
 ### Error Contract
 
-All API responses follow Laravel resource format:
+All API responses follow this unified contract:
+
+**Success Response:**
 
 ```json
 {
   "success": true,
   "data": {},
-  "message": "string",
-  "errors": {}
+  "error": null
 }
 ```
 
-Error responses:
+**Error Response:**
 
 ```json
 {
   "success": false,
   "data": null,
-  "message": "Error description",
-  "errors": { "field": ["validation message"] }
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "User-friendly error message",
+    "details": { "field": ["Field-level error message"] }
+  }
 }
 ```
+
+**Response Components:**
+
+- `success` (boolean) — Request success indicator (always present)
+- `data` (object/array/null) — Response payload (null on error, object/array on success)
+- `error` (object/null) — Error details with code, message, and field-level details (null on success)
+  - `code` (string) — Machine-readable error code (e.g., `VALIDATION_ERROR`)
+  - `message` (string) — User-friendly error message (localized if applicable)
+  - `details` (object/null) — Field-level errors for validation; other metadata as needed (optional, null if not applicable)
+
+### Error Code Registry
+
+All error codes are semantic and stable (never change once defined).
+
+| Code                           | HTTP | Description                                         |
+| ------------------------------ | ---- | --------------------------------------------------- |
+| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials (wrong email/password)    |
+| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired or revoked             |
+| `AUTH_UNAUTHORIZED`            | 403  | User authenticated but lacks permission             |
+| `RBAC_ROLE_DENIED`             | 403  | Specific role not allowed for this action           |
+| `RESOURCE_NOT_FOUND`           | 404  | Requested resource does not exist                   |
+| `VALIDATION_ERROR`             | 422  | Input validation failed (bad data format)           |
+| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition in workflow                |
+| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites for workflow step not satisfied       |
+| `PAYMENT_FAILED`               | 422  | Payment processing failed (declined card, etc.)     |
+| `CONFLICT_ERROR`               | 409  | Resource conflict (duplicate, uniqueness violation) |
+| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests from client                       |
+| `SERVER_ERROR`                 | 500  | Internal server error (unhandled exception)         |
+
+**Usage Notes:**
+
+- Validation errors MUST include field-level details in `error.details`
+- Authentication/authorization errors MUST NOT expose role information
+- Server errors (5xx) MUST NOT expose stack traces to clients (log server-side only)
+- All error messages MUST support Arabic/English localization
+- Future stages MAY extend this registry with domain-specific error codes (via enum versioning)
 
 ---
 

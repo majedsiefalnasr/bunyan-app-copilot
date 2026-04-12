@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Error Handling & Response Contract",
+  "description": "Unified API response format for all Bunyan endpoints",
+  "definitions": {
+    "successResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "const": true,
+          "description": "Always true for successful responses"
+        },
+        "data": {
+          "description": "Response payload (object, array, or null)",
+          "oneOf": [{ "type": "object" }, { "type": "array" }, { "type": "null" }]
+        },
+        "error": {
+          "type": "null",
+          "description": "Always null for successful responses"
+        }
+      },
+      "required": ["success", "data", "error"],
+      "additionalProperties": false
+    },
+    "errorResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "const": false,
+          "description": "Always false for error responses"
+        },
+        "data": {
+          "type": "null",
+          "description": "Always null for error responses"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Machine-readable error code (e.g., AUTH_INVALID_CREDENTIALS)",
+              "enum": [
+                "AUTH_INVALID_CREDENTIALS",
+                "AUTH_TOKEN_EXPIRED",
+                "AUTH_UNAUTHORIZED",
+                "RBAC_ROLE_DENIED",
+                "RESOURCE_NOT_FOUND",
+                "VALIDATION_ERROR",
+                "WORKFLOW_INVALID_TRANSITION",
+                "WORKFLOW_PREREQUISITES_UNMET",
+                "PAYMENT_FAILED",
+                "RATE_LIMIT_EXCEEDED",
+                "CONFLICT_ERROR",
+                "SERVER_ERROR"
+              ]
+            },
+            "message": {
+              "type": "string",
+              "description": "Human-readable error message in user's locale (Arabic or English)"
+            },
+            "details": {
+              "type": "object",
+              "description": "Field-level error details (only for VALIDATION_ERROR)",
+              "additionalProperties": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "required": ["code", "message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["success", "data", "error"],
+      "additionalProperties": false
+    },
+    "genericObject": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "examples": {
+    "successExample": {
+      "success": true,
+      "data": {
+        "id": 1,
+        "email": "customer@example.com",
+        "name": "Ahmed",
+        "role": "customer"
+      },
+      "error": null
+    },
+    "validationErrorExample": {
+      "success": false,
+      "data": null,
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "The given data was invalid.",
+        "details": {
+          "email": ["The email field is required."],
+          "password": ["The password must be at least 8 characters."]
+        }
+      }
+    },
+    "authErrorExample": {
+      "success": false,
+      "data": null,
+      "error": {
+        "code": "AUTH_INVALID_CREDENTIALS",
+        "message": "Invalid email or password."
+      }
+    },
+    "notFoundExample": {
+      "success": false,
+      "data": null,
+      "error": {
+        "code": "RESOURCE_NOT_FOUND",
+        "message": "The requested resource was not found."
+      }
+    },
+    "rateLimitExample": {
+      "success": false,
+      "data": null,
+      "error": {
+        "code": "RATE_LIMIT_EXCEEDED",
+        "message": "Too many requests. Please try again later."
+      }
+    }
+  },
+  "notes": {
+    "httpStatusCodes": {
+      "200": "Success",
+      "201": "Created",
+      "204": "No Content",
+      "400": "Bad Request",
+      "401": "Unauthorized (AUTH_INVALID_CREDENTIALS, AUTH_TOKEN_EXPIRED)",
+      "403": "Forbidden (AUTH_UNAUTHORIZED, RBAC_ROLE_DENIED)",
+      "404": "Not Found (RESOURCE_NOT_FOUND)",
+      "409": "Conflict (CONFLICT_ERROR)",
+      "422": "Unprocessable Entity (VALIDATION_ERROR, WORKFLOW_*, PAYMENT_FAILED)",
+      "429": "Too Many Requests (RATE_LIMIT_EXCEEDED)",
+      "500": "Internal Server Error (SERVER_ERROR)"
+    },
+    "fieldLevelErrors": "VALIDATION_ERROR responses include 'details' object with field names as keys and array of error messages as values.",
+    "localization": "Error 'message' field is localized to user's Accept-Language (Arabic or English). Technical stack traces are never exposed to clients.",
+    "correlationId": "Response will include X-Correlation-ID header for request tracing. Include this when reporting issues."
+  }
+}

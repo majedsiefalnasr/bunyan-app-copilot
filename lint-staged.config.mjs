@@ -32,7 +32,7 @@ export default {
   'frontend/**/*.{json,css}': ['prettier --write'],
   'frontend/**/*.{vue,ts,js,mjs}': [
     'prettier --write',
-    'eslint --max-warnings=0 --fix',
+    'bash -c "cd frontend && ./node_modules/.bin/eslint --max-warnings=0 --fix"',
   ],
 
   // Backend: Pint (formatting) + PHPStan (static analysis) for PHP

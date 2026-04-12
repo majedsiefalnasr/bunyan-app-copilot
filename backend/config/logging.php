@@ -1,5 +1,6 @@
 <?php
 
+use App\Logging\MaskSensitiveProcessor;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -63,6 +64,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            'processors' => [MaskSensitiveProcessor::class],
         ],
 
         'daily' => [
@@ -71,6 +73,33 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+            'processors' => [MaskSensitiveProcessor::class],
+        ],
+
+        'requests' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/requests.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_REQUESTS_DAYS', 30),
+            'replace_placeholders' => true,
+            'processors' => [MaskSensitiveProcessor::class],
+        ],
+
+        'audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/audit.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => env('LOG_AUDIT_DAYS', 90),
+            'replace_placeholders' => true,
+        ],
+
+        'errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/errors.log'),
+            'level' => 'error',
+            'days' => env('LOG_ERRORS_DAYS', 30),
+            'replace_placeholders' => true,
+            'processors' => [MaskSensitiveProcessor::class],
         ],
 
         'slack' => [
@@ -91,7 +120,7 @@ return [
                 'port' => env('PAPERTRAIL_PORT'),
                 'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
-            'processors' => [PsrLogMessageProcessor::class],
+            'processors' => [MaskSensitiveProcessor::class, PsrLogMessageProcessor::class],
         ],
 
         'stderr' => [
@@ -102,7 +131,7 @@ return [
                 'stream' => 'php://stderr',
             ],
             'formatter' => env('LOG_STDERR_FORMATTER'),
-            'processors' => [PsrLogMessageProcessor::class],
+            'processors' => [MaskSensitiveProcessor::class, PsrLogMessageProcessor::class],
         ],
 
         'syslog' => [
