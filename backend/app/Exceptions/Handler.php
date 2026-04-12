@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
             // Log the exception with context
             $context = [
                 'exception_type' => get_class($e),
-                'correlation_id' => request()->correlationId() ?? 'N/A',
+                'correlation_id' => request()->attributes->get('correlation_id') ?? 'N/A',
                 'user_id' => auth()->id(),
                 'endpoint' => request()->path(),
                 'method' => request()->method(),
@@ -80,7 +80,7 @@ class Handler extends ExceptionHandler
      * Handles JSON API requests specially with proper error contract responses.
      * Returns HTML for non-API requests (default Laravel behavior).
      */
-    public function render($request, Throwable $e): JsonResponse|mixed
+    public function render($request, Throwable $e): mixed
     {
         // For JSON API requests, render standard error responses
         if ($request->expectsJson()) {
@@ -162,7 +162,7 @@ class Handler extends ExceptionHandler
             'user_role' => $e->role,
             'required_role' => $e->requiredRole,
             'endpoint' => request()->path(),
-            'correlation_id' => request()->correlationId() ?? 'N/A',
+            'correlation_id' => request()->attributes->get('correlation_id') ?? 'N/A',
         ]);
 
         return response()->json([
@@ -241,7 +241,7 @@ class Handler extends ExceptionHandler
             'message' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
-            'correlation_id' => request()->correlationId() ?? 'N/A',
+            'correlation_id' => request()->attributes->get('correlation_id') ?? 'N/A',
             'user_id' => auth()->id(),
             'endpoint' => request()->path(),
         ]);

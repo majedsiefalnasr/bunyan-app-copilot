@@ -64,15 +64,17 @@ class RequestResponseLoggingMiddleware
      */
     private function logRequest(Request $request, Response $response, float $duration): void
     {
+        $user = auth()->user();
+
         $logData = [
             'correlation_id' => $request->attributes->get('correlation_id') ?? 'N/A',
             'method' => $request->method(),
             'uri' => $request->path(),
             'status' => $response->getStatusCode(),
             'duration_ms' => round($duration, 2),
-            'payload_size_bytes' => strlen($response->getContent() ?? ''),
+            'payload_size_bytes' => strlen((string) $response->getContent()),
             'user_id' => auth()->id(),
-            'user_role' => auth()->user()?->role ?? 'guest',
+            'user_role' => $user ? $user->role : 'guest',
             'ip' => $request->ip(),
         ];
 
