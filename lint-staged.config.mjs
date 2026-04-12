@@ -1,43 +1,52 @@
-/** @type {import('lint-staged').Config} */
-
 /**
  * lint-staged configuration for Bunyan.
  *
  * Strategy:
- * - Prettier: Markdown, YAML, JSON, CSS (declarative formatting)
- * - ESLint: JS, TS, Vue (linting + fixing)
- * - Backend: Pint (PHP formatting) + PHPStan (analysis)
- * - SKILL.md: Size validation (Q4 governance requirement)
+ * - Prettier: single root `prettier` ^3 (same major as `frontend/`); per-file config from nearest `.prettierrc`
+ * - Frontend ESLint: `cd frontend` + flat config (must not run ESLint from repo root)
+ * - Backend: Pint + PHPStan on full `backend/` when any PHP is staged (reliable analysis)
+ * - SKILL.md: optional size validation when `scripts/ci/validate-skill-sizes.sh` exists
  *
- * Key learnings applied:
- * 1. Simpler glob patterns (no complex path manipulation)
- * 2. Removed unnecessary 'cd' commands (let tools discover root)
- * 3. Separated concerns clearly (format vs. lint vs. analyze)
- * 4. Added wrapper for optional/fragile tools (safety guard)
+ * Notes:
+ * - lint-staged v10+ re-stages formatter output automatically — do not run `git add`.
+ * - Avoid `bash -c "…"` with string commands for matched files: extra argv would attach to bash, not Pint.
+ *
+ * @type {import('lint-staged').Config}
  */
-
 export default {
-  // Prettier: Markdown and YAML formatting only
-  '*.md': ['prettier --write'],
+  // Prettier — Markdown outside `frontend/` (must not use `!(frontend/**/*.md)` — that matches almost all files)
+  './*.md': ['prettier --write'],
+  '!(frontend)/**/*.md': ['prettier --write'],
   '*.{yml,yaml}': ['prettier --write'],
 
-  // SKILL.md validation: Enforce <500 line limit (governance requirement)
-  // Runs a size validation script if it exists; otherwise passes silently
+  // Prettier — `.mdc` outside `frontend/`
+  '!(frontend)/**/*.mdc': ['prettier --write'],
+  './*.mdc': ['prettier --write'],
+
+  // Root-only JSON / scripts (slash in pattern disables matchBase so we do not hit `frontend/package.json`)
+  './*.json': ['prettier --write'],
+  './*.{js,mjs,cjs,ts}': ['prettier --write'],
+
+  // SKILL.md validation — runs when script is executable; otherwise no-op
   '**/SKILL.md': [
-    'bash scripts/ci/validate-skill-sizes.sh 2>/dev/null || true',
+    'bash -c "test -x scripts/ci/validate-skill-sizes.sh && scripts/ci/validate-skill-sizes.sh || true"',
   ],
 
-  // Frontend: Prettier (format) + ESLint (lint+fix) for code files
-  // Combined pattern for JSON (config) + Code files
-  'frontend/**/*.{json,css}': ['prettier --write'],
-  'frontend/**/*.{vue,ts,js,mjs}': [
+  // Frontend — declarative / docs (root Prettier ^3; resolves `frontend/.prettierrc.json`)
+  'frontend/**/*.{json,css,md,mdc}': ['prettier --write'],
+
+  // Frontend — code (Prettier from repo root; ESLint must run with `frontend/` as cwd for flat config)
+  'frontend/**/*.{vue,ts,js,mjs,cjs}': [
     'prettier --write',
-    'bash -c "cd frontend && ./node_modules/.bin/eslint --max-warnings=0 --fix"',
+    (files) =>
+      `bash -lc 'cd frontend && npx eslint --max-warnings=0 --fix ${files
+        .map((f) => JSON.stringify(f))
+        .join(' ')}'`,
   ],
 
-  // Backend: Pint (formatting) + PHPStan (static analysis) for PHP
-  'backend/**/*.php': [
-    'bash -c "cd backend && vendor/bin/pint"',
-    'bash -c "cd backend && vendor/bin/phpstan analyse --memory-limit=512M"',
+  // Backend — function form so file paths are not appended after `bash -lc` (full tree run)
+  'backend/**/*.php': () => [
+    'bash -lc "cd backend && vendor/bin/pint"',
+    'bash -lc "cd backend && vendor/bin/phpstan analyse --memory-limit=512M"',
   ],
 };

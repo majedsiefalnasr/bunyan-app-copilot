@@ -29,15 +29,15 @@ frontend/
 
 ```vue
 <script setup lang="ts">
-  interface Props {
-    title: string
-    status: string
-  }
+interface Props {
+  title: string;
+  status: string;
+}
 
-  const props = defineProps<Props>()
-  const emit = defineEmits<{
-    update: [value: string]
-  }>()
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  update: [value: string];
+}>();
 </script>
 
 <template>

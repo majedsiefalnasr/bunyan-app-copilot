@@ -80,7 +80,7 @@ Before reasoning, planning, or code generation, load these in order:
 ### Error Contract
 
 ```json
-{"success": true, "data": {}, "message": "string", "errors": {}}
+{ "success": true, "data": {}, "message": "string", "errors": {} }
 ```
 
 ### Migration Discipline

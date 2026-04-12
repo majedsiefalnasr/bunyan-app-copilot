@@ -1,0 +1,74 @@
+name: Pre-Commit Guard
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    name: Validate PR Commits
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, redis
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Check PHP Formatting
+        working-directory: backend
+        run: composer run lint
+
+      - name: Check JavaScript/Vue Formatting
+        working-directory: frontend
+        env:
+          NODE_OPTIONS: -r ./scripts/polyfill-groupby.cjs
+        run: npm run lint
+
+      - name: Check Prettier Formatting
+        working-directory: frontend
+        run: npx prettier --check .
+
+      - name: Check TypeScript
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Lint PHP with PHPStan
+        working-directory: backend
+        run: composer run analyze
