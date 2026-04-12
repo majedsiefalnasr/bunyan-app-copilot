@@ -8,17 +8,16 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: HIGH
 Last Updated: 2026-04-12T00:00:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- 9 API endpoints (register, login, logout, forgot/reset password, email verify/resend, profile get/update)
-- AuthService + UserRepository extensions
-- 5 Form Requests, 1 API Resource
-- 4 frontend pages with RTL/Arabic
-- Pinia auth store, API composable, route middleware
+- Total: 45 atomic tasks across 7 phases
+- Backend: 19 tasks (model, service, requests, resource, controller, routes, tests)
+- Frontend: 18 tasks (types, store, composables, schemas, middleware, pages, i18n)
+- Tests: 8 tasks (feature tests for all endpoints + frontend tests)
 
 Deferred Scope:
 
@@ -27,10 +26,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Technical plan compliant — task generation authorized
+- Task set compliant — drift analysis required before implementation
 
 Notes:
-Technical plan complete. Guardian and API Designer both PASS. Task breakdown in progress.
+Atomic task set generated. Drift analysis gate pending.
 
 ## Objective
 

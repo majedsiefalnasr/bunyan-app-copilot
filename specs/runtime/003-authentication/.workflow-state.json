@@ -6,15 +6,15 @@
   "branch": "spec/003-authentication",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "plan",
+  "current_step": "tasks",
   "stage_status": "DRAFT",
   "auto_advance": true,
   "clarifications_resolved": true,
   "drift_passed": false,
   "implementation_allowed": false,
   "plan_completed": true,
-  "tasks_total": null,
-  "tasks_completed": null,
+  "tasks_total": 45,
+  "tasks_completed": 0,
   "deferred_tasks": [],
   "guardian_verdicts": {},
   "parallel_task_groups": [],
@@ -24,7 +24,8 @@
   "step_timings": {
     "specify": { "started_at": "2026-04-12T00:00:00Z", "completed_at": "2026-04-12T00:00:00Z" },
     "clarify": { "started_at": "2026-04-12T00:00:00Z", "completed_at": "2026-04-12T00:00:00Z" },
-    "plan": { "started_at": "2026-04-12T00:00:00Z", "completed_at": "2026-04-12T00:00:00Z" }
+    "plan": { "started_at": "2026-04-12T00:00:00Z", "completed_at": "2026-04-12T00:00:00Z" },
+    "tasks": { "started_at": "2026-04-12T00:00:00Z", "completed_at": "2026-04-12T00:00:00Z" }
   },
   "history": [
     {
@@ -42,6 +43,11 @@
     },
     {
       "event": "plan_complete",
+      "timestamp": "2026-04-12T00:00:00Z"
+    },
+    {
+      "event": "tasks_complete",
+      "tasks_total": 45,
       "timestamp": "2026-04-12T00:00:00Z"
     }
   ]
