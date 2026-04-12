@@ -431,7 +431,7 @@ Implement a complete authentication system using Laravel Sanctum for token-based
 }
 ```
 
-### POST `/api/v1/auth/email/verify/{id}/{hash}` (Signed URL)
+### GET `/api/v1/auth/email/verify/{id}/{hash}` (Signed URL)
 
 **Success Response (200):**
 

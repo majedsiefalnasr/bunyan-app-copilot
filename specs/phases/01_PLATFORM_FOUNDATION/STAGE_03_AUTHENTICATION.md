@@ -8,33 +8,29 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: HIGH
 Last Updated: 2026-04-12T00:00:00Z
 
-Scope Defined:
+Scope Planned:
 
-- Registration (4 roles, admin excluded), login, logout with Sanctum tokens
-- Password reset (email-based, anti-enumeration)
-- Email verification (signed URLs)
-- User profile get/update
-- Frontend auth pages with RTL/Arabic, Nuxt UI components
-- Pinia auth store with useCookie for SSR
-- Route middleware (auth + guest)
-- Saudi phone validation regex
+- 9 API endpoints (register, login, logout, forgot/reset password, email verify/resend, profile get/update)
+- AuthService + UserRepository extensions
+- 5 Form Requests, 1 API Resource
+- 4 frontend pages with RTL/Arabic
+- Pinia auth store, API composable, route middleware
 
 Deferred Scope:
 
 - RBAC middleware on domain routes (downstream)
 - OAuth, 2FA, admin user management
-- Session-based auth, avatar upload, account deletion
 
 Architecture Governance Compliance:
 
-- Clarifications resolved — planning authorized
+- Technical plan compliant — task generation authorized
 
 Notes:
-All specification ambiguities resolved. 5 clarifications auto-resolved. Ready for technical planning.
+Technical plan complete. Guardian and API Designer both PASS. Task breakdown in progress.
 
 ## Objective
 
