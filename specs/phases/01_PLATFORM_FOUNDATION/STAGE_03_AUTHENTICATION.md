@@ -8,20 +8,31 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
-Risk Level: UNKNOWN
-Initiated: 2026-04-12T00:00:00Z
+Step: specify
+Risk Level: HIGH
+Last Updated: 2026-04-12T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- Registration, login, logout with Sanctum token auth
+- Password reset flow (email-based)
+- Email verification (send, resend, verify)
+- User profile get/update
+- Frontend auth pages with RTL/Arabic
+- Pinia auth store, API client, route middleware
+
+Deferred Scope:
+
+- RBAC middleware on domain routes (downstream)
+- OAuth, 2FA, admin user management
+- Session-based auth, avatar upload, account deletion
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. 13 user stories, 64 acceptance criteria, 22 technical requirements. Clarification step pending.
 
 ## Objective
 
