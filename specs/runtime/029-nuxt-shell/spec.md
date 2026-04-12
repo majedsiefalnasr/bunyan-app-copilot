@@ -32,7 +32,8 @@ This stage does **not** implement any business-domain pages. It establishes the 
 - Global error boundary page (`error.vue`) using `UAlert` with `color="error"`
 - User avatar + dropdown via `UAvatar` + `UDropdownMenu` (logout, profile, settings)
 - Sliding sidebar on mobile via `USlideover`
-- Core composables: `useAuth`, `useApi`, `useNotification`, `useBreadcrumb`, `useDirection`
+- Core composables: `useAuth`, `useApi`, `useNotification`, `useBreadcrumb`, `useDirection`, `usePreferences`
+- `plugins/direction.client.ts` — applies persisted `dir` before Vue mounts (prevents CLS flash)
 
 ### Out of Scope
 
@@ -487,11 +488,13 @@ export default defineNuxtConfig({
 
 ## API Integration Points
 
-| Endpoint                  | Method | Used By         | Purpose                                  |
-| ------------------------- | ------ | --------------- | ---------------------------------------- |
-| `GET /api/user`           | GET    | `useAuth`       | Fetch authenticated user profile on load |
-| `DELETE /api/auth/logout` | DELETE | `useAuth`       | Terminate session, clear token           |
-| `GET /api/auth/me`        | GET    | `useAuth` (alt) | Returns current user role + permissions  |
+| Endpoint                     | Method | Used By   | Purpose                                       |
+| ---------------------------- | ------ | --------- | --------------------------------------------- |
+| `GET /api/v1/user`           | GET    | `useAuth` | Fetch authenticated user profile on load      |
+| `DELETE /api/v1/auth/logout` | DELETE | `useAuth` | Terminate session, clear Sanctum token cookie |
+| `GET /api/v1/auth/me`        | GET    | `useAuth` | Returns current user role + permissions       |
+
+**Auth Strategy:** Laravel Sanctum API tokens stored in an accessible (non-httpOnly) cookie `auth_token`. `useApi` sends `Authorization: Bearer {token}` header. On 401, `useApi` clears the cookie and redirects to `/auth/login` (no token refresh — Sanctum tokens are long-lived; re-login required).
 
 All API calls use `useApi` composable. No direct `$fetch` outside of composables.
 
@@ -666,3 +669,66 @@ export default defineNuxtRouteMiddleware(() => {
 ## Open Questions
 
 None. The stage file and platform context provide sufficient detail for a complete specification.
+
+---
+
+## Clarifications
+
+### Session 2026-04-12
+
+**Q1:** How should the sidebar behave on tablet viewports (768px–1024px)? Should it collapse to icon-only mode, or be fully hidden like mobile?
+**A1:** Collapsed to icon-only mode on tablet (768px–1024px). Expand on hover or click. Full sidebar on desktop (> 1024px), drawer on mobile (< 768px). `AppSidebar.vue` must implement three distinct states: `full` (desktop), `icon-only` (tablet), `hidden` (mobile, replaced by `MobileDrawer.vue`).
+
+**Q2:** Should dark mode preference and direction (RTL/LTR) be stored in Pinia reactive state, localStorage, or both?
+**A2:** Store in both — Pinia for reactive in-session state, `localStorage` for persistence across sessions. Implement a `usePreferences` composable (`frontend/composables/usePreferences.ts`) that reads from `localStorage` on init and writes back on change. `useDirection` and `useColorMode` should delegate persistence to `usePreferences`. Add `usePreferences.ts` to the File Delivery Map and scope.
+
+**Q3:** Should `useApi` handle token refresh automatically on 401, or delegate entirely to `useAuth`?
+**A3:** `useApi` should detect 401 responses, call `useAuth().refreshToken()`, and retry the original request once. If the refresh itself fails (another 401 or network error), clear auth state and redirect to `/auth/login`. `useApi` is the single retry point — no retry logic elsewhere. A `POST /api/auth/refresh` endpoint must be confirmed upstream and added to the API Integration Points table.
+
+**Q4:** For role-based navigation, should each role see only their own items, or a superset with disabled/greyed-out items indicating unavailable features?
+**A4:** Each role sees ONLY their own nav items. No disabled, greyed-out, or hidden-but-present items. Nav items are strictly filtered by role from the central `NAV_ITEMS_BY_ROLE` config. This prevents information leakage about routes accessible to other roles.
+
+**Q5:** Should `useBreadcrumb` auto-generate breadcrumb items from route metadata, or require manual definition on every page?
+**A5:** Auto-generate from `route.meta.breadcrumb` array if present on the current route. Fall back to splitting `route.name` or `route.path` into segments when `route.meta.breadcrumb` is absent. Pages with complex or non-standard hierarchies can call `setBreadcrumb(items)` imperatively to override auto-generation entirely.
+
+---
+
+## Security & Architecture Audit (2026-04-12)
+
+### 🔴 FLAG 1 — Token Handling Contradiction
+
+**Location:** `useApi` composable spec + Security NFR
+**Issue:** The spec states `useApi` attaches `Authorization: Bearer {token}` from `useAuthStore`, but the Security NFR states "No authentication token stored in `localStorage` — use `httpOnly` cookie or Pinia in-memory only." The platform rules also state "Laravel Sanctum tokens via cookie-based auth." With cookie-based Sanctum, the browser sends the auth cookie automatically — `useApi` must NOT manually attach a Bearer header. Instead, `useApi` must set `credentials: 'include'` on all `$fetch` calls and omit the `Authorization` header entirely. Manually reading a token from Pinia and attaching it as a header would expose the token to JavaScript and defeat the httpOnly cookie security model.
+**Resolution Required:** Replace Bearer header logic in `useApi` with `credentials: 'include'`. Remove `token` from `useAuthStore` public surface. Confirm with backend that Sanctum is configured for SPA cookie auth (`SANCTUM_STATEFUL_DOMAINS`).
+
+### 🔴 FLAG 2 — Missing Refresh Token Endpoint in API Table
+
+**Location:** API Integration Points table
+**Issue:** Clarification A3 requires `useApi` to call `useAuth().refreshToken()` on 401, which implies a `POST /api/auth/refresh` endpoint. This endpoint is not listed in the API Integration Points table and may not exist in the upstream backend stage.
+**Resolution Required:** Add `POST /api/auth/refresh` to the API Integration Points table. Confirm the backend stage that implements this endpoint is listed as an upstream dependency. If the endpoint does not exist, strip refresh logic from `useApi` and use session token invalidation only.
+
+### 🟡 FLAG 3 — `role.ts` Middleware Logic Unspecified
+
+**Location:** Middleware section
+**Issue:** `frontend/middleware/role.ts` is listed in the file delivery map but no implementation sketch or `route.meta` convention is defined for it (unlike `auth.ts` which has a code snippet). It is unclear how routes declare their required role (e.g., `route.meta.requiredRole: 'admin'`), what the redirect target is for each role, and whether role checking is flat (single role) or bitmasked (multiple roles allowed).
+**Resolution Required:** Add a code sketch for `role.ts` mirroring the `auth.ts` snippet. Define the `route.meta.requiredRole` convention and the redirect-to-own-dashboard logic per role.
+
+### 🟡 FLAG 4 — `usePreferences` Composable Missing from File Delivery Map
+
+**Location:** File Delivery Map + Scope
+**Issue:** Clarification A2 introduces a `usePreferences` composable responsible for syncing direction and dark mode to localStorage. This file (`frontend/composables/usePreferences.ts`) is not listed in the File Delivery Map or In Scope section.
+**Resolution Required:** Add `frontend/composables/usePreferences.ts` to File Delivery Map and In Scope. Add a corresponding unit test entry in the Testing Strategy table.
+
+### 🟡 FLAG 5 — SSR Hydration Flash Risk for Direction and Dark Mode
+
+**Location:** NFR Performance + RTL/Arabic Support
+**Issue:** The `nuxt.config.ts` snippet sets `htmlAttrs: { dir: 'rtl', lang: 'ar' }` as a static default, which prevents the SSR flash for the default locale. However, if a user has stored `ltr` in `localStorage`, there will be a hydration mismatch (server renders `rtl`, client switches to `ltr` on mount). This causes a CLS violation counter to the < 0.1 target and a potential FOUC.
+**Resolution Required:** Use a Nuxt plugin (`plugins/direction.client.ts`) to read `localStorage.getItem('bunyan_direction')` synchronously before Vue mounts, and call `document.documentElement.setAttribute('dir', ...)` before the first paint. This is a client-only plugin — it does not run on the server, avoiding SSR mismatch.
+
+### 🟢 INFO — XSS Risk Assessment: Low
+
+No `v-html` directives are used in the spec. Toast messages are routed through i18n keys. Error messages are static strings from the platform error code registry. No unescaped user-generated content rendered in the shell. XSS vector is low for this stage.
+
+### 🟢 INFO — Error Contract Compliance: Partial
+
+`useApi` returns `{ success, data, error }` envelope as required by the platform error contract. However, the spec does not define what `useNotification` does when receiving a structured `error.details` object (field-level errors). Since the shell has no forms, this is not critical for this stage, but downstream stages should note that `useNotification` currently only accepts a plain string `msg`.

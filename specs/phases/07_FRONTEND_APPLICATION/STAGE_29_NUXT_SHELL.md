@@ -8,29 +8,31 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: MEDIUM
-Last Updated: 2026-04-12T00:00:00Z
+Last Updated: 2026-04-12T00:10:00Z
 
 Scope Defined:
 
-- Default, auth, and public layouts
-- Role-based navigation for all 5 roles
-- RTL/LTR + dark mode + language switcher
-- Core composables: useAuth, useApi, useNotification, useBreadcrumb, useDirection
+- Default / auth / public layouts with Nuxt UI components
+- Role-based navigation (5 roles) — each role sees only their own items
+- RTL/LTR + dark mode + language switcher (AR/EN)
+- useAuth, useApi, useNotification, useBreadcrumb, useDirection, usePreferences composables
 - Toast, breadcrumb, mobile drawer, loading, skeleton, error page
+- plugins/direction.client.ts for SSR hydration
 
 Deferred Scope:
 
 - Business-domain pages
 - Auth login/register pages (STAGE_30)
+- Token refresh endpoint (not available)
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 
