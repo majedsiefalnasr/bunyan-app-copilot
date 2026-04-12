@@ -86,5 +86,93 @@
         "supervising_architect": "Supervising Architect",
         "field_engineer": "Field Engineer",
         "admin": "Admin"
+    },
+    "auth": {
+        "login": {
+            "title": "Sign In",
+            "subtitle": "Enter your credentials to access your account",
+            "email": "Email",
+            "email_placeholder": "Enter your email",
+            "password": "Password",
+            "password_placeholder": "Enter your password",
+            "submit": "Sign In",
+            "forgot_password": "Forgot password?",
+            "no_account": "Don't have an account?",
+            "register_link": "Create an account",
+            "success": "Signed in successfully",
+            "error": "Sign in failed"
+        },
+        "register": {
+            "title": "Create Account",
+            "subtitle": "Create your account to start using Bunyan",
+            "name": "Full Name",
+            "name_placeholder": "Enter your full name",
+            "email": "Email",
+            "email_placeholder": "Enter your email",
+            "phone": "Phone Number",
+            "phone_placeholder": "05xxxxxxxx",
+            "password": "Password",
+            "password_placeholder": "Enter your password",
+            "password_confirmation": "Confirm Password",
+            "password_confirmation_placeholder": "Re-enter your password",
+            "role": "Account Type",
+            "role_placeholder": "Select account type",
+            "submit": "Create Account",
+            "has_account": "Already have an account?",
+            "login_link": "Sign in",
+            "success": "Account created successfully",
+            "error": "Account creation failed"
+        },
+        "forgot_password": {
+            "title": "Forgot Password",
+            "subtitle": "Enter your email to receive a password reset link",
+            "email": "Email",
+            "email_placeholder": "Enter your email",
+            "submit": "Send Reset Link",
+            "back_to_login": "Back to Sign In",
+            "success": "A password reset link has been sent to your email",
+            "error": "Failed to send reset link"
+        },
+        "reset_password": {
+            "title": "Reset Password",
+            "subtitle": "Enter your new password",
+            "password": "New Password",
+            "password_placeholder": "Enter your new password",
+            "password_confirmation": "Confirm Password",
+            "password_confirmation_placeholder": "Re-enter your new password",
+            "submit": "Reset Password",
+            "success": "Password reset successfully",
+            "error": "Failed to reset password"
+        },
+        "verify_email": {
+            "title": "Verify Email",
+            "subtitle": "Please verify your email address to continue",
+            "message": "A verification link has been sent to your email. Please check your inbox.",
+            "resend": "Resend Verification Link",
+            "resend_success": "Verification link has been resent",
+            "resend_error": "Failed to resend verification link",
+            "verified": "Your email has been verified successfully",
+            "already_verified": "Your email is already verified"
+        },
+        "logout": {
+            "button": "Sign Out",
+            "success": "Signed out successfully"
+        },
+        "validation": {
+            "email_required": "Email is required",
+            "email_invalid": "Email is not valid",
+            "password_required": "Password is required",
+            "password_min": "Password must be at least 8 characters",
+            "password_confirmation": "Passwords do not match",
+            "name_required": "Name is required",
+            "name_max": "Name must not exceed 255 characters",
+            "phone_required": "Phone number is required",
+            "phone_invalid": "Phone number is not valid (must start with 05 or +9665)",
+            "role_required": "Account type is required"
+        },
+        "dashboard": {
+            "welcome": "Welcome, {name}",
+            "title": "Dashboard"
+        }
     }
 }

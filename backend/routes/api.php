@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,33 @@ Route::middleware('api')->prefix('v1')->group(function () {
     });
 
     // Additional API routes will be added by other stages
+
+    /**
+     * Authentication Endpoints
+     * Registration, login, logout, password reset, email verification, profile
+     */
+    Route::prefix('auth')->group(function () {
+        // Public auth routes (with rate limiting)
+        Route::post('register', [AuthController::class, 'register'])
+            ->middleware('throttle:auth-register');
+        Route::post('login', [AuthController::class, 'login'])
+            ->middleware('throttle:auth-login');
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
+            ->middleware('throttle:auth-forgot-password');
+        Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+        // Email verification (signed URL — no auth required)
+        Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+            ->middleware('signed')
+            ->name('verification.verify');
+
+        // Authenticated routes
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('logout', [AuthController::class, 'logout']);
+            Route::get('user', [AuthController::class, 'user']);
+            Route::put('user', [AuthController::class, 'updateProfile']);
+            Route::post('email/resend', [AuthController::class, 'resendVerification'])
+                ->middleware('throttle:auth-email-resend');
+        });
+    });
 });

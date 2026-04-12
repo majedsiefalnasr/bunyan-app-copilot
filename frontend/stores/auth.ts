@@ -19,12 +19,17 @@ export const useAuthStore = defineStore('auth', () => {
 
     const token = computed<string | null>(() => authCookie.value ?? null);
     const user = ref<AuthUser | null>(null);
+    const isLoading = ref(false);
 
     // Computed auth state
     const isAuthenticated = computed(() => token.value !== null && user.value !== null);
     const role = computed<UserRoleType | null>(() => user.value?.role ?? null);
 
     // Actions
+    function setToken(newToken: string) {
+        authCookie.value = newToken;
+    }
+
     function setUser(newUser: AuthUser) {
         user.value = newUser;
     }
@@ -63,7 +68,9 @@ export const useAuthStore = defineStore('auth', () => {
         token,
         user,
         isAuthenticated,
+        isLoading,
         role,
+        setToken,
         setUser,
         clearAuth,
         initFromCookie,

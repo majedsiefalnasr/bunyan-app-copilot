@@ -50,5 +50,23 @@ class AppServiceProvider extends ServiceProvider
             // 10 requests per minute is the test threshold used in security tests
             return Limit::perMinute(10)->by($ip ?: $request->ip());
         });
+
+        RateLimiter::for('auth-login', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
+        RateLimiter::for('auth-register', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
+        RateLimiter::for('auth-forgot-password', function (Request $request) {
+            $email = $request->input('email', '');
+
+            return Limit::perMinute(3)->by($request->ip().'|'.$email);
+        });
+
+        RateLimiter::for('auth-email-resend', function (Request $request) {
+            return Limit::perMinute(3)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

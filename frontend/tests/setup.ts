@@ -1,9 +1,35 @@
 import { config } from '@vue/test-utils';
 import { createI18n } from 'vue-i18n';
 import { vi } from 'vitest';
+import {
+    reactive,
+    ref,
+    computed,
+    watch,
+    onMounted,
+    onUnmounted,
+    nextTick,
+    toRef,
+    toRefs,
+} from 'vue';
 
 // Stub global navigateTo function (Nuxt auto-import)
 vi.stubGlobal('navigateTo', vi.fn());
+
+// Stub Vue auto-imports (Nuxt auto-imports these globally)
+vi.stubGlobal('reactive', reactive);
+vi.stubGlobal('ref', ref);
+vi.stubGlobal('computed', computed);
+vi.stubGlobal('watch', watch);
+vi.stubGlobal('onMounted', onMounted);
+vi.stubGlobal('onUnmounted', onUnmounted);
+vi.stubGlobal('nextTick', nextTick);
+vi.stubGlobal('toRef', toRef);
+vi.stubGlobal('toRefs', toRefs);
+
+// Stub Nuxt composables
+vi.stubGlobal('definePageMeta', vi.fn());
+vi.stubGlobal('useLocalePath', () => (path: string) => path);
 
 // Mock i18n messages
 const messages = {
