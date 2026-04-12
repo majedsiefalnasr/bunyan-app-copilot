@@ -41,6 +41,8 @@ jobs:
 
       - name: Run ESLint
         working-directory: frontend
+        env:
+          NODE_OPTIONS: -r ./scripts/polyfill-groupby.cjs
         run: npm run lint
 
       - name: Check Formatting with Prettier
