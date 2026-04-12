@@ -1,17 +1,13 @@
 {
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "printWidth": 100,
-    "tabWidth": 4,
-    "useTabs": false,
-    "vueIndentScriptAndStyle": true,
-    "overrides": [
-        {
-            "files": "*.mdc",
-            "options": {
-                "parser": "markdown"
-            }
-        }
-    ]
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": "*.mdc",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
 }
