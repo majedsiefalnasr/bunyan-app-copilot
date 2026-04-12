@@ -38,6 +38,17 @@ class CorrelationIdMiddleware
         // Bind correlation ID to Log context for all subsequent logs
         Log::withContext(['correlation_id' => $correlationId]);
 
+        // Emit an info-level trace for debugging tests (safe: contains only uuid)
+        try {
+            Log::info('correlation_id set on request', [
+                'correlation_id' => $correlationId,
+                'incoming_header' => $request->header('X-Correlation-ID'),
+                'ip' => $request->ip(),
+            ]);
+        } catch (\Throwable $_) {
+            // ignore logging failures in test harness
+        }
+
         // Process the request
         $response = $next($request);
 

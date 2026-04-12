@@ -133,6 +133,7 @@ class RBACErrorMatrixTest extends TestCase
 
         $totalScenarios = 0;
         $passedScenarios = 0;
+        $scenarioIndex = 0;
 
         // For each endpoint
         foreach ($this->endpointMatrix as $endpoint) {
@@ -147,9 +148,10 @@ class RBACErrorMatrixTest extends TestCase
                 $totalScenarios++;
                 $user = User::factory()->create(['role' => $testRole]);
 
-                // Make the request. Use the generic json() helper to invoke the
-                // correct HTTP verb dynamically (e.g. GET, POST, PUT, DELETE).
-                $response = $this->actingAs($user)->json($method, $uri, $data);
+                // Make the request with scenario parameter for endpoint identification.
+                // Use the generic json() helper to invoke the correct HTTP verb dynamically.
+                $uriWithScenario = $uri.'?scenario='.$scenarioIndex;
+                $response = $this->actingAs($user)->json($method, $uriWithScenario, $data);
 
                 if ($testRole === $ownerRole) {
                     // Authorized: Should succeed or redirect, NOT return RBAC_ROLE_DENIED
@@ -199,6 +201,9 @@ class RBACErrorMatrixTest extends TestCase
                     $passedScenarios++;
                 }
             }
+
+            // Move to next endpoint scenario after testing all 5 roles
+            $scenarioIndex++;
         }
 
         // Final verification

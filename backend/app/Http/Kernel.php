@@ -7,6 +7,7 @@ use App\Http\Middleware\CorrelationIdMiddleware;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RequestResponseLoggingMiddleware;
+use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -18,7 +19,6 @@ use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Middleware\SetCacheHeaders;
-use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Routing\Middleware\ValidateSignature;
@@ -76,7 +76,8 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            ThrottleRequests::class.':api',
+            // Apply a 10 requests per minute throttle for API routes (matching security tests)
+            ThrottleRequests::with(10, 1),
             SubstituteBindings::class,
         ],
     ];

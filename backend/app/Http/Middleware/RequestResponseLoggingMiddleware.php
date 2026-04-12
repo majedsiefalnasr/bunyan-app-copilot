@@ -85,6 +85,16 @@ class RequestResponseLoggingMiddleware
         }
 
         // Log to requests channel
+        // Ensure correlation id header is present on the response for end-to-end tracing.
+        // Do not overwrite an existing header set earlier (middleware or controller).
+        try {
+            if (! $response->headers->has('X-Correlation-ID')) {
+                $response->headers->set('X-Correlation-ID', $logData['correlation_id']);
+            }
+        } catch (\Throwable $_) {
+            // Ignore if response doesn't support headers
+        }
+
         Log::channel('requests')->info('API Request', $logData);
     }
 

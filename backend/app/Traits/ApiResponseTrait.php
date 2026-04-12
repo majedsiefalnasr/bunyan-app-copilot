@@ -34,11 +34,27 @@ trait ApiResponseTrait
         ?string $message = null,
         int $statusCode = 200,
     ): JsonResponse {
-        return response()->json([
+        $response = response()->json([
             'success' => true,
             'data' => $data,
             'error' => null,
         ], $statusCode);
+
+        // Ensure correlation ID is always present on JSON responses for E2E tracing.
+        // Prefer the attribute set by middleware, fall back to incoming header if valid.
+        $correlationId = request()->attributes->get('correlation_id');
+        if (! $correlationId) {
+            $incoming = request()->header('X-Correlation-ID') ?? request()->header('x-correlation-id');
+            if ($incoming && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $incoming)) {
+                $correlationId = $incoming;
+            }
+        }
+
+        if ($correlationId) {
+            $response->headers->set('X-Correlation-ID', $correlationId);
+        }
+
+        return $response;
     }
 
     /**
@@ -79,10 +95,26 @@ trait ApiResponseTrait
             $error['details'] = $details;
         }
 
-        return response()->json([
+        $response = response()->json([
             'success' => false,
             'data' => null,
             'error' => $error,
         ], $statusCode);
+
+        // Ensure correlation ID is always present on JSON responses for E2E tracing.
+        // Prefer attribute set by middleware; fall back to incoming header if valid.
+        $correlationId = request()->attributes->get('correlation_id');
+        if (! $correlationId) {
+            $incoming = request()->header('X-Correlation-ID') ?? request()->header('x-correlation-id');
+            if ($incoming && preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $incoming)) {
+                $correlationId = $incoming;
+            }
+        }
+
+        if ($correlationId) {
+            $response->headers->set('X-Correlation-ID', $correlationId);
+        }
+
+        return $response;
     }
 }
