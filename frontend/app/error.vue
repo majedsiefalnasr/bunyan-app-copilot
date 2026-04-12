@@ -59,51 +59,45 @@ const content = computed(
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-white px-4">
-    <div class="max-w-md w-full">
-      <!-- Icon -->
-      <div class="flex justify-center mb-6">
-        <div
-          v-if="statusCode === 500"
-          class="w-16 h-16 rounded-lg bg-red-50 flex items-center justify-center"
-        >
-          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4m0 4v2m0 0v2m0-2v2m-6-7h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"
-            />
-          </svg>
+  <div class="min-h-screen flex items-center justify-center p-6 bg-[#fafafa] dark:bg-[#0a0a0a]">
+    <UCard
+      class="w-full max-w-md"
+      :ui="{
+        root: 'shadow-[0px_0px_0px_1px_rgba(0,0,0,0.08),0px_2px_2px_rgba(0,0,0,0.04)] dark:shadow-[0px_0px_0px_1px_rgba(255,255,255,0.08)]',
+      }"
+    >
+      <template #header>
+        <div class="flex justify-center py-2">
+          <span class="text-5xl font-semibold text-[#e5e5e5] dark:text-[#333] tracking-tight">
+            {{ statusCode }}
+          </span>
         </div>
-        <div v-else class="text-6xl font-bold text-gray-200">{{ statusCode }}</div>
-      </div>
+      </template>
 
-      <!-- Heading -->
-      <h1 class="text-2xl font-semibold text-center mb-2 text-[#171717] tracking-tight">
-        {{ content?.title }}
-      </h1>
+      <UAlert
+        :color="statusCode === 404 ? 'warning' : 'error'"
+        :title="content?.title ?? ''"
+        :description="content?.message ?? ''"
+        :icon="
+          statusCode === 404
+            ? 'i-heroicons-magnifying-glass'
+            : statusCode === 403
+            ? 'i-heroicons-shield-exclamation'
+            : 'i-heroicons-exclamation-triangle'
+        "
+        variant="soft"
+      />
 
-      <!-- Description -->
-      <p class="text-sm text-[#666] text-center mb-8">
-        {{ content?.message }}
-      </p>
-
-      <!-- Buttons -->
-      <div class="flex gap-3 justify-center">
-        <button
-          class="px-4 py-2 bg-[#171717] text-white rounded-[6px] font-medium hover:bg-[#2d2d2d] transition-colors"
-          @click="goHome"
-        >
-          Go to Home
-        </button>
-        <button
-          class="px-4 py-2 border border-[#171717] text-[#171717] rounded-[6px] font-medium hover:bg-gray-50 transition-colors"
-          @click="goBack"
-        >
-          Go Back
-        </button>
-      </div>
-    </div>
+      <template #footer>
+        <div class="flex gap-3 justify-center">
+          <UButton color="neutral" variant="outline" icon="i-heroicons-arrow-left" @click="goBack">
+            {{ t('errors.go_back') }}
+          </UButton>
+          <UButton color="neutral" variant="solid" icon="i-heroicons-home" @click="goHome">
+            {{ t('errors.go_home') }}
+          </UButton>
+        </div>
+      </template>
+    </UCard>
   </div>
 </template>

@@ -50,5 +50,41 @@
     "rate_limit_exceeded": "Too many requests. Please wait and try again.",
     "conflict_error": "Resource conflict. Please refresh and try again.",
     "server_error": "Server error. Please try again later."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "my_projects": "My Projects",
+    "orders": "Orders",
+    "payments": "Payments",
+    "earnings": "Earnings",
+    "withdrawals": "Withdrawals",
+    "field_engineers": "Field Engineers",
+    "reports": "Reports",
+    "submit_report": "Submit Report",
+    "users": "Users",
+    "products": "Products",
+    "configuration": "Configuration"
+  },
+  "layout": {
+    "toggle_sidebar": "Toggle Sidebar",
+    "toggle_direction": "Toggle Direction",
+    "toggle_dark_mode": "Toggle Dark Mode",
+    "switch_language": "Switch Language",
+    "open_menu": "Open Menu",
+    "close_menu": "Close Menu",
+    "language_ar": "Arabic",
+    "language_en": "English",
+    "direction_rtl": "Right to Left",
+    "direction_ltr": "Left to Right",
+    "loading": "Loading...",
+    "footer_copyright": "© 2026 Bunyan. All rights reserved."
+  },
+  "roles": {
+    "customer": "Customer",
+    "contractor": "Contractor",
+    "supervising_architect": "Supervising Architect",
+    "field_engineer": "Field Engineer",
+    "admin": "Admin"
   }
 }
