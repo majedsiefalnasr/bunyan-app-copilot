@@ -1,30 +1,58 @@
+import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { i18n, createTestRouter } from '../setup';
 import { useErrorHandler } from '../../composables/useErrorHandler';
+
+// Helper function to create a test component that uses the composable
+const createTestComponent = () => ({
+  setup() {
+    const handler = useErrorHandler();
+    return { handler };
+  },
+  template: '<div></div>',
+});
 
 describe('useErrorHandler composable', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
+  const mountWithProviders = (component: object | null) => {
+    return mount(component || createTestComponent(), {
+      global: {
+        plugins: [i18n],
+        provide: {
+          $router: createTestRouter(),
+        },
+      },
+    });
+  };
+
   it('returns localized message for error code', () => {
-    const { getLocalizedMessage } = useErrorHandler();
-    const message = getLocalizedMessage('AUTH_INVALID_CREDENTIALS');
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const message = handler.getLocalizedMessage('AUTH_INVALID_CREDENTIALS');
 
     expect(message).toBeDefined();
     expect(typeof message).toBe('string');
   });
 
   it('returns fallback message if translation not found', () => {
-    const { getLocalizedMessage } = useErrorHandler();
-    const message = getLocalizedMessage('UNKNOWN_ERROR', 'Fallback message');
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const message = handler.getLocalizedMessage('UNKNOWN_ERROR', 'Fallback message');
 
     expect(message).toBe('Fallback message');
   });
 
   it('handles validation error with details', () => {
-    const { handleError } = useErrorHandler();
-    const result = handleError({
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const result = handler.handleError({
       code: 'VALIDATION_ERROR',
       message: 'Validation failed',
       details: {
@@ -38,8 +66,10 @@ describe('useErrorHandler composable', () => {
   });
 
   it('handles authentication error', () => {
-    const { handleError } = useErrorHandler();
-    const result = handleError({
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const result = handler.handleError({
       code: 'AUTH_INVALID_CREDENTIALS',
       message: 'Invalid credentials',
     });
@@ -49,8 +79,10 @@ describe('useErrorHandler composable', () => {
   });
 
   it('handles authorization error', () => {
-    const { handleError } = useErrorHandler();
-    const result = handleError({
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const result = handler.handleError({
       code: 'RBAC_ROLE_DENIED',
       message: 'Role not authorized',
     });
@@ -60,8 +92,10 @@ describe('useErrorHandler composable', () => {
   });
 
   it('handles not found error', () => {
-    const { handleError } = useErrorHandler();
-    const result = handleError({
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const result = handler.handleError({
       code: 'RESOURCE_NOT_FOUND',
       message: 'Resource not found',
     });
@@ -71,8 +105,10 @@ describe('useErrorHandler composable', () => {
   });
 
   it('handles server error', () => {
-    const { handleError } = useErrorHandler();
-    const result = handleError({
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
+    const result = handler.handleError({
       code: 'SERVER_ERROR',
       message: 'Internal server error',
       correlationId: 'abc-123-def',
@@ -83,9 +119,11 @@ describe('useErrorHandler composable', () => {
   });
 
   it('preserves correlation ID', () => {
-    const { handleError } = useErrorHandler();
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
     const correlationId = 'corr-id-12345';
-    handleError({
+    handler.handleError({
       code: 'SERVER_ERROR',
       message: 'Error',
       correlationId,
@@ -95,7 +133,9 @@ describe('useErrorHandler composable', () => {
   });
 
   it('handles API error response', () => {
-    const { handleApiError } = useErrorHandler();
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
     const response = {
       status: 400,
       error: {
@@ -110,23 +150,27 @@ describe('useErrorHandler composable', () => {
       },
     };
 
-    const result = handleApiError(response);
+    const result = handler.handleApiError(response);
     expect(result.code).toBe('VALIDATION_ERROR');
   });
 
   it('handles validation error with field details', () => {
-    const { handleValidationError } = useErrorHandler();
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
     const details = {
       email: ['Email is required', 'Email must be valid'],
       password: ['Password is required'],
     };
 
-    const result = handleValidationError(details, 'corr-123');
+    const result = handler.handleValidationError(details, 'corr-123');
     expect(result.code).toBe('VALIDATION_ERROR');
   });
 
   it('maps all standard error codes', () => {
-    const { handleError } = useErrorHandler();
+    const wrapper = mountWithProviders(null);
+    const handler = (wrapper.vm as unknown as { handler: ReturnType<typeof useErrorHandler> })
+      .handler;
     const standardCodes = [
       'AUTH_INVALID_CREDENTIALS',
       'AUTH_TOKEN_EXPIRED',
@@ -143,7 +187,7 @@ describe('useErrorHandler composable', () => {
     ];
 
     standardCodes.forEach((code) => {
-      const result = handleError({ code, message: 'Test' });
+      const result = handler.handleError({ code, message: 'Test' });
       expect(result.code).toBe(code);
       expect(result.mapping).toBeDefined();
     });
