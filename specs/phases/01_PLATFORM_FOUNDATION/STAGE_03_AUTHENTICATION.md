@@ -7,9 +7,21 @@
 
 ## Stage Status
 
-Status: NOT STARTED
-Step: —
-Risk Level: HIGH
+Status: DRAFT
+Step: pre_step
+Risk Level: UNKNOWN
+Initiated: 2026-04-12T00:00:00Z
+
+Scope Open:
+
+- Specification pending
+
+Architecture Governance Compliance:
+
+- Pending governance audit
+
+Notes:
+Stage initialized. Specification in progress.
 
 ## Objective
 

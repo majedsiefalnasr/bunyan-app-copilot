@@ -1,0 +1,32 @@
+{
+  "stage": "Authentication",
+  "phase": "01_PLATFORM_FOUNDATION",
+  "stage_dir": "specs/runtime/003-authentication",
+  "stage_file": "specs/phases/01_PLATFORM_FOUNDATION/STAGE_03_AUTHENTICATION.md",
+  "branch": "spec/003-authentication",
+  "base_branch": "develop",
+  "pkg_manager": "composer",
+  "current_step": "pre_step",
+  "stage_status": "DRAFT",
+  "auto_advance": true,
+  "clarifications_resolved": false,
+  "drift_passed": false,
+  "implementation_allowed": false,
+  "plan_completed": false,
+  "tasks_total": null,
+  "tasks_completed": null,
+  "deferred_tasks": [],
+  "guardian_verdicts": {},
+  "parallel_task_groups": [],
+  "current_parallel_group": null,
+  "session_started_at": "2026-04-12T00:00:00Z",
+  "last_updated": "2026-04-12T00:00:00Z",
+  "step_timings": {},
+  "history": [
+    {
+      "event": "branch_created",
+      "branch": "spec/003-authentication",
+      "timestamp": "2026-04-12T00:00:00Z"
+    }
+  ]
+}
