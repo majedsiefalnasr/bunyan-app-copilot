@@ -8,18 +8,20 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: HIGH
 Last Updated: 2026-04-12T00:00:00Z
 
 Scope Defined:
 
-- Registration, login, logout with Sanctum token auth
-- Password reset flow (email-based)
-- Email verification (send, resend, verify)
+- Registration (4 roles, admin excluded), login, logout with Sanctum tokens
+- Password reset (email-based, anti-enumeration)
+- Email verification (signed URLs)
 - User profile get/update
-- Frontend auth pages with RTL/Arabic
-- Pinia auth store, API client, route middleware
+- Frontend auth pages with RTL/Arabic, Nuxt UI components
+- Pinia auth store with useCookie for SSR
+- Route middleware (auth + guest)
+- Saudi phone validation regex
 
 Deferred Scope:
 
@@ -29,10 +31,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. 13 user stories, 64 acceptance criteria, 22 technical requirements. Clarification step pending.
+All specification ambiguities resolved. 5 clarifications auto-resolved. Ready for technical planning.
 
 ## Objective
 

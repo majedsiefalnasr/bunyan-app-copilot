@@ -492,3 +492,97 @@ Implement a complete authentication system using Laravel Sanctum for token-based
 ## Open Questions
 
 None — all requirements are fully specified based on the stage file, existing User model, UserRole enum, and platform constraints.
+
+## Clarifications
+
+### Session 2026-04-12
+
+Five ambiguities were identified during a structured spec audit and auto-resolved using platform constraints and security best practices.
+
+---
+
+**Q1: Can users self-register as Admin?**
+_Category: Security / RBAC_
+
+The spec states the role selector presents "all 5 roles" (US10), but admin self-registration is a critical security risk.
+
+**Resolution:** Admin role is **excluded from self-registration**. The registration endpoint and frontend role selector only permit 4 roles: `customer`, `contractor`, `supervising_architect`, `field_engineer`. Admin accounts are created exclusively via database seeder or by an existing admin through a future admin management feature. The `RegisterRequest` Form Request must validate `role` against the 4 non-admin values: `Rule::in(['customer', 'contractor', 'supervising_architect', 'field_engineer'])`.
+
+**Affected artifacts:**
+
+- US1 acceptance criteria: role validation restricts to 4 roles
+- US10 acceptance criteria: role selector shows 4 roles (not 5)
+- `RegisterRequest` validation rule
+- Registration API contract (422 on `role: "admin"`)
+
+---
+
+**Q2: Where does each role redirect after login?**
+_Category: UX Flow / Frontend Routing_
+
+The spec references "redirected to dashboard" in multiple user stories (US9, US10, US13) but does not specify whether roles have different dashboard routes.
+
+**Resolution:** All roles redirect to a **single `/dashboard` route** after login. Role-specific dashboard views and routing are deferred to the RBAC/Dashboard stage (downstream). The auth stage is only responsible for establishing the authenticated session and redirecting to `/dashboard`. The dashboard page itself will be a placeholder until the next stage.
+
+**Affected artifacts:**
+
+- US9, US10, US13: "dashboard" means `/dashboard` (single route)
+- `auth` middleware: redirects to `/dashboard` on success
+- `guest` middleware: redirects authenticated users to `/dashboard`
+
+---
+
+**Q3: Token persistence — `localStorage` or `useCookie`?**
+_Category: Frontend Architecture / SSR Compatibility_
+
+US12 states token is persisted to "`localStorage` (or `useCookie` for SSR)" without a definitive choice.
+
+**Resolution:** Use **`useCookie`** (Nuxt's built-in composable) for token persistence. This is the Nuxt-native approach that supports SSR and ensures the token is available during server-side rendering. Configuration: `useCookie('auth_token', { maxAge: 60 * 60 * 24 * 7, secure: true, sameSite: 'lax' })`. The cookie is **not** `httpOnly` because client-side JavaScript must read it to inject the `Authorization: Bearer` header on API requests.
+
+**Affected artifacts:**
+
+- US12: Token persistence strategy decided as `useCookie`
+- Auth store (`stores/auth.ts`): uses `useCookie` instead of `localStorage`
+- API composable: reads token from cookie for header injection
+
+---
+
+**Q4: What constitutes a "valid Saudi phone format"?**
+_Category: Validation / Data Integrity_
+
+US1 and US8 reference "valid Saudi format" for phone validation without specifying the exact pattern.
+
+**Resolution:** Saudi mobile phone validation accepts two formats:
+
+- **Local format:** `05XXXXXXXX` — 10 digits starting with `05`. Regex: `/^05\d{8}$/`
+- **International format:** `+9665XXXXXXXX` — country code prefix. Regex: `/^\+9665\d{8}$/`
+
+The combined validation regex is: `/^(\+9665|05)\d{8}$/`
+
+This covers all Saudi mobile carriers (STC, Mobily, Zain). Landline numbers are not accepted. The `RegisterRequest` and `UpdateProfileRequest` Form Requests use this regex in their validation rules: `'phone' => ['required', 'regex:/^(\+9665|05)\d{8}$/']`.
+
+**Affected artifacts:**
+
+- US1, US8: Phone validation rule defined
+- `RegisterRequest`, `UpdateProfileRequest`: regex rule for phone
+- Frontend Zod schemas: matching regex validation
+
+---
+
+**Q5: Is there a limit on concurrent active tokens per user?**
+_Category: Token Lifecycle / Security_
+
+The spec does not address how many active API tokens a single user can hold simultaneously (e.g., logged in from multiple devices).
+
+**Resolution:** **No hard limit** on concurrent tokens. Each successful login creates a new Sanctum personal access token. This mirrors standard Sanctum behavior and supports multi-device usage. Token cleanup behavior:
+
+- **Logout (US3):** Revokes only the current request's token (not all tokens)
+- **Password reset (US5):** Revokes **all** tokens for the user (force re-authentication on all devices)
+- **"Logout from all devices":** Out of scope for this stage; may be added in a future profile management stage
+
+A periodic token pruning job (e.g., deleting tokens older than 30 days) is recommended but deferred to an infrastructure/maintenance stage.
+
+**Affected artifacts:**
+
+- US2, US3, US5: Token lifecycle behavior clarified
+- No new endpoints or middleware required for this stage
