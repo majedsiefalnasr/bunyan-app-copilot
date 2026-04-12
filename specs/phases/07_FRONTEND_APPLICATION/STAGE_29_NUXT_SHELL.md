@@ -8,21 +8,16 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: MEDIUM
-Last Updated: 2026-04-12T00:20:00Z
+Last Updated: 2026-04-12T00:25:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- 30 files across 6 sequential phases
-- 3 layouts (default, auth, public)
-- 2 Pinia stores (auth with cookie-derived token, ui)
-- 5 core composables (useAuth, useNotification, useBreadcrumb, useDirection, usePreferences)
-- 7 navigation components + navigation config
-- plugins/direction.client.ts for hydration CLS prevention
-- Critical fix: app.vue NuxtLayout wrapper (layouts silently broken without it)
-- Token-from-cookie pattern (auth state consistency, no redirect loops)
-- Module-level breadcrumb state (cross-component reactivity)
+- Total: 30 atomic tasks
+- 7 phases: Foundation (3), Stores (2), Composables (5), Components (7), Layouts (3), Core Updates (4), Tests (6)
+- 5 parallel groups across phases 2-6
+- 2 HIGH-risk tasks (T004 auth store, T018 default layout)
 
 Deferred Scope:
 
@@ -32,12 +27,12 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Technical plan compliant — task generation authorized
+- Task set compliant — drift analysis required before implementation
 - Architecture Guardian: PASS (5 violations found and remediated)
 - API Designer: PASS (1 violation found and remediated)
 
 Notes:
-Technical plan complete. Task breakdown in progress.
+Task breakdown complete. 30 tasks across 6 implementation phases. Ready for analysis.
 
 ## Objective
 
