@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Enums\ApiErrorCode;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
@@ -23,7 +24,7 @@ use Tests\TestCase;
  */
 class ErrorHandlingIntegrationTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * Test complete authentication error flow.
@@ -189,7 +190,7 @@ class ErrorHandlingIntegrationTest extends TestCase
         // Verify Retry-After header
         $retryAfter = $response->headers->get('Retry-After');
         $this->assertNotNull($retryAfter);
-        $this->assertGreaterThan(0, (int)$retryAfter);
+        $this->assertGreaterThan(0, (int) $retryAfter);
     }
 
     /**

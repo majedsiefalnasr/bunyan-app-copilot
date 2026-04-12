@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Enums\ApiErrorCode;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
@@ -25,7 +26,7 @@ use Tests\TestCase;
  */
 class SecurityAttackSimulationTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * Test brute-force attack simulation.
@@ -58,7 +59,7 @@ class SecurityAttackSimulationTest extends TestCase
             $this->assertNotEqual(
                 429,
                 $response->status(),
-                "Rate limiting should not kick in before 10 requests"
+                'Rate limiting should not kick in before 10 requests'
             );
         }
 
@@ -72,7 +73,7 @@ class SecurityAttackSimulationTest extends TestCase
         $this->assertEquals(
             429,
             $response->status(),
-            "Brute-force attack should be rate limited with 429 after 10 requests"
+            'Brute-force attack should be rate limited with 429 after 10 requests'
         );
 
         // Verify error code is RATE_LIMIT_EXCEEDED
@@ -82,18 +83,18 @@ class SecurityAttackSimulationTest extends TestCase
         $this->assertEquals(
             ApiErrorCode::RATE_LIMIT_EXCEEDED->value,
             $json['error']['code'],
-            "Rate limit error code must be RATE_LIMIT_EXCEEDED"
+            'Rate limit error code must be RATE_LIMIT_EXCEEDED'
         );
 
         // Verify Retry-After header exists
         $this->assertNotNull(
             $response->headers->get('Retry-After'),
-            "Rate limited response must include Retry-After header"
+            'Rate limited response must include Retry-After header'
         );
 
         // Verify Retry-After is a valid number (seconds)
         $retryAfter = (int) $response->headers->get('Retry-After');
-        $this->assertGreaterThan(0, $retryAfter, "Retry-After must be positive number of seconds");
+        $this->assertGreaterThan(0, $retryAfter, 'Retry-After must be positive number of seconds');
     }
 
     /**
@@ -179,7 +180,7 @@ class SecurityAttackSimulationTest extends TestCase
         $this->assertEquals(
             429,
             $response->status(),
-            "Spoofing X-Forwarded-For should not bypass rate limiting"
+            'Spoofing X-Forwarded-For should not bypass rate limiting'
         );
 
         // Also try with completely different IP in header
@@ -194,7 +195,7 @@ class SecurityAttackSimulationTest extends TestCase
         $this->assertIn(
             $response->status(),
             [401, 403, 429],
-            "Spoofed IP header should not allow unlimited requests"
+            'Spoofed IP header should not allow unlimited requests'
         );
     }
 
@@ -267,7 +268,7 @@ class SecurityAttackSimulationTest extends TestCase
         $this->assertLessThan(
             0.010,
             $timeDifference,
-            "Response times should not differ significantly between valid and invalid users (timing attack)"
+            'Response times should not differ significantly between valid and invalid users (timing attack)'
         );
     }
 }

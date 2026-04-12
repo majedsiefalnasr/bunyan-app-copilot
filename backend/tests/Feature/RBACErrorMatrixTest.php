@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Enums\ApiErrorCode;
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
@@ -23,7 +24,7 @@ use Tests\TestCase;
  */
 class RBACErrorMatrixTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * Test matrix: 5 roles × 5 endpoint types = 25 scenarios
@@ -146,8 +147,9 @@ class RBACErrorMatrixTest extends TestCase
                 $totalScenarios++;
                 $user = User::factory()->create(['role' => $testRole]);
 
-                // Make the request
-                $response = $this->actingAs($user)->{strtolower($method)}Json($uri, $data);
+                // Make the request. Use the generic json() helper to invoke the
+                // correct HTTP verb dynamically (e.g. GET, POST, PUT, DELETE).
+                $response = $this->actingAs($user)->json($method, $uri, $data);
 
                 if ($testRole === $ownerRole) {
                     // Authorized: Should succeed or redirect, NOT return RBAC_ROLE_DENIED
@@ -260,7 +262,7 @@ class RBACErrorMatrixTest extends TestCase
         $this->assertNotEquals(
             ApiErrorCode::RBAC_ROLE_DENIED->value,
             $json['error']['code'],
-            "Unauthenticated request must not return RBAC_ROLE_DENIED"
+            'Unauthenticated request must not return RBAC_ROLE_DENIED'
         );
     }
 }

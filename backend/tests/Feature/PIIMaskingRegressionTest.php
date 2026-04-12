@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 /**
  * PII Masking Regression Test Suite
@@ -25,7 +25,7 @@ use Illuminate\Support\Str;
  */
 class PIIMaskingRegressionTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * Common patterns that should NOT appear unmasked in logs
@@ -98,12 +98,12 @@ class PIIMaskingRegressionTest extends TestCase
             $unmasked = preg_match('/password["\']?\s*[:=]\s*["\']?[^*\s,}]+["\']?/i', $logContent, $matches);
 
             // Allow false positives like "password_reset" or "password_field"
-            if ($unmasked && !$this->isAllowedPattern($matches[0])) {
-                $this->fail("Found unmasked password in logs: " . $matches[0]);
+            if ($unmasked && ! $this->isAllowedPattern($matches[0])) {
+                $this->fail('Found unmasked password in logs: '.$matches[0]);
             }
         }
 
-        $this->assertTrue(true, "No unmasked passwords found in logs");
+        $this->assertTrue(true, 'No unmasked passwords found in logs');
     }
 
     /**
@@ -112,10 +112,10 @@ class PIIMaskingRegressionTest extends TestCase
     public function test_no_unmasked_tokens_in_logs(): void
     {
         // Generate a test token
-        $testToken = 'test_token_' . Str::random(32);
+        $testToken = 'test_token_'.Str::random(32);
 
         // Create a logging test that includes the token
-        $response = $this->withHeader('Authorization', 'Bearer ' . $testToken)
+        $response = $this->withHeader('Authorization', 'Bearer '.$testToken)
             ->getJson('/api/v1/test/success');
 
         $logs = $this->readLogFiles();
@@ -125,7 +125,7 @@ class PIIMaskingRegressionTest extends TestCase
             $this->assertStringNotContainsString(
                 $testToken,
                 $logContent,
-                "Full token should not appear in logs"
+                'Full token should not appear in logs'
             );
 
             // If token appears at all, it must be masked
@@ -138,13 +138,13 @@ class PIIMaskingRegressionTest extends TestCase
                     $maskedToken = preg_match('/tok_\*{4,}/', $logContent);
                     $this->assertTrue(
                         $maskedToken,
-                        "Any token in logs must be masked to tok_****"
+                        'Any token in logs must be masked to tok_****'
                     );
                 }
             }
         }
 
-        $this->assertTrue(true, "No unmasked tokens found in logs");
+        $this->assertTrue(true, 'No unmasked tokens found in logs');
     }
 
     /**
@@ -171,7 +171,7 @@ class PIIMaskingRegressionTest extends TestCase
                 $this->assertStringNotContainsString(
                     '3333',
                     $logContent,
-                    "Last 4 digits of card should be masked or properly formatted"
+                    'Last 4 digits of card should be masked or properly formatted'
                 );
 
                 // If card field appears, must be masked
@@ -179,14 +179,14 @@ class PIIMaskingRegressionTest extends TestCase
                     // Must follow masking pattern for cards
                     $masked = preg_match('/\*{4}-\*{4}-\*{4}-\d{4}/', $logContent);
                     $this->assertTrue(
-                        $masked || !preg_match('/\d{4}-\d{4}-\d{4}-\d{4}/', $logContent),
-                        "Credit card in logs must be masked as ****-****-****-1234"
+                        $masked || ! preg_match('/\d{4}-\d{4}-\d{4}-\d{4}/', $logContent),
+                        'Credit card in logs must be masked as ****-****-****-1234'
                     );
                 }
             }
         }
 
-        $this->assertTrue(true, "No unmasked credit cards found in logs");
+        $this->assertTrue(true, 'No unmasked credit cards found in logs');
     }
 
     /**
@@ -208,14 +208,14 @@ class PIIMaskingRegressionTest extends TestCase
 
             // Field names should be masked or generic
             $this->assertStringNotContainsString('password', strtolower($details),
-                "Sensitive field names should not appear in error details");
+                'Sensitive field names should not appear in error details');
             $this->assertStringNotContainsString('credit_card', strtolower($details),
-                "Credit card field names should not appear in error details");
+                'Credit card field names should not appear in error details');
             $this->assertStringNotContainsString('ssn', strtolower($details),
-                "SSN field names should not appear in error details");
+                'SSN field names should not appear in error details');
         }
 
-        $this->assertTrue(true, "Error details properly masked");
+        $this->assertTrue(true, 'Error details properly masked');
     }
 
     /**
@@ -243,13 +243,13 @@ class PIIMaskingRegressionTest extends TestCase
                     }
                 }
 
-                if (!$isAllowed) {
-                    $this->fail("False positive: {$description} triggered on allowed pattern: " . $matches[0]);
+                if (! $isAllowed) {
+                    $this->fail("False positive: {$description} triggered on allowed pattern: ".$matches[0]);
                 }
             }
         }
 
-        $this->assertTrue(true, "Allowed patterns correctly excluded from detection");
+        $this->assertTrue(true, 'Allowed patterns correctly excluded from detection');
     }
 
     /**
@@ -279,7 +279,7 @@ class PIIMaskingRegressionTest extends TestCase
         }
 
         // Note: This is a basic check; actual implementation needs proper masking middleware
-        $this->assertTrue(true, "Field masking test completed");
+        $this->assertTrue(true, 'Field masking test completed');
     }
 
     /**
@@ -301,20 +301,20 @@ class PIIMaskingRegressionTest extends TestCase
             if (preg_match('/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i', $logContent, $matches)) {
                 // Allow specific test patterns that are obvious test data
                 $isTestData = preg_match('/example\.com|test@|admin@|fake@/i', $matches[0]);
-                if (!$isTestData) {
+                if (! $isTestData) {
                     // Check if it's properly masked
                     $isMasked = preg_match('/\*+@example\.com/', $matches[0]);
-                    $this->assertTrue($isMasked || $isTestData, "Email should be masked in logs");
+                    $this->assertTrue($isMasked || $isTestData, 'Email should be masked in logs');
                 }
             }
 
             // SSN patterns
             if (preg_match('/\d{3}-\d{2}-\d{4}/', $logContent)) {
-                $this->fail("Unmasked SSN found in logs");
+                $this->fail('Unmasked SSN found in logs');
             }
         }
 
-        $this->assertTrue(true, "No unmasked PII found in logs");
+        $this->assertTrue(true, 'No unmasked PII found in logs');
     }
 
     /**
@@ -325,11 +325,11 @@ class PIIMaskingRegressionTest extends TestCase
         $logDirectory = storage_path('logs');
         $logs = [];
 
-        if (!is_dir($logDirectory)) {
+        if (! is_dir($logDirectory)) {
             return $logs;
         }
 
-        $files = glob($logDirectory . '/*.log');
+        $files = glob($logDirectory.'/*.log');
         foreach ($files as $file) {
             if (is_file($file) && is_readable($file)) {
                 $logs[] = file_get_contents($file);
@@ -349,6 +349,7 @@ class PIIMaskingRegressionTest extends TestCase
                 return true;
             }
         }
+
         return false;
     }
 }
