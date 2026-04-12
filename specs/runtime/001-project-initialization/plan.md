@@ -405,16 +405,16 @@ Response → JSON formatter (error handler catches exceptions)
 
 ```typescript
 // stores/user.ts
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   const user = ref<User | null>(null);
-  const token = ref<string | null>(localStorage.getItem('token'));
+  const token = ref<string | null>(localStorage.getItem("token"));
   const isAuthenticated = computed(() => !!token.value);
 
   const login = async (email: string, password: string) => {
-    const res = await $fetch('/api/v1/auth/login', {
-      method: 'POST',
+    const res = await $fetch("/api/v1/auth/login", {
+      method: "POST",
       body: { email, password },
     });
     token.value = res.data.token;
@@ -439,7 +439,7 @@ export const useAuth = () => {
   const isLoggedIn = computed(() => user.isAuthenticated);
 
   const logout = async () => {
-    await $fetch('/api/v1/auth/logout', { method: 'POST' });
+    await $fetch("/api/v1/auth/logout", { method: "POST" });
     user.clear();
   };
 

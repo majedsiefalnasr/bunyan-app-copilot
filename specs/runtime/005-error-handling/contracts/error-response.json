@@ -13,7 +13,11 @@
         },
         "data": {
           "description": "Response payload (object, array, or null)",
-          "oneOf": [{ "type": "object" }, { "type": "array" }, { "type": "null" }]
+          "oneOf": [
+            { "type": "object" },
+            { "type": "array" },
+            { "type": "null" }
+          ]
         },
         "error": {
           "type": "null",

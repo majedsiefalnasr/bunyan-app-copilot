@@ -12,45 +12,45 @@ tools:
     search,
     web,
     todo,
-    'figma/*',
-    'com.figma.mcp/mcp/*',
-    'microsoft/markitdown/*',
-    'gitnexus/*',
-    'io.github.upstash/context7/*',
-    'github/*',
+    "figma/*",
+    "com.figma.mcp/mcp/*",
+    "microsoft/markitdown/*",
+    "gitnexus/*",
+    "io.github.upstash/context7/*",
+    "github/*",
   ]
 agents:
   [
-    'speckit.specify',
-    'speckit.clarify',
-    'speckit.plan',
-    'speckit.tasks',
-    'speckit.analyze',
-    'speckit.implement',
-    'speckit.checklist',
-    'API Designer',
-    'Architecture Guardian',
-    'Code Reviewer',
-    'Database Engineer',
-    'DevOps Engineer',
-    'Frontend Developer',
-    'Performance Optimizer',
-    'QA Engineer',
-    'Security Auditor',
-    'Technical Writer',
-    'Context7 Expert',
-    'CodeRabbit Review Resolver',
-    'Debug Mode Instructions',
-    'Critic',
-    'Code Simplifier',
-    'Researcher',
-    'Debugger',
-    'Implementer',
-    'Planner',
-    'ADR Generator',
-    'Laravel Expert',
-    'Nuxt Expert',
-    'GitHub Actions Expert',
+    "speckit.specify",
+    "speckit.clarify",
+    "speckit.plan",
+    "speckit.tasks",
+    "speckit.analyze",
+    "speckit.implement",
+    "speckit.checklist",
+    "API Designer",
+    "Architecture Guardian",
+    "Code Reviewer",
+    "Database Engineer",
+    "DevOps Engineer",
+    "Frontend Developer",
+    "Performance Optimizer",
+    "QA Engineer",
+    "Security Auditor",
+    "Technical Writer",
+    "Context7 Expert",
+    "CodeRabbit Review Resolver",
+    "Debug Mode Instructions",
+    "Critic",
+    "Code Simplifier",
+    "Researcher",
+    "Debugger",
+    "Implementer",
+    "Planner",
+    "ADR Generator",
+    "Laravel Expert",
+    "Nuxt Expert",
+    "GitHub Actions Expert",
   ]
 ---
 
@@ -1797,13 +1797,34 @@ Modifications require a new stage.
   "deferred_tasks": [],
   "session_started_at": "<preserve from initialization>",
   "step_timings": {
-    "specify": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "clarify": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "plan": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "tasks": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "analyze": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "implement": { "started_at": "<ISO_TIMESTAMP>", "completed_at": "<ISO_TIMESTAMP>" },
-    "closure": { "started_at": "<ISO_TIMESTAMP of 7.1 start>", "completed_at": "<ISO_TIMESTAMP>" }
+    "specify": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "clarify": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "plan": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "tasks": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "analyze": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "implement": {
+      "started_at": "<ISO_TIMESTAMP>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    },
+    "closure": {
+      "started_at": "<ISO_TIMESTAMP of 7.1 start>",
+      "completed_at": "<ISO_TIMESTAMP>"
+    }
   },
   "last_updated": "<ISO_TIMESTAMP>",
   "history": [

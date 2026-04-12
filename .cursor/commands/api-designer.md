@@ -1,5 +1,5 @@
 ---
-description: 'Production API Architect for Bunyan. Designs scalable, secure, observable RESTful APIs aligned with Laravel conventions and domain rules.'
+description: "Production API Architect for Bunyan. Designs scalable, secure, observable RESTful APIs aligned with Laravel conventions and domain rules."
 ---
 
 ## User Input

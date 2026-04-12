@@ -1,5 +1,5 @@
 ---
-description: 'Writes code using TDD (Red-Green), implements features, fixes bugs, refactors.'
+description: "Writes code using TDD (Red-Green), implements features, fixes bugs, refactors."
 ---
 
 ## User Input

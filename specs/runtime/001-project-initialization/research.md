@@ -261,15 +261,19 @@ npm run dev
 ```javascript
 // tailwind.config.js
 export default {
-  content: ['./components/**/*.{vue,js}', './pages/**/*.{vue,js}', './layouts/**/*.{vue,js}'],
+  content: [
+    "./components/**/*.{vue,js}",
+    "./pages/**/*.{vue,js}",
+    "./layouts/**/*.{vue,js}",
+  ],
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Geist', 'system-ui', 'sans-serif'],
+        sans: ["Geist", "system-ui", "sans-serif"],
       },
       colors: {
-        primary: '#000000',
-        secondary: '#666666',
+        primary: "#000000",
+        secondary: "#666666",
       },
     },
   },
@@ -282,7 +286,7 @@ export default {
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/i18n', '@pinia/nuxt'],
+  modules: ["@nuxt/ui", "@nuxtjs/i18n", "@pinia/nuxt"],
 
   imports: {
     autoImport: true,
@@ -292,11 +296,11 @@ export default defineNuxtConfig({
     strict: true,
   },
 
-  css: ['~/assets/styles/globals.css'],
+  css: ["~/assets/styles/globals.css"],
 
   runtimeConfig: {
     public: {
-      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:8000',
+      apiBaseUrl: process.env.API_BASE_URL || "http://localhost:8000",
     },
   },
 });
@@ -356,10 +360,10 @@ export default defineNuxtConfig({
 </template>
 
 <script setup lang="ts">
-  import { useI18n } from 'vue-i18n';
+  import { useI18n } from "vue-i18n";
 
   const { locale } = useI18n();
-  const isArabic = computed(() => locale.value === 'ar');
+  const isArabic = computed(() => locale.value === "ar");
 </script>
 ```
 
@@ -369,7 +373,11 @@ export default defineNuxtConfig({
 // tailwind.config.ts
 export default {
   // Support both LTR and RTL
-  content: ['./components/**/*.{vue,js}', './pages/**/*.{vue,js}', './layouts/**/*.{vue,js}'],
+  content: [
+    "./components/**/*.{vue,js}",
+    "./pages/**/*.{vue,js}",
+    "./layouts/**/*.{vue,js}",
+  ],
 
   // Logical properties plugin (auto-convert LTR → RTL)
   plugins: [],
@@ -384,8 +392,8 @@ export default {
     extend: {
       spacing: {
         // Use for both directions
-        'inline-4': '1rem', // margin/padding horizontal
-        'block-4': '1rem', // margin/padding vertical
+        "inline-4": "1rem", // margin/padding horizontal
+        "block-4": "1rem", // margin/padding vertical
       },
     },
   },
@@ -397,16 +405,16 @@ export default {
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/i18n'],
+  modules: ["@nuxtjs/i18n"],
 
   i18n: {
     locales: [
-      { code: 'ar', iso: 'ar-SA', name: 'العربية', dir: 'rtl' },
-      { code: 'en', iso: 'en-US', name: 'English', dir: 'ltr' },
+      { code: "ar", iso: "ar-SA", name: "العربية", dir: "rtl" },
+      { code: "en", iso: "en-US", name: "English", dir: "ltr" },
     ],
-    defaultLocale: 'ar',
-    langDir: '~/locales/',
-    strategy: 'prefix_except_default', // /en/page but /page for ar
+    defaultLocale: "ar",
+    langDir: "~/locales/",
+    strategy: "prefix_except_default", // /en/page but /page for ar
   },
 });
 ```
@@ -419,7 +427,7 @@ export default defineNuxtConfig({
 
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
@@ -433,14 +441,14 @@ services:
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/docker/mysql/my.cnf:/etc/mysql/my.cnf:ro
     networks:
       - bunyan
     healthcheck:
-      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
 
@@ -448,13 +456,13 @@ services:
     image: redis:7-alpine
     container_name: bunyan-redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - bunyan
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       timeout: 20s
       retries: 10
 
@@ -569,7 +577,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: "8.2"
           extensions: pdo, pdo_mysql, zip, gd
           coverage: xdebug
 
@@ -620,8 +628,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
@@ -686,10 +694,10 @@ chmod +x .husky/pre-push
 ```javascript
 // ./lint-staged.config.js
 export default {
-  '*.php': ['vendor/bin/pint --test', 'vendor/bin/phpstan analyse'],
-  '*.vue': ['eslint --fix', 'prettier --write'],
-  '*.{js,ts}': ['eslint --fix'],
-  '*.json': ['prettier --write'],
+  "*.php": ["vendor/bin/pint --test", "vendor/bin/phpstan analyse"],
+  "*.vue": ["eslint --fix", "prettier --write"],
+  "*.{js,ts}": ["eslint --fix"],
+  "*.json": ["prettier --write"],
 };
 ```
 
@@ -756,16 +764,16 @@ public function login(LoginRequest $request)
 // composables/useApi.ts
 export const useAuth = () => {
   const login = async (email: string, password: string) => {
-    const res = await $fetch('/api/v1/auth/login', {
-      method: 'POST',
+    const res = await $fetch("/api/v1/auth/login", {
+      method: "POST",
       body: { email, password },
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
     });
 
-    localStorage.setItem('token', res.data.token);
+    localStorage.setItem("token", res.data.token);
     return res.data.user;
   };
 
@@ -866,25 +874,25 @@ Route::middleware(['auth:sanctum', 'role:admin,contractor'])->group(function () 
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
-import path from 'path';
+import { defineConfig } from "vitest/config";
+import vue from "@vitejs/plugin-vue";
+import path from "path";
 
 export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: "jsdom",
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'dist/', '.nuxt/'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "dist/", ".nuxt/"],
     },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './'),
-      '~': path.resolve(__dirname, './'),
+      "@": path.resolve(__dirname, "./"),
+      "~": path.resolve(__dirname, "./"),
     },
   },
 });
@@ -894,24 +902,24 @@ export default defineConfig({
 
 ```typescript
 // tests/unit/stores/user.test.ts
-import { describe, it, expect, beforeEach } from 'vitest';
-import { setActivePinia, createPinia } from 'pinia';
-import { useUserStore } from '~/stores/user';
+import { describe, it, expect, beforeEach } from "vitest";
+import { setActivePinia, createPinia } from "pinia";
+import { useUserStore } from "~/stores/user";
 
-describe('User Store', () => {
+describe("User Store", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
-  it('initializes with no user', () => {
+  it("initializes with no user", () => {
     const store = useUserStore();
     expect(store.user).toBeNull();
   });
 
-  it('sets user on login', () => {
+  it("sets user on login", () => {
     const store = useUserStore();
-    store.setUser({ id: 1, email: 'test@example.com', role: 'customer' });
-    expect(store.user?.email).toBe('test@example.com');
+    store.setUser({ id: 1, email: "test@example.com", role: "customer" });
+    expect(store.user?.email).toBe("test@example.com");
     expect(store.isAuthenticated).toBe(true);
   });
 });
@@ -921,30 +929,30 @@ describe('User Store', () => {
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: "./tests/e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
 
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    baseURL: "http://localhost:3000",
+    trace: "on-first-retry",
   },
 
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: "npm run dev",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
   },
 });
@@ -954,20 +962,20 @@ export default defineConfig({
 
 ```typescript
 // tests/e2e/auth.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Authentication', () => {
-  test('Register flow', async ({ page }) => {
-    await page.goto('/auth/register');
+test.describe("Authentication", () => {
+  test("Register flow", async ({ page }) => {
+    await page.goto("/auth/register");
 
-    await page.fill('input[name="email"]', 'new@example.com');
-    await page.fill('input[name="password"]', 'password123');
-    await page.fill('input[name="password_confirmation"]', 'password123');
+    await page.fill('input[name="email"]', "new@example.com");
+    await page.fill('input[name="password"]', "password123");
+    await page.fill('input[name="password_confirmation"]', "password123");
 
     await page.click('button:has-text("Register")');
 
-    await expect(page).toHaveURL('/dashboard');
-    await expect(page.locator('text=Welcome')).toBeVisible();
+    await expect(page).toHaveURL("/dashboard");
+    await expect(page.locator("text=Welcome")).toBeVisible();
   });
 });
 ```
@@ -987,26 +995,26 @@ npm install @nuxtjs/i18n@next
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/i18n'],
+  modules: ["@nuxtjs/i18n"],
 
   i18n: {
     locales: [
       {
-        code: 'ar',
-        iso: 'ar-SA',
-        name: 'العربية',
-        file: 'ar.json',
+        code: "ar",
+        iso: "ar-SA",
+        name: "العربية",
+        file: "ar.json",
       },
       {
-        code: 'en',
-        iso: 'en-US',
-        name: 'English',
-        file: 'en.json',
+        code: "en",
+        iso: "en-US",
+        name: "English",
+        file: "en.json",
       },
     ],
-    defaultLocale: 'ar',
-    langDir: 'locales/',
-    strategy: 'prefix_except_default', // /en/page but /page for ar
+    defaultLocale: "ar",
+    langDir: "locales/",
+    strategy: "prefix_except_default", // /en/page but /page for ar
     lazy: false,
     skipSettingLocaleOnNavigate: false,
   },
@@ -1066,19 +1074,19 @@ export default defineNuxtConfig({
 ```vue
 <template>
   <div>
-    <h1>{{ $t('auth.page.title') }}</h1>
-    <label>{{ $t('common.label.email') }}</label>
-    <button>{{ $t('common.button.submit') }}</button>
+    <h1>{{ $t("auth.page.title") }}</h1>
+    <label>{{ $t("common.label.email") }}</label>
+    <button>{{ $t("common.button.submit") }}</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 
 const { t, locale } = useI18n();
 
 const switchLocale = () => {
-  locale.value = locale.value === 'ar' ? 'en' : 'ar';
+  locale.value = locale.value === "ar" ? "en" : "ar";
 };
 </script>
 ```
@@ -1087,7 +1095,7 @@ const switchLocale = () => {
 
 ```typescript
 // composables/useLocale.ts
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 
 export const useLocale = () => {
   const { locale, availableLocales } = useI18n();
@@ -1096,11 +1104,11 @@ export const useLocale = () => {
 
   const switchLocale = (newLocale: string) => {
     locale.value = newLocale;
-    localStorage.setItem('locale', newLocale);
+    localStorage.setItem("locale", newLocale);
   };
 
-  const isArabic = computed(() => locale.value === 'ar');
-  const isEnglish = computed(() => locale.value === 'en');
+  const isArabic = computed(() => locale.value === "ar");
+  const isEnglish = computed(() => locale.value === "en");
 
   return {
     currentLocale,

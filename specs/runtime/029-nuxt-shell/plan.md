@@ -40,29 +40,30 @@ Each phase MUST be completed before the next begins (sequential dependency chain
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/i18n'],
+  modules: ["@nuxt/ui", "@nuxtjs/i18n"],
   devtools: { enabled: true },
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: "2024-04-03",
   runtimeConfig: {
     public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000",
     },
   },
   app: {
     head: {
-      htmlAttrs: { lang: 'ar', dir: 'rtl' },
+      htmlAttrs: { lang: "ar", dir: "rtl" },
     },
   },
   colorMode: {
-    classSuffix: '',
+    classSuffix: "",
   },
   i18n: {
-    defaultLocale: 'ar',
-    strategy: 'prefix',
-    langDir: 'locales',
+    defaultLocale: "ar",
+    strategy: "prefix",
+    langDir: "locales",
     locales: [
-      { code: 'ar', language: 'ar-SA', dir: 'rtl', file: 'ar.json' },
-      { code: 'en', language: 'en-US', dir: 'ltr', file: 'en.json' },
+      { code: "ar", language: "ar-SA", dir: "rtl", file: "ar.json" },
+      { code: "en", language: "en-US", dir: "ltr", file: "en.json" },
     ],
   },
 });
@@ -88,8 +89,11 @@ export default defineNuxtConfig({
 
 ```typescript
 export default defineNuxtPlugin(() => {
-  const stored = localStorage.getItem('bunyan_direction') as 'rtl' | 'ltr' | null;
-  if (stored === 'rtl' || stored === 'ltr') {
+  const stored = localStorage.getItem("bunyan_direction") as
+    | "rtl"
+    | "ltr"
+    | null;
+  if (stored === "rtl" || stored === "ltr") {
     document.documentElement.dir = stored;
   }
 });
@@ -149,11 +153,15 @@ export default defineNuxtPlugin(() => {
 
 ```typescript
 // token is DERIVED from the cookie — not a separate ref
-const authCookie = useCookie<string | null>('auth_token', { maxAge: 60 * 60 * 24 * 7 });
+const authCookie = useCookie<string | null>("auth_token", {
+  maxAge: 60 * 60 * 24 * 7,
+});
 const token = computed(() => authCookie.value ?? null);
 
 // isAuthenticated automatically reacts when useApi.ts sets authCookie.value = null
-const isAuthenticated = computed(() => user.value !== null && token.value !== null);
+const isAuthenticated = computed(
+  () => user.value !== null && token.value !== null
+);
 
 // clearAuth — nulls user, clears cookie
 function clearAuth() {
@@ -226,7 +234,7 @@ function clearAuth() {
 async function logout() {
   const { apiFetch } = useApi();
   try {
-    await apiFetch('/api/v1/auth/logout', { method: 'DELETE' });
+    await apiFetch("/api/v1/auth/logout", { method: "DELETE" });
   } catch {
     // Ignore logout API failure — clear local state regardless
   } finally {
@@ -263,9 +271,12 @@ async function logout() {
 export function useNotification() {
   const toast = useToast();
   return {
-    notifySuccess: (msg: string, duration = 3000) => toast.showSuccess(msg, duration),
-    notifyError: (msg: string, duration = 5000) => toast.showError(msg, duration),
-    notifyWarning: (msg: string, duration = 5000) => toast.showWarning(msg, duration),
+    notifySuccess: (msg: string, duration = 3000) =>
+      toast.showSuccess(msg, duration),
+    notifyError: (msg: string, duration = 5000) =>
+      toast.showError(msg, duration),
+    notifyWarning: (msg: string, duration = 5000) =>
+      toast.showWarning(msg, duration),
     notifyInfo: (msg: string, duration = 5000) => toast.showInfo(msg, duration),
     dismiss: (id: string) => toast.removeToast(id),
   };
@@ -300,14 +311,18 @@ export function useNotification() {
 // Declared at MODULE LEVEL using Nuxt's useState — provides per-request isolation
 // on SSR (no state bleed across concurrent requests) while maintaining shared
 // cross-instance reactivity on the client (same reactive ref for all call sites).
-const _manualBreadcrumbs = useState<BreadcrumbItem[] | null>('breadcrumbs.manual', () => null);
+const _manualBreadcrumbs = useState<BreadcrumbItem[] | null>(
+  "breadcrumbs.manual",
+  () => null
+);
 
 export function useBreadcrumb() {
   const route = useRoute();
 
   const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     if (_manualBreadcrumbs.value !== null) return _manualBreadcrumbs.value;
-    if (Array.isArray(route.meta.breadcrumb)) return route.meta.breadcrumb as BreadcrumbItem[];
+    if (Array.isArray(route.meta.breadcrumb))
+      return route.meta.breadcrumb as BreadcrumbItem[];
     return [];
   });
 
@@ -356,7 +371,7 @@ export function useBreadcrumb() {
 function applyDirection(dir: Direction) {
   document.documentElement.dir = dir;
   direction.value = dir;
-  localStorage.setItem('bunyan_direction', dir);
+  localStorage.setItem("bunyan_direction", dir);
 }
 ```
 
@@ -366,7 +381,7 @@ function applyDirection(dir: Direction) {
 watch(locale, (newLocale) => {
   // If user has NOT manually overridden direction, auto-sync with locale
   if (!hasManualOverride.value) {
-    applyDirection(newLocale === 'ar' ? 'rtl' : 'ltr');
+    applyDirection(newLocale === "ar" ? "rtl" : "ltr");
   }
 });
 ```
@@ -411,149 +426,149 @@ watch(locale, (newLocale) => {
 **Structure:**
 
 ```typescript
-import { UserRole } from '~/types';
-import type { NavItem } from '~/types';
+import { UserRole } from "~/types";
+import type { NavItem } from "~/types";
 
 export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
   [UserRole.Customer]: [
     {
-      labelKey: 'nav.dashboard',
-      icon: 'i-heroicons-home',
-      to: '/dashboard',
+      labelKey: "nav.dashboard",
+      icon: "i-heroicons-home",
+      to: "/dashboard",
       roles: [UserRole.Customer],
     },
     {
-      labelKey: 'nav.projects',
-      icon: 'i-heroicons-folder',
-      to: '/projects',
+      labelKey: "nav.projects",
+      icon: "i-heroicons-folder",
+      to: "/projects",
       roles: [UserRole.Customer],
     },
     {
-      labelKey: 'nav.orders',
-      icon: 'i-heroicons-shopping-bag',
-      to: '/orders',
+      labelKey: "nav.orders",
+      icon: "i-heroicons-shopping-bag",
+      to: "/orders",
       roles: [UserRole.Customer],
     },
     {
-      labelKey: 'nav.payments',
-      icon: 'i-heroicons-credit-card',
-      to: '/payments',
+      labelKey: "nav.payments",
+      icon: "i-heroicons-credit-card",
+      to: "/payments",
       roles: [UserRole.Customer],
     },
   ],
   [UserRole.Contractor]: [
     {
-      labelKey: 'nav.dashboard',
-      icon: 'i-heroicons-home',
-      to: '/dashboard',
+      labelKey: "nav.dashboard",
+      icon: "i-heroicons-home",
+      to: "/dashboard",
       roles: [UserRole.Contractor],
     },
     {
-      labelKey: 'nav.projects',
-      icon: 'i-heroicons-folder',
-      to: '/projects',
+      labelKey: "nav.projects",
+      icon: "i-heroicons-folder",
+      to: "/projects",
       roles: [UserRole.Contractor],
     },
     {
-      labelKey: 'nav.earnings',
-      icon: 'i-heroicons-banknotes',
-      to: '/earnings',
+      labelKey: "nav.earnings",
+      icon: "i-heroicons-banknotes",
+      to: "/earnings",
       roles: [UserRole.Contractor],
     },
     {
-      labelKey: 'nav.withdrawals',
-      icon: 'i-heroicons-arrow-up-on-square',
-      to: '/withdrawals',
+      labelKey: "nav.withdrawals",
+      icon: "i-heroicons-arrow-up-on-square",
+      to: "/withdrawals",
       roles: [UserRole.Contractor],
     },
   ],
   [UserRole.SupervisingArchitect]: [
     {
-      labelKey: 'nav.dashboard',
-      icon: 'i-heroicons-home',
-      to: '/dashboard',
+      labelKey: "nav.dashboard",
+      icon: "i-heroicons-home",
+      to: "/dashboard",
       roles: [UserRole.SupervisingArchitect],
     },
     {
-      labelKey: 'nav.projects',
-      icon: 'i-heroicons-folder',
-      to: '/projects',
+      labelKey: "nav.projects",
+      icon: "i-heroicons-folder",
+      to: "/projects",
       roles: [UserRole.SupervisingArchitect],
     },
     {
-      labelKey: 'nav.field_engineers',
-      icon: 'i-heroicons-user-group',
-      to: '/field-engineers',
+      labelKey: "nav.field_engineers",
+      icon: "i-heroicons-user-group",
+      to: "/field-engineers",
       roles: [UserRole.SupervisingArchitect],
     },
     {
-      labelKey: 'nav.reports',
-      icon: 'i-heroicons-document-text',
-      to: '/reports',
+      labelKey: "nav.reports",
+      icon: "i-heroicons-document-text",
+      to: "/reports",
       roles: [UserRole.SupervisingArchitect],
     },
   ],
   [UserRole.FieldEngineer]: [
     {
-      labelKey: 'nav.dashboard',
-      icon: 'i-heroicons-home',
-      to: '/dashboard',
+      labelKey: "nav.dashboard",
+      icon: "i-heroicons-home",
+      to: "/dashboard",
       roles: [UserRole.FieldEngineer],
     },
     {
-      labelKey: 'nav.my_projects',
-      icon: 'i-heroicons-folder',
-      to: '/projects',
+      labelKey: "nav.my_projects",
+      icon: "i-heroicons-folder",
+      to: "/projects",
       roles: [UserRole.FieldEngineer],
     },
     {
-      labelKey: 'nav.submit_report',
-      icon: 'i-heroicons-paper-airplane',
-      to: '/reports/create',
+      labelKey: "nav.submit_report",
+      icon: "i-heroicons-paper-airplane",
+      to: "/reports/create",
       roles: [UserRole.FieldEngineer],
     },
   ],
   [UserRole.Admin]: [
     {
-      labelKey: 'nav.dashboard',
-      icon: 'i-heroicons-home',
-      to: '/dashboard',
+      labelKey: "nav.dashboard",
+      icon: "i-heroicons-home",
+      to: "/dashboard",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.users',
-      icon: 'i-heroicons-users',
-      to: '/admin/users',
+      labelKey: "nav.users",
+      icon: "i-heroicons-users",
+      to: "/admin/users",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.projects',
-      icon: 'i-heroicons-folder',
-      to: '/admin/projects',
+      labelKey: "nav.projects",
+      icon: "i-heroicons-folder",
+      to: "/admin/projects",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.products',
-      icon: 'i-heroicons-cube',
-      to: '/admin/products',
+      labelKey: "nav.products",
+      icon: "i-heroicons-cube",
+      to: "/admin/products",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.orders',
-      icon: 'i-heroicons-shopping-bag',
-      to: '/admin/orders',
+      labelKey: "nav.orders",
+      icon: "i-heroicons-shopping-bag",
+      to: "/admin/orders",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.configuration',
-      icon: 'i-heroicons-cog-6-tooth',
-      to: '/admin/configuration',
+      labelKey: "nav.configuration",
+      icon: "i-heroicons-cog-6-tooth",
+      to: "/admin/configuration",
       roles: [UserRole.Admin],
     },
     {
-      labelKey: 'nav.reports',
-      icon: 'i-heroicons-document-text',
-      to: '/admin/reports',
+      labelKey: "nav.reports",
+      icon: "i-heroicons-document-text",
+      to: "/admin/reports",
       roles: [UserRole.Admin],
     },
   ],
@@ -621,10 +636,24 @@ export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
 ```typescript
 const userMenuItems = computed<DropdownMenuGroup[]>(() => [
   [
-    { label: t('profile'), icon: 'i-heroicons-user', to: `/${locale.value}/profile` },
-    { label: t('settings'), icon: 'i-heroicons-cog-6-tooth', to: `/${locale.value}/settings` },
+    {
+      label: t("profile"),
+      icon: "i-heroicons-user",
+      to: `/${locale.value}/profile`,
+    },
+    {
+      label: t("settings"),
+      icon: "i-heroicons-cog-6-tooth",
+      to: `/${locale.value}/settings`,
+    },
   ],
-  [{ label: t('logout'), icon: 'i-heroicons-arrow-right-on-rectangle', click: logout }],
+  [
+    {
+      label: t("logout"),
+      icon: "i-heroicons-arrow-right-on-rectangle",
+      click: logout,
+    },
+  ],
 ]);
 ```
 
@@ -794,7 +823,11 @@ const userMenuItems = computed<DropdownMenuGroup[]>(() => [
 **UProgress Integration:**
 
 ```vue
-<UProgress v-if="isPageLoading" animation="carousel" class="fixed top-0 start-0 end-0 z-50 h-0.5" />
+<UProgress
+  v-if="isPageLoading"
+  animation="carousel"
+  class="fixed top-0 start-0 end-0 z-50 h-0.5"
+/>
 ```
 
 - `isPageLoading` from `useUiStore().isPageLoading`
@@ -943,20 +976,27 @@ useHead({
 ```vue
 <template>
   <div class="min-h-screen flex items-center justify-center p-6 bg-[#fafafa]">
-    <UCard class="w-full max-w-lg" :ui="{ root: 'shadow-[0px_0px_0px_1px_rgba(0,0,0,0.08)]' }">
+    <UCard
+      class="w-full max-w-lg"
+      :ui="{ root: 'shadow-[0px_0px_0px_1px_rgba(0,0,0,0.08)]' }"
+    >
       <UAlert
         :color="statusCode === 404 ? 'warning' : 'error'"
         :title="content.title"
         :description="content.message"
-        :icon="statusCode === 404 ? 'i-heroicons-map-pin' : 'i-heroicons-exclamation-triangle'"
+        :icon="
+          statusCode === 404
+            ? 'i-heroicons-map-pin'
+            : 'i-heroicons-exclamation-triangle'
+        "
       />
       <template #footer>
         <div class="flex gap-3 justify-end mt-4">
           <UButton variant="ghost" @click="goBack">
-            {{ t('errors.go_back') }}
+            {{ t("errors.go_back") }}
           </UButton>
           <UButton @click="goHome">
-            {{ t('errors.go_home') }}
+            {{ t("errors.go_home") }}
           </UButton>
         </div>
       </template>

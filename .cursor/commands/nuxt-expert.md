@@ -1,5 +1,5 @@
 ---
-description: 'Nuxt.js and Vue 3 frontend specialist for Bunyan. Expert in Composition API, Pinia, Nuxt UI, Tailwind CSS v4, RTL Arabic design, i18n, Playwright.'
+description: "Nuxt.js and Vue 3 frontend specialist for Bunyan. Expert in Composition API, Pinia, Nuxt UI, Tailwind CSS v4, RTL Arabic design, i18n, Playwright."
 ---
 
 ## User Input

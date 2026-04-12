@@ -1,5 +1,5 @@
 ---
-description: 'Initialize a Git repository with an initial commit'
+description: "Initialize a Git repository with an initial commit"
 ---
 
 # Initialize Git Repository

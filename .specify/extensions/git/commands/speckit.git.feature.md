@@ -1,5 +1,5 @@
 ---
-description: 'Create a feature branch with sequential or timestamp numbering'
+description: "Create a feature branch with sequential or timestamp numbering"
 ---
 
 # Create Feature Branch

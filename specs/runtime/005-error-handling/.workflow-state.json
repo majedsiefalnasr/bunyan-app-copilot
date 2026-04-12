@@ -31,12 +31,30 @@
   "last_updated": "2026-04-12T12:00:00Z",
   "step_timings": {
     "specify": 1200000,
-    "clarify": { "started_at": "2026-04-11T00:00:00Z", "completed_at": "2026-04-11T00:00:00Z" },
-    "plan": { "started_at": "2026-04-11T00:00:00Z", "completed_at": "2026-04-11T14:45:00Z" },
-    "tasks": { "started_at": "2026-04-11T14:50:00Z", "completed_at": "2026-04-11T15:30:00Z" },
-    "analyze": { "started_at": "2026-04-11T15:45:00Z", "completed_at": "2026-04-11T16:20:00Z" },
-    "implement": { "started_at": "2026-04-11T16:30:00Z", "completed_at": "2026-04-12T08:00:00Z" },
-    "closure": { "started_at": "2026-04-12T08:00:00Z", "completed_at": "2026-04-12T12:00:00Z" }
+    "clarify": {
+      "started_at": "2026-04-11T00:00:00Z",
+      "completed_at": "2026-04-11T00:00:00Z"
+    },
+    "plan": {
+      "started_at": "2026-04-11T00:00:00Z",
+      "completed_at": "2026-04-11T14:45:00Z"
+    },
+    "tasks": {
+      "started_at": "2026-04-11T14:50:00Z",
+      "completed_at": "2026-04-11T15:30:00Z"
+    },
+    "analyze": {
+      "started_at": "2026-04-11T15:45:00Z",
+      "completed_at": "2026-04-11T16:20:00Z"
+    },
+    "implement": {
+      "started_at": "2026-04-11T16:30:00Z",
+      "completed_at": "2026-04-12T08:00:00Z"
+    },
+    "closure": {
+      "started_at": "2026-04-12T08:00:00Z",
+      "completed_at": "2026-04-12T12:00:00Z"
+    }
   },
   "history": [
     {
@@ -190,7 +208,12 @@
         "TESTING_GUIDE.md",
         "PR_SUMMARY.md"
       ],
-      "reviewers": ["Architecture Guardian", "Security Auditor", "QA Engineer", "Code Reviewer"],
+      "reviewers": [
+        "Architecture Guardian",
+        "Security Auditor",
+        "QA Engineer",
+        "Code Reviewer"
+      ],
       "approval_status": "APPROVED",
       "timestamp": "2026-04-12T11:00:00Z"
     },

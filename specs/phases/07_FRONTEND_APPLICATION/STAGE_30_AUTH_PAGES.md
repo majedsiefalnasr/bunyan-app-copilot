@@ -50,10 +50,10 @@ All forms use **VeeValidate** + **Zod** schemas:
 
 ```typescript
 // schemas/auth.ts
-import { z } from 'zod';
+import { z } from "zod";
 export const loginSchema = z.object({
-  email: z.string().email({ message: 'البريد الإلكتروني غير صالح' }),
-  password: z.string().min(8, { message: 'كلمة المرور قصيرة جدًا' }),
+  email: z.string().email({ message: "البريد الإلكتروني غير صالح" }),
+  password: z.string().min(8, { message: "كلمة المرور قصيرة جدًا" }),
 });
 ```
 
@@ -85,20 +85,22 @@ export const loginSchema = z.object({
 
 ```typescript
 // tests/e2e/auth.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('login with valid credentials redirects to dashboard', async ({ page }) => {
-  await page.goto('/auth/login');
-  await page.fill('[data-testid="email-input"]', 'user@example.com');
-  await page.fill('[data-testid="password-input"]', 'password123');
+test("login with valid credentials redirects to dashboard", async ({
+  page,
+}) => {
+  await page.goto("/auth/login");
+  await page.fill('[data-testid="email-input"]', "user@example.com");
+  await page.fill('[data-testid="password-input"]', "password123");
   await page.click('[data-testid="login-button"]');
-  await expect(page).toHaveURL('/dashboard');
+  await expect(page).toHaveURL("/dashboard");
 });
 
-test('login shows Arabic error on bad credentials', async ({ page }) => {
-  await page.goto('/auth/login');
-  await page.fill('[data-testid="email-input"]', 'wrong@example.com');
-  await page.fill('[data-testid="password-input"]', 'wrongpassword');
+test("login shows Arabic error on bad credentials", async ({ page }) => {
+  await page.goto("/auth/login");
+  await page.fill('[data-testid="email-input"]', "wrong@example.com");
+  await page.fill('[data-testid="password-input"]', "wrongpassword");
   await page.click('[data-testid="login-button"]');
   await expect(page.locator('[role="alert"]')).toBeVisible();
 });

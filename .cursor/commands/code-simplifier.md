@@ -1,5 +1,5 @@
 ---
-description: 'Refactoring specialist — removes dead code, reduces complexity, consolidates duplicates.'
+description: "Refactoring specialist — removes dead code, reduces complexity, consolidates duplicates."
 ---
 
 ## User Input

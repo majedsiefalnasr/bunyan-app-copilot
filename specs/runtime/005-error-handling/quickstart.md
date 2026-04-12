@@ -323,9 +323,9 @@ export function useApi() {
 
     onRequest({ options }) {
       if (auth.token) {
-        options.headers.set('Authorization', `Bearer ${auth.token}`);
+        options.headers.set("Authorization", `Bearer ${auth.token}`);
       }
-      options.headers.set('Accept-Language', useI18n().locale.value);
+      options.headers.set("Accept-Language", useI18n().locale.value);
     },
 
     onResponseError({ response }) {
@@ -334,27 +334,27 @@ export function useApi() {
       // Handle specific status codes
       if (response.status === 401) {
         auth.logout();
-        navigateTo('/auth/login');
+        navigateTo("/auth/login");
         return;
       }
 
       if (response.status === 403) {
-        navigateTo('/error/403');
+        navigateTo("/error/403");
         return;
       }
 
       // Show error toast
-      const message = data?.error?.message || 'An error occurred';
+      const message = data?.error?.message || "An error occurred";
       toast.showToast({
-        type: 'error',
+        type: "error",
         message,
         duration: 5000,
       });
 
       // Log correlation ID for support
-      const correlationId = response.headers.get('X-Correlation-ID');
+      const correlationId = response.headers.get("X-Correlation-ID");
       if (correlationId) {
-        console.error('Error ID:', correlationId);
+        console.error("Error ID:", correlationId);
       }
     },
   });
@@ -364,7 +364,7 @@ export function useApi() {
 
 // Usage
 const { api } = useApi();
-const { data: projects } = await api<ProjectsResponse>('/api/v1/projects');
+const { data: projects } = await api<ProjectsResponse>("/api/v1/projects");
 ```
 
 ---
@@ -381,17 +381,17 @@ export function useErrorHandler() {
   function handleError(error: ApiError) {
     const message = t(`errors.${error.code}`) || error.message;
 
-    if (error.code === 'VALIDATION_ERROR') {
+    if (error.code === "VALIDATION_ERROR") {
       // Handle field-level errors separately
       return {
-        message: t('errors.validation_failed'),
+        message: t("errors.validation_failed"),
         details: error.details, // Pass to form
       };
     }
 
-    if (error.code === 'RATE_LIMIT_EXCEEDED') {
+    if (error.code === "RATE_LIMIT_EXCEEDED") {
       toast.showToast({
-        type: 'warning',
+        type: "warning",
         message,
         duration: 10000,
       });
@@ -399,7 +399,7 @@ export function useErrorHandler() {
     }
 
     toast.showToast({
-      type: 'error',
+      type: "error",
       message,
       duration: 5000,
     });
@@ -419,7 +419,7 @@ export function useErrorHandler() {
 export function useToast() {
   const error = useErrorStore();
 
-  function showToast(toast: Omit<Toast, 'id'>) {
+  function showToast(toast: Omit<Toast, "id">) {
     const id = Math.random().toString(36).substring(7);
     error.addToast({ ...toast, id });
 
@@ -438,8 +438,8 @@ export function useToast() {
 // Usage
 const { showToast } = useToast();
 showToast({
-  type: 'error',
-  message: 'Failed to create project',
+  type: "error",
+  message: "Failed to create project",
   duration: 5000,
 });
 ```
@@ -457,12 +457,12 @@ showToast({
   >
     <div class="text-center max-w-md">
       <h1 class="text-6xl font-bold text-gray-900 mb-2">404</h1>
-      <p class="text-xl text-gray-600 mb-6">{{ $t('errors.not_found') }}</p>
+      <p class="text-xl text-gray-600 mb-6">{{ $t("errors.not_found") }}</p>
       <NuxtLink
         to="/"
         class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
       >
-        {{ $t('errors.go_home') }}
+        {{ $t("errors.go_home") }}
       </NuxtLink>
     </div>
   </div>
@@ -476,12 +476,12 @@ showToast({
   >
     <div class="text-center max-w-md">
       <h1 class="text-6xl font-bold text-red-900 mb-2">403</h1>
-      <p class="text-xl text-red-700 mb-6">{{ $t('errors.access_denied') }}</p>
+      <p class="text-xl text-red-700 mb-6">{{ $t("errors.access_denied") }}</p>
       <a
         href="mailto:support@bunyan.example"
         class="inline-block px-6 py-3 bg-red-600 text-white rounded-lg"
       >
-        {{ $t('errors.contact_support') }}
+        {{ $t("errors.contact_support") }}
       </a>
     </div>
   </div>
@@ -559,28 +559,28 @@ class ExceptionHandlerTest extends TestCase
 ```typescript
 // tests/e2e/errorHandling.test.ts
 
-test('displays validation errors on form submission', async ({ page }) => {
-  await page.goto('/projects/create');
+test("displays validation errors on form submission", async ({ page }) => {
+  await page.goto("/projects/create");
 
   // Submit empty form
   await page.click('button:has-text("Create")');
 
   // Check for error messages
-  await expect(page.locator('text=required')).toBeVisible();
-  await expect(page.locator('[role="alert"]')).toContainText('validation');
+  await expect(page.locator("text=required")).toBeVisible();
+  await expect(page.locator('[role="alert"]')).toContainText("validation");
 });
 
-test('displays correlation ID on server error', async ({ page }) => {
+test("displays correlation ID on server error", async ({ page }) => {
   // Force 500 error (mock API)
-  await page.route('**/api/**', (route) => {
-    route.abort('failed');
+  await page.route("**/api/**", (route) => {
+    route.abort("failed");
   });
 
-  await page.goto('/projects');
+  await page.goto("/projects");
 
   // Check error message includes ID
   const errorText = await page.locator('[role="alert"]').textContent();
-  expect(errorText).toContain('Error ID:');
+  expect(errorText).toContain("Error ID:");
 });
 ```
 

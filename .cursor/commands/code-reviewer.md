@@ -1,5 +1,5 @@
 ---
-description: 'Production-grade code reviewer for Bunyan. Enforces RBAC, clean architecture, security, observability, workflow integrity.'
+description: "Production-grade code reviewer for Bunyan. Enforces RBAC, clean architecture, security, observability, workflow integrity."
 ---
 
 ## User Input

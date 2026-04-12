@@ -408,9 +408,9 @@ class ProjectController extends BaseController
 
 ```typescript
 // composables/useApi.ts
-import { useRouter } from 'vue-router';
-import { useToast } from './useToast';
-import { useErrorHandler } from './useErrorHandler';
+import { useRouter } from "vue-router";
+import { useToast } from "./useToast";
+import { useErrorHandler } from "./useErrorHandler";
 
 export const useApi = () => {
   const router = useRouter();
@@ -424,12 +424,12 @@ export const useApi = () => {
         const error = response._data;
 
         // Handle specific error codes
-        if (error.error?.code === 'AUTH_TOKEN_EXPIRED') {
-          router.push('/login');
-        } else if (error.error?.code === 'RBAC_ROLE_DENIED') {
-          showToast('Access denied', 'error');
-        } else if (error.error?.code === 'RATE_LIMIT_EXCEEDED') {
-          showToast('Too many requests. Please wait a moment.', 'warning');
+        if (error.error?.code === "AUTH_TOKEN_EXPIRED") {
+          router.push("/login");
+        } else if (error.error?.code === "RBAC_ROLE_DENIED") {
+          showToast("Access denied", "error");
+        } else if (error.error?.code === "RATE_LIMIT_EXCEEDED") {
+          showToast("Too many requests. Please wait a moment.", "warning");
         }
       }
     },
@@ -447,7 +447,7 @@ export const useApi = () => {
 ```vue
 <!-- components/GlobalErrorBoundary.vue -->
 <script setup lang="ts">
-import { onErrorCaptured, ref } from 'vue';
+import { onErrorCaptured, ref } from "vue";
 
 const error = ref(null);
 const showError = ref(false);
@@ -457,7 +457,7 @@ onErrorCaptured((err) => {
   showError.value = true;
 
   // Log error with correlation ID
-  console.error('Component error:', {
+  console.error("Component error:", {
     correlation_id: window.__CORRELATION_ID__,
     error: err.message,
   });
@@ -481,7 +481,7 @@ const goBack = () => {
     <div v-else class="error-boundary">
       <UCard>
         <h1>Something went wrong</h1>
-        <p>{{ error?.message || 'An unexpected error occurred' }}</p>
+        <p>{{ error?.message || "An unexpected error occurred" }}</p>
         <div class="actions">
           <UButton @click="reload">Reload Page</UButton>
           <UButton variant="secondary" @click="goBack">Go Back</UButton>
@@ -496,8 +496,8 @@ const goBack = () => {
 
 ```typescript
 // composables/useErrorHandler.ts
-import { useRouter } from 'vue-router';
-import { useToast } from './useToast';
+import { useRouter } from "vue-router";
+import { useToast } from "./useToast";
 
 export const useErrorHandler = () => {
   const router = useRouter();
@@ -508,48 +508,54 @@ export const useErrorHandler = () => {
     const errorCode = error?.error?.code || error?.status;
 
     switch (errorCode) {
-      case 'AUTH_INVALID_CREDENTIALS':
-        showToast($t('errors.auth_invalid_credentials'), 'error');
-        router.push('/login');
+      case "AUTH_INVALID_CREDENTIALS":
+        showToast($t("errors.auth_invalid_credentials"), "error");
+        router.push("/login");
         break;
 
-      case 'AUTH_TOKEN_EXPIRED':
-        showToast($t('errors.auth_token_expired'), 'error');
-        router.push('/login');
+      case "AUTH_TOKEN_EXPIRED":
+        showToast($t("errors.auth_token_expired"), "error");
+        router.push("/login");
         break;
 
-      case 'RBAC_ROLE_DENIED':
-        showToast($t('errors.access_denied'), 'error');
-        router.push('/error-403');
+      case "RBAC_ROLE_DENIED":
+        showToast($t("errors.access_denied"), "error");
+        router.push("/error-403");
         break;
 
-      case 'RESOURCE_NOT_FOUND':
+      case "RESOURCE_NOT_FOUND":
       case 404:
-        showToast($t('errors.not_found'), 'error');
-        router.push('/error-404');
+        showToast($t("errors.not_found"), "error");
+        router.push("/error-404");
         break;
 
-      case 'VALIDATION_ERROR':
+      case "VALIDATION_ERROR":
         if (error.error?.details) {
           // Display field-level errors
           displayFieldErrors(error.error.details);
         } else {
-          showToast(error.error?.message || $t('errors.validation_error'), 'error');
+          showToast(
+            error.error?.message || $t("errors.validation_error"),
+            "error"
+          );
         }
         break;
 
-      case 'RATE_LIMIT_EXCEEDED':
+      case "RATE_LIMIT_EXCEEDED":
       case 429:
-        showToast($t('errors.rate_limit_exceeded'), 'warning');
+        showToast($t("errors.rate_limit_exceeded"), "warning");
         break;
 
-      case 'SERVER_ERROR':
+      case "SERVER_ERROR":
       case 500:
-        showToast($t('errors.server_error'), 'error');
+        showToast($t("errors.server_error"), "error");
         break;
 
       default:
-        showToast(error?.error?.message || context?.fallback || $t('errors.unknown'), 'error');
+        showToast(
+          error?.error?.message || context?.fallback || $t("errors.unknown"),
+          "error"
+        );
     }
   };
 
@@ -615,18 +621,18 @@ class ProjectControllerTest extends TestCase
 **Vitest Example:**
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { useErrorHandler } from '~/composables/useErrorHandler';
+import { describe, it, expect, beforeEach } from "vitest";
+import { mount } from "@vue/test-utils";
+import { useErrorHandler } from "~/composables/useErrorHandler";
 
-describe('useErrorHandler', () => {
-  it('handles RBAC_ROLE_DENIED error', () => {
+describe("useErrorHandler", () => {
+  it("handles RBAC_ROLE_DENIED error", () => {
     const { handleError } = useErrorHandler();
 
     const error = {
       error: {
-        code: 'RBAC_ROLE_DENIED',
-        message: 'Access denied',
+        code: "RBAC_ROLE_DENIED",
+        message: "Access denied",
       },
     };
 
@@ -635,15 +641,15 @@ describe('useErrorHandler', () => {
     }).not.toThrow();
   });
 
-  it('handles validation errors with field details', () => {
+  it("handles validation errors with field details", () => {
     const { handleError } = useErrorHandler();
 
     const error = {
       error: {
-        code: 'VALIDATION_ERROR',
+        code: "VALIDATION_ERROR",
         details: {
-          name: ['Name is required'],
-          budget: ['Budget must be positive'],
+          name: ["Name is required"],
+          budget: ["Budget must be positive"],
         },
       },
     };

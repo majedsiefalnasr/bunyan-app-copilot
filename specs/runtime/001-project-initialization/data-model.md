@@ -239,11 +239,11 @@ export interface User {
 }
 
 export type UserRole =
-  | 'customer'
-  | 'contractor'
-  | 'supervising_architect'
-  | 'field_engineer'
-  | 'admin';
+  | "customer"
+  | "contractor"
+  | "supervising_architect"
+  | "field_engineer"
+  | "admin";
 
 export interface RegisterRequest {
   name: string;
@@ -275,11 +275,11 @@ export interface ApiResponse<T> {
 }
 
 export const USER_ROLES: Record<UserRole, { ar: string; en: string }> = {
-  customer: { ar: 'العميل', en: 'Customer' },
-  contractor: { ar: 'المقاول', en: 'Contractor' },
-  supervising_architect: { ar: 'المهندس المشرف', en: 'Supervising Architect' },
-  field_engineer: { ar: 'المهندس الميداني', en: 'Field Engineer' },
-  admin: { ar: 'الإدارة', en: 'Admin' },
+  customer: { ar: "العميل", en: "Customer" },
+  contractor: { ar: "المقاول", en: "Contractor" },
+  supervising_architect: { ar: "المهندس المشرف", en: "Supervising Architect" },
+  field_engineer: { ar: "المهندس الميداني", en: "Field Engineer" },
+  admin: { ar: "الإدارة", en: "Admin" },
 };
 ```
 

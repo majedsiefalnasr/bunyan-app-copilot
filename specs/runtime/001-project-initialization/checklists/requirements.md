@@ -281,17 +281,17 @@ SESSION_DRIVER=cookie
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/i18n'],
+  modules: ["@nuxt/ui", "@nuxtjs/i18n"],
   ui: {
     global: true,
   },
   i18n: {
     locales: [
-      { code: 'ar', iso: 'ar-SA', dir: 'rtl' },
-      { code: 'en', iso: 'en-US', dir: 'ltr' },
+      { code: "ar", iso: "ar-SA", dir: "rtl" },
+      { code: "en", iso: "en-US", dir: "ltr" },
     ],
-    defaultLocale: 'ar',
-    strategy: 'prefix_except_default',
+    defaultLocale: "ar",
+    strategy: "prefix_except_default",
   },
 });
 ```
@@ -327,7 +327,7 @@ export default defineNuxtConfig({
 
 ```typescript
 export default {
-  content: ['./components/**/*.{js,vue,ts}', './pages/**/*.{js,vue,ts}'],
+  content: ["./components/**/*.{js,vue,ts}", "./pages/**/*.{js,vue,ts}"],
   theme: {
     extend: {},
   },
@@ -542,7 +542,7 @@ npm run test
 **File:** `docker-compose.yml`
 
 ```yaml
-version: '3.8'
+version: "3.8"
 services:
   mysql:
     image: mysql:8.0
@@ -550,14 +550,14 @@ services:
       MYSQL_DATABASE: bunyan
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
   redis:
     image: redis:7-alpine
     ports:
-      - '6379:6379'
+      - "6379:6379"
 
   node:
     image: node:18-alpine
@@ -566,7 +566,7 @@ services:
       - .:/app
     command: npm run dev
     ports:
-      - '3000:3000'
+      - "3000:3000"
 
 volumes:
   mysql_data:

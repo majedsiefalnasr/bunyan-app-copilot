@@ -1,5 +1,5 @@
 ---
-description: 'QA engineer for Bunyan. Enforces RBAC testing, workflow validation, file upload testing, Arabic/RTL testing, and risk-based coverage.'
+description: "QA engineer for Bunyan. Enforces RBAC testing, workflow validation, file upload testing, Arabic/RTL testing, and risk-based coverage."
 ---
 
 ## User Input

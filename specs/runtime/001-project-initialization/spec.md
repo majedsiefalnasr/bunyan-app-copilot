@@ -531,11 +531,11 @@ _Rationale:_ Foundation stage focuses on architecture and tooling. Content and c
 // nuxt.config.ts
 export default defineNuxtConfig({
   i18n: {
-    locales: ['ar', 'en'],
-    defaultLocale: 'ar',
-    strategy: 'prefix',
+    locales: ["ar", "en"],
+    defaultLocale: "ar",
+    strategy: "prefix",
   },
-  dir: 'rtl', // Sets initial direction
+  dir: "rtl", // Sets initial direction
 });
 ```
 

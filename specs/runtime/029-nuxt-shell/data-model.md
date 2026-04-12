@@ -19,11 +19,11 @@ All types and interfaces defined here belong in `frontend/types/index.ts`. They 
  * Values match the backend `role` field exactly (snake_case strings).
  */
 export enum UserRole {
-  Customer = 'customer',
-  Contractor = 'contractor',
-  SupervisingArchitect = 'supervising_architect',
-  FieldEngineer = 'field_engineer',
-  Admin = 'admin',
+  Customer = "customer",
+  Contractor = "contractor",
+  SupervisingArchitect = "supervising_architect",
+  FieldEngineer = "field_engineer",
+  Admin = "admin",
 }
 
 /**
@@ -31,11 +31,11 @@ export enum UserRole {
  * without importing the enum (e.g., Pinia state, API response shape).
  */
 export type UserRoleType =
-  | 'customer'
-  | 'contractor'
-  | 'supervising_architect'
-  | 'field_engineer'
-  | 'admin';
+  | "customer"
+  | "contractor"
+  | "supervising_architect"
+  | "field_engineer"
+  | "admin";
 ```
 
 ---
@@ -118,7 +118,7 @@ export interface AuthUser {
  * Document writing direction.
  * Applied to document.documentElement.dir and Tailwind logical properties.
  */
-export type Direction = 'rtl' | 'ltr';
+export type Direction = "rtl" | "ltr";
 ```
 
 ---
@@ -130,7 +130,7 @@ export type Direction = 'rtl' | 'ltr';
  * Supported application locales.
  * Must match locale codes in nuxt.config.ts locales array.
  */
-export type Locale = 'ar' | 'en';
+export type Locale = "ar" | "en";
 ```
 
 ---
@@ -145,7 +145,7 @@ export type Locale = 'ar' | 'en';
 export interface UiPreferences {
   direction: Direction;
   locale: Locale;
-  colorMode: 'light' | 'dark' | 'system';
+  colorMode: "light" | "dark" | "system";
 }
 ```
 
@@ -198,7 +198,7 @@ export interface RouteMetaBreadcrumb {
 }
 
 /** Extend Nuxt's RouteMeta to include breadcrumb */
-declare module '#app' {
+declare module "#app" {
   interface PageMeta {
     breadcrumb?: BreadcrumbItem[];
     /** Required role to access this page (UX guard — server re-validates) */

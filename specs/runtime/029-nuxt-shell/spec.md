@@ -242,36 +242,96 @@ This stage does **not** implement any business-domain pages. It establishes the 
 // frontend/app/config/navigation.ts
 export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
   customer: [
-    { label: 'nav.dashboard', icon: 'i-heroicons-home', to: '/customer' },
-    { label: 'nav.projects', icon: 'i-heroicons-briefcase', to: '/customer/projects' },
-    { label: 'nav.orders', icon: 'i-heroicons-shopping-cart', to: '/customer/orders' },
-    { label: 'nav.payments', icon: 'i-heroicons-credit-card', to: '/customer/payments' },
+    { label: "nav.dashboard", icon: "i-heroicons-home", to: "/customer" },
+    {
+      label: "nav.projects",
+      icon: "i-heroicons-briefcase",
+      to: "/customer/projects",
+    },
+    {
+      label: "nav.orders",
+      icon: "i-heroicons-shopping-cart",
+      to: "/customer/orders",
+    },
+    {
+      label: "nav.payments",
+      icon: "i-heroicons-credit-card",
+      to: "/customer/payments",
+    },
   ],
   contractor: [
-    { label: 'nav.dashboard', icon: 'i-heroicons-home', to: '/contractor' },
-    { label: 'nav.projects', icon: 'i-heroicons-briefcase', to: '/contractor/projects' },
-    { label: 'nav.earnings', icon: 'i-heroicons-banknotes', to: '/contractor/earnings' },
-    { label: 'nav.withdrawals', icon: 'i-heroicons-arrow-up-tray', to: '/contractor/withdrawals' },
+    { label: "nav.dashboard", icon: "i-heroicons-home", to: "/contractor" },
+    {
+      label: "nav.projects",
+      icon: "i-heroicons-briefcase",
+      to: "/contractor/projects",
+    },
+    {
+      label: "nav.earnings",
+      icon: "i-heroicons-banknotes",
+      to: "/contractor/earnings",
+    },
+    {
+      label: "nav.withdrawals",
+      icon: "i-heroicons-arrow-up-tray",
+      to: "/contractor/withdrawals",
+    },
   ],
   supervising_architect: [
-    { label: 'nav.dashboard', icon: 'i-heroicons-home', to: '/architect' },
-    { label: 'nav.projects', icon: 'i-heroicons-briefcase', to: '/architect/projects' },
-    { label: 'nav.field_engineers', icon: 'i-heroicons-users', to: '/architect/engineers' },
-    { label: 'nav.reports', icon: 'i-heroicons-document-text', to: '/architect/reports' },
+    { label: "nav.dashboard", icon: "i-heroicons-home", to: "/architect" },
+    {
+      label: "nav.projects",
+      icon: "i-heroicons-briefcase",
+      to: "/architect/projects",
+    },
+    {
+      label: "nav.field_engineers",
+      icon: "i-heroicons-users",
+      to: "/architect/engineers",
+    },
+    {
+      label: "nav.reports",
+      icon: "i-heroicons-document-text",
+      to: "/architect/reports",
+    },
   ],
   field_engineer: [
-    { label: 'nav.dashboard', icon: 'i-heroicons-home', to: '/engineer' },
-    { label: 'nav.projects', icon: 'i-heroicons-briefcase', to: '/engineer/projects' },
-    { label: 'nav.submit_report', icon: 'i-heroicons-plus-circle', to: '/engineer/reports/new' },
+    { label: "nav.dashboard", icon: "i-heroicons-home", to: "/engineer" },
+    {
+      label: "nav.projects",
+      icon: "i-heroicons-briefcase",
+      to: "/engineer/projects",
+    },
+    {
+      label: "nav.submit_report",
+      icon: "i-heroicons-plus-circle",
+      to: "/engineer/reports/new",
+    },
   ],
   admin: [
-    { label: 'nav.dashboard', icon: 'i-heroicons-home', to: '/admin' },
-    { label: 'nav.users', icon: 'i-heroicons-users', to: '/admin/users' },
-    { label: 'nav.projects', icon: 'i-heroicons-briefcase', to: '/admin/projects' },
-    { label: 'nav.products', icon: 'i-heroicons-cube', to: '/admin/products' },
-    { label: 'nav.orders', icon: 'i-heroicons-shopping-cart', to: '/admin/orders' },
-    { label: 'nav.configuration', icon: 'i-heroicons-cog-6-tooth', to: '/admin/config' },
-    { label: 'nav.reports', icon: 'i-heroicons-document-text', to: '/admin/reports' },
+    { label: "nav.dashboard", icon: "i-heroicons-home", to: "/admin" },
+    { label: "nav.users", icon: "i-heroicons-users", to: "/admin/users" },
+    {
+      label: "nav.projects",
+      icon: "i-heroicons-briefcase",
+      to: "/admin/projects",
+    },
+    { label: "nav.products", icon: "i-heroicons-cube", to: "/admin/products" },
+    {
+      label: "nav.orders",
+      icon: "i-heroicons-shopping-cart",
+      to: "/admin/orders",
+    },
+    {
+      label: "nav.configuration",
+      icon: "i-heroicons-cog-6-tooth",
+      to: "/admin/config",
+    },
+    {
+      label: "nav.reports",
+      icon: "i-heroicons-document-text",
+      to: "/admin/reports",
+    },
   ],
 };
 ```
@@ -315,28 +375,28 @@ export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/i18n'],
+  modules: ["@nuxt/ui", "@nuxtjs/i18n"],
   ui: {
     theme: {
-      colors: ['primary', 'secondary', 'success', 'warning', 'error', 'info'],
+      colors: ["primary", "secondary", "success", "warning", "error", "info"],
     },
   },
   app: {
     head: {
-      htmlAttrs: { dir: 'rtl', lang: 'ar' },
+      htmlAttrs: { dir: "rtl", lang: "ar" },
     },
   },
   i18n: {
     locales: [
-      { code: 'ar', iso: 'ar-SA', dir: 'rtl', file: 'ar.json' },
-      { code: 'en', iso: 'en-US', dir: 'ltr', file: 'en.json' },
+      { code: "ar", iso: "ar-SA", dir: "rtl", file: "ar.json" },
+      { code: "en", iso: "en-US", dir: "ltr", file: "en.json" },
     ],
-    defaultLocale: 'ar',
-    detectBrowserLanguage: { useCookie: true, cookieKey: 'bunyan_locale' },
+    defaultLocale: "ar",
+    detectBrowserLanguage: { useCookie: true, cookieKey: "bunyan_locale" },
   },
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:8000',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? "http://localhost:8000",
     },
   },
 });
@@ -555,7 +615,7 @@ All API calls use `useApi` composable. No direct `$fetch` outside of composables
 export default defineNuxtRouteMiddleware(() => {
   const auth = useAuthStore();
   if (!auth.isAuthenticated) {
-    return navigateTo('/login');
+    return navigateTo("/login");
   }
 });
 ```

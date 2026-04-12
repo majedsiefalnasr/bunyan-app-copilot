@@ -1,5 +1,5 @@
 ---
-description: 'Verifies CodeRabbit and GitHub review-bot comments against current code, fixes actionable findings, and drafts commit messages.'
+description: "Verifies CodeRabbit and GitHub review-bot comments against current code, fixes actionable findings, and drafts commit messages."
 ---
 
 ## User Input

@@ -145,12 +145,12 @@ protected function success($data, $message = null, $status = 200) {
 **Pinia Store:**
 
 ```ts
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   const user = ref(null);
   const token = ref(null);
 
   const login = async (email, password) => {
-    const { data } = await useApi().post('/auth/login', { email, password });
+    const { data } = await useApi().post("/auth/login", { email, password });
     token.value = data.token;
     user.value = data.user;
   };
@@ -204,11 +204,11 @@ services:
   app:
     build: ./backend
     ports:
-      - '8000:8000'
+      - "8000:8000"
   web:
     build: ./frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
 ```
 
 **GitHub Actions (`.github/workflows/ci.yml`):**

@@ -546,12 +546,12 @@ Route::middleware('rate_limit:10')->group(function () {
 <!-- components/errors/GlobalErrorBoundary.vue -->
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue";
 
 const error = ref<Error | null>(null);
 const errorHandler = (err: Error) => {
   error.value = err;
-  console.error('Error caught by boundary:', err);
+  console.error("Error caught by boundary:", err);
 };
 
 onErrorCaptured(errorHandler);
@@ -561,7 +561,10 @@ onErrorCaptured(errorHandler);
   <div v-if="error" class="p-4 border border-red-300 rounded-md bg-red-50">
     <h2 class="text-red-800 font-semibold">Something went wrong</h2>
     <p class="text-red-700 text-sm mt-2">{{ error.message }}</p>
-    <button @click="error = null" class="mt-2 px-4 py-2 bg-red-600 text-white rounded">
+    <button
+      @click="error = null"
+      class="mt-2 px-4 py-2 bg-red-600 text-white rounded"
+    >
       Try again
     </button>
   </div>
@@ -574,7 +577,7 @@ onErrorCaptured(errorHandler);
 ```typescript
 // composables/useApi.ts
 
-import { $fetch } from 'ofetch';
+import { $fetch } from "ofetch";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -595,36 +598,36 @@ export function useApi() {
     baseURL: config.public.apiBaseUrl,
     onRequest({ options }) {
       if (auth.token) {
-        options.headers.set('Authorization', `Bearer ${auth.token}`);
+        options.headers.set("Authorization", `Bearer ${auth.token}`);
       }
-      options.headers.set('Accept-Language', useI18n().locale.value);
+      options.headers.set("Accept-Language", useI18n().locale.value);
     },
     onResponseError({ response, error }) {
       const data = response._data as ApiResponse<unknown>;
 
       if (response.status === 401) {
         auth.logout();
-        navigateTo('/auth/login');
+        navigateTo("/auth/login");
         return;
       }
 
       if (response.status === 403) {
-        navigateTo('/error/403');
+        navigateTo("/error/403");
         return;
       }
 
       // Show toast for other errors
-      const message = data?.error?.message || 'An error occurred';
+      const message = data?.error?.message || "An error occurred";
       toast.showToast({
-        type: 'error',
+        type: "error",
         message,
         duration: 5000,
       });
 
       // Log correlation ID for support
-      const correlationId = response.headers.get('X-Correlation-ID');
+      const correlationId = response.headers.get("X-Correlation-ID");
       if (correlationId) {
-        console.error('Correlation ID:', correlationId);
+        console.error("Correlation ID:", correlationId);
       }
     },
   });
@@ -640,7 +643,7 @@ export function useApi() {
 
 export interface Toast {
   id: string;
-  type: 'error' | 'warning' | 'success' | 'info';
+  type: "error" | "warning" | "success" | "info";
   message: string;
   duration?: number;
 }
@@ -648,7 +651,7 @@ export interface Toast {
 export function useToast() {
   const toastStore = useErrorStore();
 
-  function showToast(toast: Omit<Toast, 'id'>) {
+  function showToast(toast: Omit<Toast, "id">) {
     const id = Math.random().toString(36).substring(7);
     const toastItem = { ...toast, id };
 
@@ -668,7 +671,7 @@ export function useToast() {
 
 // stores/errorStore.ts
 
-export const useErrorStore = defineStore('error', () => {
+export const useErrorStore = defineStore("error", () => {
   const toasts = ref<Toast[]>([]);
 
   function addToast(toast: Toast) {
@@ -692,9 +695,12 @@ export const useErrorStore = defineStore('error', () => {
   <div class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="text-center">
       <h1 class="text-6xl font-bold text-gray-900">404</h1>
-      <p class="text-xl text-gray-600 mt-4">{{ $t('errors.not_found') }}</p>
-      <NuxtLink to="/" class="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg">
-        {{ $t('errors.go_home') }}
+      <p class="text-xl text-gray-600 mt-4">{{ $t("errors.not_found") }}</p>
+      <NuxtLink
+        to="/"
+        class="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg"
+      >
+        {{ $t("errors.go_home") }}
       </NuxtLink>
     </div>
   </div>
@@ -814,12 +820,14 @@ public function test_invalid_login_returns_401(): void
 ```typescript
 // tests/e2e/errorHandling.test.ts
 
-test('displays validation errors on form submission', async ({ page }) => {
-  await page.goto('/projects/create');
+test("displays validation errors on form submission", async ({ page }) => {
+  await page.goto("/projects/create");
   await page.click('button:has-text("Create")');
 
-  await expect(page.locator('text=Name is required')).toBeVisible();
-  await expect(page.locator('[role="alert"]')).toContainText('Validation failed');
+  await expect(page.locator("text=Name is required")).toBeVisible();
+  await expect(page.locator('[role="alert"]')).toContainText(
+    "Validation failed"
+  );
 });
 ```
 
@@ -853,7 +861,7 @@ return [
 <script setup lang="ts">
 const { t } = useI18n();
 
-const errorMessage = t('errors.validation_failed');
+const errorMessage = t("errors.validation_failed");
 // or from API response:
 const apiError = ref(null);
 const displayMessage = computed(() => {

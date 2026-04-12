@@ -1,5 +1,5 @@
 ---
-description: 'GitHub Actions specialist for CI/CD workflows, action pinning, permissions, and supply-chain security.'
+description: "GitHub Actions specialist for CI/CD workflows, action pinning, permissions, and supply-chain security."
 ---
 
 ## User Input

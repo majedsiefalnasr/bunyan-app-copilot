@@ -1,5 +1,5 @@
 ---
-description: 'Laravel framework specialist for Bunyan. Expert in Eloquent, Services, Repositories, Sanctum, Form Requests, Policies, Events, Jobs.'
+description: "Laravel framework specialist for Bunyan. Expert in Eloquent, Services, Repositories, Sanctum, Form Requests, Policies, Events, Jobs."
 ---
 
 ## User Input

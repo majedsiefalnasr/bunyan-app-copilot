@@ -544,17 +544,17 @@ class UserController extends Controller
 **Location:** `frontend/composables/useApiError.ts`
 
 ```typescript
-import type { ApiResponse } from '~/types/api';
+import type { ApiResponse } from "~/types/api";
 
 export const useApiError = () => {
   const handleError = (error: any): string => {
     if (error.data?.errors) {
       // Collect all error messages
-      const messages = Object.values(error.data.errors).flat().join('; ');
-      return messages || error.data.message || 'An error occurred';
+      const messages = Object.values(error.data.errors).flat().join("; ");
+      return messages || error.data.message || "An error occurred";
     }
 
-    return error.message || 'An unexpected error occurred';
+    return error.message || "An unexpected error occurred";
   };
 
   const getFieldError = (error: any, field: string): string[] => {
@@ -573,24 +573,28 @@ export const useApiError = () => {
 ```vue
 <template>
   <form @submit.prevent="submitForm">
-    <UInput v-model="form.email" label="Email" :error="fieldErrors.email?.[0]" />
+    <UInput
+      v-model="form.email"
+      label="Email"
+      :error="fieldErrors.email?.[0]"
+    />
     <UButton type="submit">Submit</UButton>
     <UAlert v-if="globalError" :title="globalError" color="red" />
   </form>
 </template>
 
 <script setup lang="ts">
-import { useApiError } from '~/composables/useApiError';
+import { useApiError } from "~/composables/useApiError";
 
 const { handleError, getFieldError } = useApiError();
-const form = ref({ email: '' });
-const globalError = ref('');
+const form = ref({ email: "" });
+const globalError = ref("");
 const fieldErrors = ref({});
 
 const submitForm = async () => {
   try {
-    await $fetch('/api/v1/submit', {
-      method: 'POST',
+    await $fetch("/api/v1/submit", {
+      method: "POST",
       body: form.value,
     });
   } catch (error) {

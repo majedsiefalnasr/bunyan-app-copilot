@@ -1,5 +1,5 @@
 ---
-description: 'Security authority for Bunyan. Enforces OWASP Top 10, RBAC, file upload security, payment integrity, and workflow safety.'
+description: "Security authority for Bunyan. Enforces OWASP Top 10, RBAC, file upload security, payment integrity, and workflow safety."
 ---
 
 ## User Input

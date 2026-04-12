@@ -314,24 +314,24 @@ export const handleError = (error: any) => {
   const code = error.error?.code;
 
   switch (code) {
-    case 'AUTH_TOKEN_EXPIRED':
-      navigateTo('/login');
+    case "AUTH_TOKEN_EXPIRED":
+      navigateTo("/login");
       break;
-    case 'RBAC_ROLE_DENIED':
-      navigateTo('/error-403');
+    case "RBAC_ROLE_DENIED":
+      navigateTo("/error-403");
       break;
-    case 'RESOURCE_NOT_FOUND':
-      navigateTo('/error-404');
+    case "RESOURCE_NOT_FOUND":
+      navigateTo("/error-404");
       break;
-    case 'RATE_LIMIT_EXCEEDED':
-      const retryAfter = error.response.headers['retry-after'];
-      showToast(`Please wait ${retryAfter} seconds`, 'warning');
+    case "RATE_LIMIT_EXCEEDED":
+      const retryAfter = error.response.headers["retry-after"];
+      showToast(`Please wait ${retryAfter} seconds`, "warning");
       break;
-    case 'VALIDATION_ERROR':
+    case "VALIDATION_ERROR":
       displayFieldErrors(error.error.details);
       break;
     default:
-      showToast(error.error?.message || 'Something went wrong', 'error');
+      showToast(error.error?.message || "Something went wrong", "error");
   }
 };
 ```
