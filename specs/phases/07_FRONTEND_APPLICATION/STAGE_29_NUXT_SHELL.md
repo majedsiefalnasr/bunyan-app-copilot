@@ -8,18 +8,21 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: MEDIUM
-Last Updated: 2026-04-12T00:10:00Z
+Last Updated: 2026-04-12T00:20:00Z
 
-Scope Defined:
+Scope Planned:
 
-- Default / auth / public layouts with Nuxt UI components
-- Role-based navigation (5 roles) — each role sees only their own items
-- RTL/LTR + dark mode + language switcher (AR/EN)
-- useAuth, useApi, useNotification, useBreadcrumb, useDirection, usePreferences composables
-- Toast, breadcrumb, mobile drawer, loading, skeleton, error page
-- plugins/direction.client.ts for SSR hydration
+- 30 files across 6 sequential phases
+- 3 layouts (default, auth, public)
+- 2 Pinia stores (auth with cookie-derived token, ui)
+- 5 core composables (useAuth, useNotification, useBreadcrumb, useDirection, usePreferences)
+- 7 navigation components + navigation config
+- plugins/direction.client.ts for hydration CLS prevention
+- Critical fix: app.vue NuxtLayout wrapper (layouts silently broken without it)
+- Token-from-cookie pattern (auth state consistency, no redirect loops)
+- Module-level breadcrumb state (cross-component reactivity)
 
 Deferred Scope:
 
@@ -29,10 +32,12 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Clarifications resolved — planning authorized
+- Technical plan compliant — task generation authorized
+- Architecture Guardian: PASS (5 violations found and remediated)
+- API Designer: PASS (1 violation found and remediated)
 
 Notes:
-All specification ambiguities resolved. Ready for technical planning.
+Technical plan complete. Task breakdown in progress.
 
 ## Objective
 
