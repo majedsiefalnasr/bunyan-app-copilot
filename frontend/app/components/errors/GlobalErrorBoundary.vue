@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useToast } from '~/composables/useToast';
-import { useI18n } from 'vue-i18n';
 
 interface CaughtError {
   message: string;

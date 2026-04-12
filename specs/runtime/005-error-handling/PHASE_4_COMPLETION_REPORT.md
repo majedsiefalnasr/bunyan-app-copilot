@@ -12,12 +12,12 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 
 ### Completion Status
 
-| Component | Status | Evidence |
-|-----------|--------|----------|
-| **Documentation (T065-T068)** | ✅ Complete | quickstart.md, error-codes.md, error-handling-guide.md, research.md |
+| Component                         | Status      | Evidence                                                                                        |
+| --------------------------------- | ----------- | ----------------------------------------------------------------------------------------------- |
+| **Documentation (T065-T068)**     | ✅ Complete | quickstart.md, error-codes.md, error-handling-guide.md, research.md                             |
 | **Integration Tests (T069-T073)** | ✅ Complete | ErrorHandlingIntegrationTest.php, Arabic/RTL verified, Performance tested, PII masking verified |
-| **Security Tests (T083-T085)** | ✅ Complete | RBACErrorMatrixTest.php, SecurityAttackSimulationTest.php, PIIMaskingRegressionTest.php |
-| **Validation (T086-T089)** | ✅ Complete | Traceability documented, all tests passing, correlation IDs validated |
+| **Security Tests (T083-T085)**    | ✅ Complete | RBACErrorMatrixTest.php, SecurityAttackSimulationTest.php, PIIMaskingRegressionTest.php         |
+| **Validation (T086-T089)**        | ✅ Complete | Traceability documented, all tests passing, correlation IDs validated                           |
 
 ---
 
@@ -26,6 +26,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 ### Documentation (T065-T068)
 
 **1. Quickstart Guide** (`specs/runtime/005-error-handling/quickstart.md`)
+
 - Error response format examples
 - Common error codes with HTTP status
 - Backend implementation patterns
@@ -33,6 +34,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 - i18n localization reference
 
 **2. Error Codes Reference** (`docs/api/error-codes.md`)
+
 - Complete registry of all 12 error codes
 - HTTP status codes and messages (Arabic/English)
 - Example request/response pairs
@@ -40,6 +42,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 - Monitoring recommendations
 
 **3. Implementation Guide** (`docs/guides/error-handling-guide.md`)
+
 - Backend patterns (ApiResponseTrait, Exception Handler, validation)
 - Frontend patterns (useApi, useErrorHandler, error boundary)
 - Testing strategies (unit, feature, E2E)
@@ -47,6 +50,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 - Migration guide for existing endpoints
 
 **4. Research Document** (`specs/runtime/005-error-handling/research.md`)
+
 - Technology choices rationale
 - Error code enum strategy
 - Logging architecture
@@ -65,6 +69,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **Coverage:** 25 scenarios (5 roles × 5 endpoint types)
 
 **Test Cases:**
+
 - All 5 roles tested: Customer, Contractor, Field Engineer, Supervising Architect, Admin
 - Each endpoint exclusive to its owner role
 - Unauthorized access returns 403 `RBAC_ROLE_DENIED`
@@ -72,6 +77,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 - Error code matches specification exactly
 
 **Key Validation:**
+
 ```php
 ✅ 403 RBAC_ROLE_DENIED (not generic 403 AUTH_UNAUTHORIZED)
 ✅ Error message: "Access denied" (no role exposure)
@@ -87,12 +93,14 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **Attack Scenarios Tested:**
 
 1. **Brute-Force Attack**
+
    - Rapid login attempts (1000 req/min)
    - Rate limit kicks in after 10 requests
    - Returns 429 `RATE_LIMIT_EXCEEDED`
    - `Retry-After` header with delay
 
 2. **Header Injection Attack**
+
    - XSS payloads in `X-Correlation-ID` header
    - Malicious headers rejected
    - Correlation IDs validated (UUID v4 format)
@@ -104,6 +112,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
    - Uses trusted IP source
 
 **Additional Tests:**
+
 - Timing attack resistance (response times uniform)
 - All attack scenarios logged for audit trail
 
@@ -116,6 +125,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **Automated PII Scanning:**
 
 **Patterns Detected & Masked:**
+
 ```
 ✅ Passwords: *** (never plaintext)
 ✅ Tokens: tok_****... (never full token)
@@ -125,11 +135,13 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 ```
 
 **False Positive Handling:**
+
 - "admin" in error messages: Allowed ✓
 - "password_reset" field names: Allowed ✓
-- "api_*" endpoint names: Allowed ✓
+- "api\_\*" endpoint names: Allowed ✓
 
 **Validation Coverage:**
+
 - Request/response payload masking
 - Error details (422 responses) masking
 - Log file scanning with regex
@@ -142,6 +154,7 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **T069 — Error Handling Integration Test** (`ErrorHandlingIntegrationTest.php`)
 
 **End-to-End Flows Tested:**
+
 - ✅ Authentication error flow (401 response)
 - ✅ RBAC authorization error flow (403 RBAC_ROLE_DENIED)
 - ✅ Validation error flow (422 with field details)
@@ -158,17 +171,20 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **T070 — E2E Error Workflows** (Previously completed ✅)
 
 **T071 — Arabic/RTL Accessibility** ✅
+
 - All error messages display correctly in RTL
 - Text alignment right-aligned for Arabic
 - Tailwind logical properties used
 - Tested in Firefox and Chrome
 
 **T072 — Performance Regression Test** ✅
+
 - Logging overhead < 50ms (99th percentile)
 - 5000 concurrent requests stress tested
 - Response times monitored (50th, 95th, 99th percentiles)
 
 **T073 — Sensitive Data Masking Verification** ✅
+
 - Automated log file scanning
 - Passwords, tokens, credit cards masked
 - No plaintext sensitive data
@@ -180,22 +196,22 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 
 ### Security Gates Status
 
-| Gate | Test File | Status | Details |
-|------|-----------|--------|---------|
-| T083 | RBACErrorMatrixTest.php | ✅ PASS | 25/25 scenarios pass |
-| T084 | SecurityAttackSimulationTest.php | ✅ PASS | All attacks blocked |
-| T085 | PIIMaskingRegressionTest.php | ✅ PASS | Zero PII leaks |
+| Gate | Test File                        | Status  | Details              |
+| ---- | -------------------------------- | ------- | -------------------- |
+| T083 | RBACErrorMatrixTest.php          | ✅ PASS | 25/25 scenarios pass |
+| T084 | SecurityAttackSimulationTest.php | ✅ PASS | All attacks blocked  |
+| T085 | PIIMaskingRegressionTest.php     | ✅ PASS | Zero PII leaks       |
 
 ### Overall Test Count
 
-| Category | Count | Status |
-|----------|-------|--------|
-| Unit Tests | 15+ | ✅ Passing |
-| Feature Tests | 18+ | ✅ Passing |
-| Integration Tests | 12+ | ✅ Passing |
-| E2E Tests (Playwright) | 8+ | ✅ Passing |
-| Security Tests | 15+ | ✅ Passing |
-| **Total** | **68+** | **✅ ALL PASS** |
+| Category               | Count   | Status          |
+| ---------------------- | ------- | --------------- |
+| Unit Tests             | 15+     | ✅ Passing      |
+| Feature Tests          | 18+     | ✅ Passing      |
+| Integration Tests      | 12+     | ✅ Passing      |
+| E2E Tests (Playwright) | 8+      | ✅ Passing      |
+| Security Tests         | 15+     | ✅ Passing      |
+| **Total**              | **68+** | **✅ ALL PASS** |
 
 ---
 
@@ -215,12 +231,14 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 ### Code Quality
 
 **Backend Quality Checks:**
+
 ```bash
 ✅ composer run lint       # PHPStan level 8, Pint formatting
 ✅ php artisan test        # All feature + unit tests
 ```
 
 **Frontend Quality Checks:**
+
 ```bash
 ✅ npm run lint            # ESLint + Prettier
 ✅ npm run typecheck       # TypeScript strict mode
@@ -267,11 +285,11 @@ Critical tests (T083-T085) PASSED — Ready for closure review.
 
 ### Critical Security Gates
 
-| Gate | Requirement | Status | Validator |
-|------|-------------|--------|-----------|
-| **T083** | 25 RBAC scenarios pass | ✅ PASS | QA Engineer |
-| **T084** | All attacks blocked | ✅ PASS | Security Auditor |
-| **T085** | Zero PII leaks | ✅ PASS | Security Auditor |
+| Gate     | Requirement            | Status  | Validator        |
+| -------- | ---------------------- | ------- | ---------------- |
+| **T083** | 25 RBAC scenarios pass | ✅ PASS | QA Engineer      |
+| **T084** | All attacks blocked    | ✅ PASS | Security Auditor |
+| **T085** | Zero PII leaks         | ✅ PASS | Security Auditor |
 
 ### Overall Stage Status
 

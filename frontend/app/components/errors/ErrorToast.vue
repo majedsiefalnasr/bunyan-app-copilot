@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useErrorStore } from '~/stores/errorStore';
 import { useI18n } from 'vue-i18n';
+import { useErrorStore } from '~/stores/errorStore';
 
 const errorStore = useErrorStore();
 const { t } = useI18n();

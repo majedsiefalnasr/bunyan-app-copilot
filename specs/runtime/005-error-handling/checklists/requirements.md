@@ -8,7 +8,7 @@
 
 - [ ] Error contract defined and documented
 - [ ] All API responses follow error contract format (success/data/error)
-- [ ] Error codes use semantic naming (AUTH_*, VALIDATION_*, WORKFLOW_*, etc.)
+- [ ] Error codes use semantic naming (AUTH*\*, VALIDATION*\_, WORKFLOW\_\_, etc.)
 - [ ] Global exception handler in place and tested
 - [ ] No business logic in exception handlers
 - [ ] Error responses do NOT expose internal stack traces to clients

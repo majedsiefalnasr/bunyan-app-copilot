@@ -2,7 +2,7 @@
 
 **Stage:** ERROR_HANDLING  
 **Phase:** 01_PLATFORM_FOUNDATION  
-**Date:** 2026-04-12  
+**Date:** 2026-04-12
 
 ---
 
@@ -383,20 +383,21 @@ php artisan config:cache
 
 ## Support & Troubleshooting
 
-| Issue | Root Cause | Solution |
-| --- | --- | --- |
-| Correlation ID missing in logs | Middleware not registered | Verify CorrelationIdMiddleware in Http/Kernel.php |
-| PII data visible in logs | Masking not applied | Verify SensitiveFields.php registry and masking middleware |
-| Log file not created | Logging channel misconfigured | Check storage/logs/ permissions, verify config/logging.php |
-| Rate limiting not working | Rate limiter not configured | Install Laravel rate-limiter, configure in config/cache.php |
-| Frontend error toast not showing | Toast store not mounted | Verify errorStore configured in app.vue |
-| ErrorBoundary not catching errors | Not wrapped in app | Verify GlobalErrorBoundary wraps router-view in app.vue |
+| Issue                             | Root Cause                    | Solution                                                    |
+| --------------------------------- | ----------------------------- | ----------------------------------------------------------- |
+| Correlation ID missing in logs    | Middleware not registered     | Verify CorrelationIdMiddleware in Http/Kernel.php           |
+| PII data visible in logs          | Masking not applied           | Verify SensitiveFields.php registry and masking middleware  |
+| Log file not created              | Logging channel misconfigured | Check storage/logs/ permissions, verify config/logging.php  |
+| Rate limiting not working         | Rate limiter not configured   | Install Laravel rate-limiter, configure in config/cache.php |
+| Frontend error toast not showing  | Toast store not mounted       | Verify errorStore configured in app.vue                     |
+| ErrorBoundary not catching errors | Not wrapped in app            | Verify GlobalErrorBoundary wraps router-view in app.vue     |
 
 ---
 
 ## Summary
 
 This testing guide covers:
+
 - ✅ Database and logging setup
 - ✅ Exception handling for all error codes
 - ✅ Correlation ID generation and propagation

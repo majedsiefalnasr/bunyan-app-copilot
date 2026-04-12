@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
 import GlobalErrorBoundary from '~/app/components/errors/GlobalErrorBoundary.vue';
 
 describe('GlobalErrorBoundary', () => {

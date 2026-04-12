@@ -20,16 +20,16 @@
 
 ## Stage Artifacts
 
-| Artifact          | Owner        | Path                                                | Generated At |
-| ----------------- | ------------ | --------------------------------------------------- | ------------ |
-| Workflow State    | Orchestrator | .workflow-state.json                                | Pre-Step     |
-| Spec Report       | Orchestrator | reports/SPECIFY_REPORT.md                           | Step 1       |
-| Clarify Report    | Orchestrator | reports/CLARIFY_REPORT.md                           | Step 2       |
-| Plan Report       | Orchestrator | reports/PLAN_REPORT.md                              | Step 3       |
-| Verification Checklists | SpecKit | checklists/                                         | Step 3       |
-| Tasks Report      | Orchestrator | reports/TASKS_REPORT.md                             | Step 4       |
-| Validation Report | Orchestrator | audits/VALIDATION_REPORT.md                         | Step 6       |
-| Implementation Report | Orchestrator | reports/IMPLEMENT_REPORT.md                     | Step 6       |
-| Closure Report    | Orchestrator | reports/CLOSURE_REPORT.md                           | Step 7       |
-| Testing Guide     | Orchestrator | guides/TESTING_GUIDE.md                             | Step 7       |
-| PR Summary        | Orchestrator | PR_SUMMARY.md                                       | Step 7       |
+| Artifact                | Owner        | Path                        | Generated At |
+| ----------------------- | ------------ | --------------------------- | ------------ |
+| Workflow State          | Orchestrator | .workflow-state.json        | Pre-Step     |
+| Spec Report             | Orchestrator | reports/SPECIFY_REPORT.md   | Step 1       |
+| Clarify Report          | Orchestrator | reports/CLARIFY_REPORT.md   | Step 2       |
+| Plan Report             | Orchestrator | reports/PLAN_REPORT.md      | Step 3       |
+| Verification Checklists | SpecKit      | checklists/                 | Step 3       |
+| Tasks Report            | Orchestrator | reports/TASKS_REPORT.md     | Step 4       |
+| Validation Report       | Orchestrator | audits/VALIDATION_REPORT.md | Step 6       |
+| Implementation Report   | Orchestrator | reports/IMPLEMENT_REPORT.md | Step 6       |
+| Closure Report          | Orchestrator | reports/CLOSURE_REPORT.md   | Step 7       |
+| Testing Guide           | Orchestrator | guides/TESTING_GUIDE.md     | Step 7       |
+| PR Summary              | Orchestrator | PR_SUMMARY.md               | Step 7       |

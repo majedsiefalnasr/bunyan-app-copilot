@@ -99,6 +99,7 @@ Language: Arabic-first (Full RTL support), multi-language ready.
 All API responses follow this unified contract:
 
 **Success Response:**
+
 ```json
 {
   "success": true,
@@ -108,6 +109,7 @@ All API responses follow this unified contract:
 ```
 
 **Error Response:**
+
 ```json
 {
   "success": false,
@@ -121,6 +123,7 @@ All API responses follow this unified contract:
 ```
 
 **Response Components:**
+
 - `success` (boolean) — Request success indicator (always present)
 - `data` (object/array/null) — Response payload (null on error, object/array on success)
 - `error` (object/null) — Error details with code, message, and field-level details (null on success)
@@ -132,22 +135,23 @@ All API responses follow this unified contract:
 
 All error codes are semantic and stable (never change once defined).
 
-| Code                           | HTTP | Description                                  |
-| ------------------------------ | ---- | -------------------------------------------- |
-| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials (wrong email/password) |
-| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired or revoked      |
-| `AUTH_UNAUTHORIZED`            | 403  | User authenticated but lacks permission      |
-| `RBAC_ROLE_DENIED`             | 403  | Specific role not allowed for this action    |
-| `RESOURCE_NOT_FOUND`           | 404  | Requested resource does not exist            |
-| `VALIDATION_ERROR`             | 422  | Input validation failed (bad data format)    |
-| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition in workflow         |
-| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites for workflow step not satisfied|
-| `PAYMENT_FAILED`               | 422  | Payment processing failed (declined card, etc.) |
+| Code                           | HTTP | Description                                         |
+| ------------------------------ | ---- | --------------------------------------------------- |
+| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials (wrong email/password)    |
+| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired or revoked             |
+| `AUTH_UNAUTHORIZED`            | 403  | User authenticated but lacks permission             |
+| `RBAC_ROLE_DENIED`             | 403  | Specific role not allowed for this action           |
+| `RESOURCE_NOT_FOUND`           | 404  | Requested resource does not exist                   |
+| `VALIDATION_ERROR`             | 422  | Input validation failed (bad data format)           |
+| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition in workflow                |
+| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites for workflow step not satisfied       |
+| `PAYMENT_FAILED`               | 422  | Payment processing failed (declined card, etc.)     |
 | `CONFLICT_ERROR`               | 409  | Resource conflict (duplicate, uniqueness violation) |
-| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests from client                |
-| `SERVER_ERROR`                 | 500  | Internal server error (unhandled exception)  |
+| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests from client                       |
+| `SERVER_ERROR`                 | 500  | Internal server error (unhandled exception)         |
 
 **Usage Notes:**
+
 - Validation errors MUST include field-level details in `error.details`
 - Authentication/authorization errors MUST NOT expose role information
 - Server errors (5xx) MUST NOT expose stack traces to clients (log server-side only)

@@ -104,10 +104,10 @@ if ($e instanceof ValidationException) {
 
 // AuthenticationException → 401 AUTH_UNAUTHORIZED or AUTH_TOKEN_EXPIRED
 if ($e instanceof AuthenticationException) {
-    $code = $e->getMessage() === 'token_expired' 
-        ? ApiErrorCode::AUTH_TOKEN_EXPIRED 
+    $code = $e->getMessage() === 'token_expired'
+        ? ApiErrorCode::AUTH_TOKEN_EXPIRED
         : ApiErrorCode::AUTH_INVALID_CREDENTIALS;
-    
+
     return response()->json([
         'success' => false,
         'data' => null,
@@ -210,7 +210,7 @@ public function store(StoreProjectRequest $request): JsonResponse
 {
     // Validation happens automatically; 422 response if invalid
     $validated = $request->validated();
-    
+
     $project = Project::create($validated);
     return $this->success($project, 'Project created', 201);
 }
@@ -257,17 +257,17 @@ public function show(Project $project): JsonResponse
 {
     // Throws AuthorizationException if unauthorized
     $this->authorize('view', $project);
-    
+
     return $this->success($project);
 }
 
 public function update(Project $project): JsonResponse
 {
     $this->authorize('update', $project);
-    
+
     $validated = request()->validate([...]);
     $project->update($validated);
-    
+
     return $this->success($project);
 }
 ```
@@ -368,7 +368,7 @@ class ProjectController extends BaseController
     public function store(): JsonResponse
     {
         $correlationId = request()->correlationId();
-        
+
         try {
             Log::info('Creating project', [
                 'correlation_id' => $correlationId,
@@ -377,7 +377,7 @@ class ProjectController extends BaseController
             ]);
 
             // ... create project
-            
+
             Log::info('Project created', [
                 'correlation_id' => $correlationId,
                 'project_id' => $project->id,
@@ -408,38 +408,38 @@ class ProjectController extends BaseController
 
 ```typescript
 // composables/useApi.ts
-import { useRouter } from 'vue-router'
-import { useToast } from './useToast'
-import { useErrorHandler } from './useErrorHandler'
+import { useRouter } from 'vue-router';
+import { useToast } from './useToast';
+import { useErrorHandler } from './useErrorHandler';
 
 export const useApi = () => {
-  const router = useRouter()
-  const { showToast } = useToast()
-  const { handleError } = useErrorHandler()
+  const router = useRouter();
+  const { showToast } = useToast();
+  const { handleError } = useErrorHandler();
 
   // Setup axios/fetch interceptors
   const $fetch = $fetch.create({
     onResponse({ response }) {
       if (response.status >= 400) {
-        const error = response._data
+        const error = response._data;
 
         // Handle specific error codes
         if (error.error?.code === 'AUTH_TOKEN_EXPIRED') {
-          router.push('/login')
+          router.push('/login');
         } else if (error.error?.code === 'RBAC_ROLE_DENIED') {
-          showToast('Access denied', 'error')
+          showToast('Access denied', 'error');
         } else if (error.error?.code === 'RATE_LIMIT_EXCEEDED') {
-          showToast('Too many requests. Please wait a moment.', 'warning')
+          showToast('Too many requests. Please wait a moment.', 'warning');
         }
       }
     },
     onError({ error }) {
-      handleError(error)
+      handleError(error);
     },
-  })
+  });
 
-  return { $fetch }
-}
+  return { $fetch };
+};
 ```
 
 ### 2. Error Boundary Component
@@ -447,31 +447,31 @@ export const useApi = () => {
 ```vue
 <!-- components/GlobalErrorBoundary.vue -->
 <script setup lang="ts">
-import { onErrorCaptured, ref } from 'vue'
+import { onErrorCaptured, ref } from 'vue';
 
-const error = ref(null)
-const showError = ref(false)
+const error = ref(null);
+const showError = ref(false);
 
 onErrorCaptured((err) => {
-  error.value = err
-  showError.value = true
+  error.value = err;
+  showError.value = true;
 
   // Log error with correlation ID
   console.error('Component error:', {
     correlation_id: window.__CORRELATION_ID__,
     error: err.message,
-  })
+  });
 
-  return false // Prevent propagation
-})
+  return false; // Prevent propagation
+});
 
 const reload = () => {
-  window.location.reload()
-}
+  window.location.reload();
+};
 
 const goBack = () => {
-  window.history.back()
-}
+  window.history.back();
+};
 </script>
 
 <template>
@@ -496,68 +496,65 @@ const goBack = () => {
 
 ```typescript
 // composables/useErrorHandler.ts
-import { useRouter } from 'vue-router'
-import { useToast } from './useToast'
+import { useRouter } from 'vue-router';
+import { useToast } from './useToast';
 
 export const useErrorHandler = () => {
-  const router = useRouter()
-  const { showToast } = useToast()
-  const { $t } = useI18n()
+  const router = useRouter();
+  const { showToast } = useToast();
+  const { $t } = useI18n();
 
   const handleError = (error: any, context?: any) => {
-    const errorCode = error?.error?.code || error?.status
+    const errorCode = error?.error?.code || error?.status;
 
     switch (errorCode) {
       case 'AUTH_INVALID_CREDENTIALS':
-        showToast($t('errors.auth_invalid_credentials'), 'error')
-        router.push('/login')
-        break
+        showToast($t('errors.auth_invalid_credentials'), 'error');
+        router.push('/login');
+        break;
 
       case 'AUTH_TOKEN_EXPIRED':
-        showToast($t('errors.auth_token_expired'), 'error')
-        router.push('/login')
-        break
+        showToast($t('errors.auth_token_expired'), 'error');
+        router.push('/login');
+        break;
 
       case 'RBAC_ROLE_DENIED':
-        showToast($t('errors.access_denied'), 'error')
-        router.push('/error-403')
-        break
+        showToast($t('errors.access_denied'), 'error');
+        router.push('/error-403');
+        break;
 
       case 'RESOURCE_NOT_FOUND':
       case 404:
-        showToast($t('errors.not_found'), 'error')
-        router.push('/error-404')
-        break
+        showToast($t('errors.not_found'), 'error');
+        router.push('/error-404');
+        break;
 
       case 'VALIDATION_ERROR':
         if (error.error?.details) {
           // Display field-level errors
-          displayFieldErrors(error.error.details)
+          displayFieldErrors(error.error.details);
         } else {
-          showToast(error.error?.message || $t('errors.validation_error'), 'error')
+          showToast(error.error?.message || $t('errors.validation_error'), 'error');
         }
-        break
+        break;
 
       case 'RATE_LIMIT_EXCEEDED':
       case 429:
-        showToast($t('errors.rate_limit_exceeded'), 'warning')
-        break
+        showToast($t('errors.rate_limit_exceeded'), 'warning');
+        break;
 
       case 'SERVER_ERROR':
       case 500:
-        showToast($t('errors.server_error'), 'error')
-        break
+        showToast($t('errors.server_error'), 'error');
+        break;
 
       default:
-        showToast(
-          error?.error?.message || context?.fallback || $t('errors.unknown'),
-          'error'
-        )
+        showToast(error?.error?.message || context?.fallback || $t('errors.unknown'), 'error');
     }
-  }
+  };
 
-  return { handleError }
-}
+  return { handleError };
+};
 ```
 
 ---
@@ -618,28 +615,28 @@ class ProjectControllerTest extends TestCase
 **Vitest Example:**
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { useErrorHandler } from '~/composables/useErrorHandler'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { useErrorHandler } from '~/composables/useErrorHandler';
 
 describe('useErrorHandler', () => {
   it('handles RBAC_ROLE_DENIED error', () => {
-    const { handleError } = useErrorHandler()
+    const { handleError } = useErrorHandler();
 
     const error = {
       error: {
         code: 'RBAC_ROLE_DENIED',
         message: 'Access denied',
       },
-    }
+    };
 
     expect(() => {
-      handleError(error)
-    }).not.toThrow()
-  })
+      handleError(error);
+    }).not.toThrow();
+  });
 
   it('handles validation errors with field details', () => {
-    const { handleError } = useErrorHandler()
+    const { handleError } = useErrorHandler();
 
     const error = {
       error: {
@@ -649,12 +646,12 @@ describe('useErrorHandler', () => {
           budget: ['Budget must be positive'],
         },
       },
-    }
+    };
 
-    handleError(error)
+    handleError(error);
     // Verify field errors displayed
-  })
-})
+  });
+});
 ```
 
 ---
@@ -664,6 +661,7 @@ describe('useErrorHandler', () => {
 ### i18n Setup
 
 **ar.json:**
+
 ```json
 {
   "errors": {
@@ -679,6 +677,7 @@ describe('useErrorHandler', () => {
 ```
 
 **en.json:**
+
 ```json
 {
   "errors": {
@@ -700,6 +699,7 @@ describe('useErrorHandler', () => {
 ### Migrating Existing Endpoints
 
 **Before (Old Pattern):**
+
 ```php
 public function show($id)
 {
@@ -713,6 +713,7 @@ public function show($id)
 ```
 
 **After (New Pattern):**
+
 ```php
 public function show(Project $project): JsonResponse
 {

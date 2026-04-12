@@ -19,6 +19,7 @@ Implementation Gate: FORBIDDEN
 Violations Found:
 
 **🔴 CRITICAL (4 Security + 3 High Security):**
+
 - Rate limiting middleware not tasked
 - Correlation ID header injection vulnerability
 - RBAC error code implementation ambiguity
@@ -28,6 +29,7 @@ Violations Found:
 - Rate limit bypass via X-Forwarded-For
 
 **🟡 HIGH (QA Testing Gaps):**
+
 - RBAC role-matrix integration tests missing (~35 scenarios)
 - Attack simulation scenarios undefined
 - PII masking regression tests not automated

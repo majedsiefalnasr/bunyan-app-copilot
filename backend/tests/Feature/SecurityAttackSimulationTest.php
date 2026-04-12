@@ -45,7 +45,7 @@ class SecurityAttackSimulationTest extends TestCase
 
         // Simulate rapid login attempts from same IP
         $attacker_ip = '192.168.1.100';
-        
+
         // First 10 attempts should succeed (or fail with 401, but not 429)
         for ($i = 0; $i < 10; $i++) {
             $response = $this->withHeader('X-Forwarded-For', $attacker_ip)
@@ -121,12 +121,12 @@ class SecurityAttackSimulationTest extends TestCase
             // Response can succeed or fail, but correlation ID injection must not work
             // Verify the payload did not make it through unescaped
             $json = $response->json();
-            
+
             // The correlation ID in response header should be either:
             // 1. A valid UUID (our generated one, not the payload)
             // 2. Absent (payload was rejected)
             $correlationId = $response->headers->get('X-Correlation-ID');
-            
+
             if ($correlationId) {
                 // If we got a correlation ID back, it must be UUID format
                 // UUID v4: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -155,7 +155,7 @@ class SecurityAttackSimulationTest extends TestCase
 
         // Initialize rate limiter for one IP
         $attacker_base_ip = '192.168.1.100';
-        
+
         // Make 10 requests from base IP
         for ($i = 0; $i < 10; $i++) {
             $response = $this->withHeader('X-Forwarded-For', $attacker_base_ip)
@@ -168,7 +168,7 @@ class SecurityAttackSimulationTest extends TestCase
         // Try to bypass rate limit by spoofing a different IP in X-Forwarded-For
         // (typical spoofing attack: send multiple IPs to confuse rate limiter)
         $spoofed_ips = '192.168.1.100, 10.0.0.1, 172.16.0.1';
-        
+
         $response = $this->withHeader('X-Forwarded-For', $spoofed_ips)
             ->postJson('/api/v1/test/error/auth-invalid-credentials', [
                 'email' => 'test@example.com',
@@ -233,7 +233,7 @@ class SecurityAttackSimulationTest extends TestCase
 
     /**
      * Test timing-based attack resistance.
-     * 
+     *
      * Verify that response times don't leak information about valid usernames
      * (timing attack on user enumeration).
      */

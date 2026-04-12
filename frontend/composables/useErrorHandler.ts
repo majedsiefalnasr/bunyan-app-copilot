@@ -1,6 +1,6 @@
-import { useErrorStore } from '~/stores/errorStore';
-import { useToast } from '~/composables/useToast';
 import { useI18n } from 'vue-i18n';
+import { useToast } from '~/composables/useToast';
+import { useErrorStore } from '~/stores/errorStore';
 
 interface ErrorContext {
   code?: string;

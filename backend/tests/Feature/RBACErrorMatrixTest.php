@@ -27,7 +27,7 @@ class RBACErrorMatrixTest extends TestCase
 
     /**
      * Test matrix: 5 roles × 5 endpoint types = 25 scenarios
-     * 
+     *
      * Each endpoint array contains:
      * - method: HTTP method (GET, POST, PUT, DELETE)
      * - uri: API endpoint URI
@@ -151,7 +151,7 @@ class RBACErrorMatrixTest extends TestCase
 
                 if ($testRole === $ownerRole) {
                     // Authorized: Should succeed or redirect, NOT return RBAC_ROLE_DENIED
-                    $this->assertNotIn($response->status(), [403], 
+                    $this->assertNotIn($response->status(), [403],
                         "Role {$testRole->value} should have access to: {$endpointName}");
                     $passedScenarios++;
                 } else {
@@ -167,13 +167,13 @@ class RBACErrorMatrixTest extends TestCase
                     ]);
 
                     $json = $response->json();
-                    $this->assertFalse($json['success'], 
+                    $this->assertFalse($json['success'],
                         "Unauthorized response must have success=false for {$endpointName}");
-                    $this->assertNull($json['data'], 
+                    $this->assertNull($json['data'],
                         "Unauthorized response must have data=null for {$endpointName}");
-                    $this->assertIsArray($json['error'], 
+                    $this->assertIsArray($json['error'],
                         "Unauthorized response must have error object for {$endpointName}");
-                    
+
                     // CRITICAL: Error code MUST be RBAC_ROLE_DENIED (not AUTH_UNAUTHORIZED)
                     $this->assertEquals(
                         ApiErrorCode::RBAC_ROLE_DENIED->value,
@@ -226,7 +226,7 @@ class RBACErrorMatrixTest extends TestCase
 
     /**
      * Test that RBAC errors are distinct from AUTH_UNAUTHORIZED errors.
-     * 
+     *
      * Both return 403, but must have different error codes for distinguishing
      * "not authenticated" (AUTH_UNAUTHORIZED) from "authenticated but wrong role" (RBAC_ROLE_DENIED).
      */

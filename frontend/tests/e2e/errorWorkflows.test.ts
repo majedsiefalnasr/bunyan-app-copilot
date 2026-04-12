@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Error Workflows', () => {
   test('error boundary catches and displays errors', async ({ page }) => {

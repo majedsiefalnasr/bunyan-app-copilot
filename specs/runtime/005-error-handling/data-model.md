@@ -25,41 +25,41 @@ Purpose: Permanent audit trail for financial and workflow-sensitive events
 ```sql
 CREATE TABLE audit_logs (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    
+
     -- Tracing
     correlation_id CHAR(36) NOT NULL COMMENT 'UUID for request tracing',
     request_id CHAR(36) NOT NULL COMMENT 'Request identifier',
-    
+
     -- User Context
     user_id BIGINT UNSIGNED COMMENT 'ID of user who initiated action',
     user_role VARCHAR(50) COMMENT 'Role of user (e.g., customer, contractor, admin)',
-    
+
     -- Action Details
     action VARCHAR(255) NOT NULL COMMENT 'Action performed (e.g., payment_processed, phase_approved)',
     resource_type VARCHAR(100) NOT NULL COMMENT 'Type of resource (e.g., Project, Payment, Phase)',
     resource_id BIGINT UNSIGNED COMMENT 'ID of resource affected',
-    
+
     -- State Change (JSON)
     old_values JSON COMMENT 'Previous state of resource',
     new_values JSON COMMENT 'New state of resource',
-    
+
     -- Result
     status VARCHAR(50) NOT NULL COMMENT 'success, failed, pending',
     error_code VARCHAR(100) COMMENT 'Error code if failed (e.g., PAYMENT_FAILED)',
     error_message TEXT COMMENT 'Human-readable error message',
-    
+
     -- Request Metadata
     method VARCHAR(10) COMMENT 'HTTP method (GET, POST, etc.)',
     uri VARCHAR(500) COMMENT 'Request URI',
     ip_address VARCHAR(45) COMMENT 'IPv4 or IPv6 address',
     user_agent TEXT COMMENT 'Browser/client user agent',
-    
+
     -- Performance
     duration_ms INT COMMENT 'Request duration in milliseconds',
-    
+
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     -- Indexes
     KEY idx_user_id_created_at (user_id, created_at),
     KEY idx_correlation_id (correlation_id),
@@ -162,36 +162,36 @@ Purpose: HTTP request/response metadata for performance analysis, debugging, and
 ```sql
 CREATE TABLE request_logs (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    
+
     -- Tracing
     correlation_id CHAR(36) NOT NULL COMMENT 'UUID for request tracing',
     request_id CHAR(36) NOT NULL COMMENT 'Unique request identifier',
-    
+
     -- Request Details
     method VARCHAR(10) NOT NULL COMMENT 'HTTP method (GET, POST, PUT, PATCH, DELETE)',
     uri VARCHAR(500) NOT NULL COMMENT 'Request path (e.g., /api/v1/projects)',
     query_string TEXT COMMENT 'Query parameters (e.g., page=1&limit=10)',
-    
+
     -- Response Details
     status_code INT NOT NULL COMMENT 'HTTP status code (200, 401, 404, 500, etc.)',
     response_time_ms INT COMMENT 'Request duration in milliseconds',
     response_size_bytes INT COMMENT 'Response body size',
-    
+
     -- User Context
     user_id BIGINT UNSIGNED COMMENT 'ID of authenticated user',
     user_role VARCHAR(50) COMMENT 'Role of user',
-    
+
     -- Client Context
     ip_address VARCHAR(45) COMMENT 'IPv4 or IPv6 address',
     user_agent TEXT COMMENT 'Browser/client user agent',
     referer VARCHAR(500) COMMENT 'HTTP Referer header',
-    
+
     -- Error Context
     error_code VARCHAR(100) COMMENT 'Error code if request failed (e.g., AUTH_UNAUTHORIZED)',
-    
+
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     -- Indexes
     KEY idx_user_id_created_at (user_id, created_at),
     KEY idx_correlation_id (correlation_id),
@@ -319,29 +319,29 @@ Purpose: Detailed error tracking for analysis and alerting
 ```sql
 CREATE TABLE error_events (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    
+
     -- Tracing
     correlation_id CHAR(36) NOT NULL,
-    
+
     -- Error Details
     error_code VARCHAR(100) NOT NULL,
     exception_class VARCHAR(255) COMMENT 'Exception PHP class name',
     exception_message TEXT,
     stack_trace LONGTEXT COMMENT 'Full stack trace',
-    
+
     -- Context
     user_id BIGINT UNSIGNED,
     endpoint VARCHAR(500),
     method VARCHAR(10),
-    
+
     -- Analysis
     is_resolved BOOLEAN DEFAULT FALSE,
     resolution_notes TEXT,
-    
+
     -- Timestamps
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP NULL,
-    
+
     -- Indexes
     KEY idx_error_code_created_at (error_code, created_at),
     KEY idx_user_id (user_id),
@@ -356,6 +356,7 @@ CREATE TABLE error_events (
 ### Common Queries
 
 **1. Find all requests from a user in the last hour**:
+
 ```sql
 SELECT * FROM request_logs
 WHERE user_id = 5 AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
@@ -364,6 +365,7 @@ LIMIT 100;
 ```
 
 **2. Find all errors in the last day**:
+
 ```sql
 SELECT * FROM request_logs
 WHERE status_code >= 400 AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)
@@ -372,6 +374,7 @@ ORDER BY COUNT(*) DESC;
 ```
 
 **3. Find all 429 rate limit errors**:
+
 ```sql
 SELECT * FROM request_logs
 WHERE error_code = 'RATE_LIMIT_EXCEEDED'
@@ -380,6 +383,7 @@ ORDER BY created_at DESC;
 ```
 
 **4. Audit trail for a specific resource**:
+
 ```sql
 SELECT * FROM audit_logs
 WHERE resource_type = 'Payment' AND resource_id = 101
@@ -387,6 +391,7 @@ ORDER BY created_at DESC;
 ```
 
 **5. Find slow requests (>1000ms)**:
+
 ```sql
 SELECT * FROM request_logs
 WHERE response_time_ms > 1000
@@ -622,10 +627,10 @@ This data model provides optional database tables for:
 3. **error_events** — Detailed error tracking for analysis
 
 These tables enable:
+
 - Regulatory compliance (audit trail)
 - Performance analysis (slow query detection)
 - Security monitoring (rate limit violations, failed auth)
 - Debugging (request/response history)
 
 All tables are optional for Phase 1. Implement when required by compliance or operational needs.
-

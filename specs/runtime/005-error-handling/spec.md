@@ -14,6 +14,7 @@ Establish a unified, platform-wide error handling contract and structured loggin
 ### In Scope
 
 **Backend (Laravel):**
+
 - Custom exception handler with JSON response support
 - Comprehensive error code registry and documentation
 - API response helper trait/class for consistent success/error responses
@@ -22,6 +23,7 @@ Establish a unified, platform-wide error handling contract and structured loggin
 - Correlation ID middleware for request tracing
 
 **Frontend (Nuxt.js):**
+
 - Global error handler (Nuxt error boundary)
 - API error interceptor with automatic error formatting
 - Toast notification system for user-friendly error display
@@ -245,14 +247,14 @@ All API responses (success and error) MUST follow this format:
 
 **Field Definitions:**
 
-| Field    | Type                | Description                                    | Notes                           |
-| -------- | ------------------- | ---------------------------------------------- | ------------------------------- |
-| success  | boolean             | `true` if operation succeeded, `false` if failed | Always present                  |
-| data     | null\|object\|array | Operation result (populated on success)         | Null on errors                  |
-| error    | null\|object        | Error details (null on success)                | Null on success; object on error |
-| code     | string              | Machine-readable error code                    | Within `error` object            |
-| message  | string              | Human-readable error message (Arabic/English)  | Within `error` object            |
-| details  | object              | Field-level details (validation errors only)   | Optional; within `error` object  |
+| Field   | Type                | Description                                      | Notes                            |
+| ------- | ------------------- | ------------------------------------------------ | -------------------------------- |
+| success | boolean             | `true` if operation succeeded, `false` if failed | Always present                   |
+| data    | null\|object\|array | Operation result (populated on success)          | Null on errors                   |
+| error   | null\|object        | Error details (null on success)                  | Null on success; object on error |
+| code    | string              | Machine-readable error code                      | Within `error` object            |
+| message | string              | Human-readable error message (Arabic/English)    | Within `error` object            |
+| details | object              | Field-level details (validation errors only)     | Optional; within `error` object  |
 
 ### Success Response Example
 
@@ -288,20 +290,20 @@ All API responses (success and error) MUST follow this format:
 
 ### Error Code Registry
 
-| Code                           | HTTP | Description                                  | Example Scenario                       |
-| ------------------------------ | ---- | -------------------------------------------- | -------------------------------------- |
-| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials                    | Wrong email/password combination       |
-| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired                 | Token issued > 24 hours ago            |
-| `AUTH_UNAUTHORIZED`            | 403  | Insufficient permissions for action          | User lacks required role               |
-| `RBAC_ROLE_DENIED`             | 403  | Specific role not allowed for this action    | Admin endpoint accessed by customer    |
-| `RESOURCE_NOT_FOUND`           | 404  | Requested resource does not exist            | GET /api/v1/projects/999 (not found)   |
-| `VALIDATION_ERROR`             | 422  | Input validation failed                      | Missing required field, invalid format |
-| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition in workflow         | Attempting impossible status change    |
-| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites for workflow step not satisfied| Trying to complete before approval     |
-| `PAYMENT_FAILED`               | 422  | Payment processing failed                    | Card declined, insufficient funds      |
-| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests from client                | > 100 requests/minute                  |
-| `CONFLICT_ERROR`               | 409  | Resource conflict (e.g., duplicate)          | Email already exists                   |
-| `SERVER_ERROR`                 | 500  | Internal server error                        | Unhandled exception, database failure  |
+| Code                           | HTTP | Description                                   | Example Scenario                       |
+| ------------------------------ | ---- | --------------------------------------------- | -------------------------------------- |
+| `AUTH_INVALID_CREDENTIALS`     | 401  | Invalid login credentials                     | Wrong email/password combination       |
+| `AUTH_TOKEN_EXPIRED`           | 401  | Authentication token expired                  | Token issued > 24 hours ago            |
+| `AUTH_UNAUTHORIZED`            | 403  | Insufficient permissions for action           | User lacks required role               |
+| `RBAC_ROLE_DENIED`             | 403  | Specific role not allowed for this action     | Admin endpoint accessed by customer    |
+| `RESOURCE_NOT_FOUND`           | 404  | Requested resource does not exist             | GET /api/v1/projects/999 (not found)   |
+| `VALIDATION_ERROR`             | 422  | Input validation failed                       | Missing required field, invalid format |
+| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition in workflow          | Attempting impossible status change    |
+| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites for workflow step not satisfied | Trying to complete before approval     |
+| `PAYMENT_FAILED`               | 422  | Payment processing failed                     | Card declined, insufficient funds      |
+| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests from client                 | > 100 requests/minute                  |
+| `CONFLICT_ERROR`               | 409  | Resource conflict (e.g., duplicate)           | Email already exists                   |
+| `SERVER_ERROR`                 | 500  | Internal server error                         | Unhandled exception, database failure  |
 
 ---
 
@@ -379,6 +381,7 @@ All API responses (success and error) MUST follow this format:
 **Rationale:** Simpler deployment model for early stages. Reduces operational complexity and external dependencies. Can be extended to ELK in future DevOps stage if needed.
 
 **Implementation Impact:**
+
 - Use Laravel's `daily` channel driver for general logs (`storage/logs/laravel.log`)
 - Use separate `audit` channel for financial/workflow logs (`storage/logs/audit.log`)
 - Configure file rotation via `config/logging.php`
@@ -394,6 +397,7 @@ All API responses (success and error) MUST follow this format:
 **Rationale:** Provides both simplicity (global floor) and flexibility (sensitive endpoints can be more restrictive).
 
 **Implementation Impact:**
+
 - Configure global rate limit middleware in `app/Http/Middleware/`
 - Allow per-route overrides via route group attributes or controller middleware
 - Example: Global 100 req/min; Auth endpoints 10 req/min
@@ -409,6 +413,7 @@ All API responses (success and error) MUST follow this format:
 **Rationale:** Conservative limits prioritize security for auth/payment in a construction marketplace. Prevents brute-force attacks and payment fraud while allowing normal API usage.
 
 **Technical Specification:**
+
 - Global middleware: `RateLimitMiddleware` — 100 req/min per user
 - Auth endpoints (login, register): 10 req/min per IP
 - Payment endpoints: 10 req/min per user
@@ -426,6 +431,7 @@ All API responses (success and error) MUST follow this format:
 **Rationale:** User-facing messages (validation, auth, workflows) must be localized for Arabic users. Technical errors (server errors, stack traces) remain in English for debugging efficiency.
 
 **Translation Scope:**
+
 - ✅ Localized: Validation errors, auth errors, workflow state messages, payment errors, business rule violations
 - ❌ Not Localized: Stack traces, database query errors, internal system errors, correlation IDs
 - All user-facing messages keyed in `resources/lang/{ar,en}/` with dot notation
@@ -442,6 +448,7 @@ All API responses (success and error) MUST follow this format:
 **Rationale:** Balanced approach: 30 days for general logs provides sufficient debugging history while controlling storage costs. 90 days for audit logs meets construction industry compliance expectations (financial audit trail).
 
 **Implementation Impact:**
+
 - `config/logging.php` — General channel: `'days' => 30`
 - `config/logging.php` — Audit channel: `'days' => 90`
 - Automated cleanup via Laravel schedule jobs
@@ -456,6 +463,7 @@ All API responses (success and error) MUST follow this format:
 **Decision:** **Explicit sensitive field registry with per-field masking rules.**
 
 **Sensitive Fields:**
+
 - Passwords → `***` (never log, hash if captured)
 - Tokens (API, Session, CSRF) → `tok_****...` (first 3 + last 3 characters visible)
 - Payment Card Numbers → `****-****-****-1234` (last 4 digits visible)
@@ -463,12 +471,14 @@ All API responses (success and error) MUST follow this format:
 - Bank Account Numbers → `****-****-****-1234`
 
 **Implementation:**
+
 - Create `app/Support/SensitiveFields.php` with registry and masking functions
 - Configure request logging middleware to apply masking automatically
 - Add test case to validate sensitive data patterns don't appear in logs
 - Document how to extend sensitive field registry for new features
 
 **Masking Patterns (Regex validation in test suite):**
+
 - Card numbers: `\b(?:\d{4}[-\s]?){3}\d{4}\b` → replaced with masked version
 - Tokens: `\b[a-zA-Z0-9_-]{20,}\b` → truncated to `tok_****...`
 - Passwords: Never logged (caught before logging layer)
@@ -482,11 +492,13 @@ All API responses (success and error) MUST follow this format:
 **Decision:** **Async logging via Laravel queued jobs with batch optimization.**
 
 **Performance Targets:**
+
 - Logging overhead: < 50ms per request (99th percentile)
 - Audit log inserts queued asynchronously (fire-and-forget)
 - Request context saved immediately; full serialization done in background job
 
 **Implementation Strategy (Phase 2):**
+
 1. Audit log writes via `AuditLog::create()` → queued job pattern
 2. Database indexes on: `(user_id, created_at)`, `(correlation_id)`, `(status_code)`, `(created_at)`
 3. Request logging middleware logs to file immediately; database writes queued
@@ -494,6 +506,7 @@ All API responses (success and error) MUST follow this format:
 5. Performance test: Validate that logging + response time remains < 50ms additional latency
 
 **Batch Optimization:**
+
 - Group audit logs into daily buckets for batch deletion after retention period
 - Use raw `flush()` queries for log purge (faster than model deletion)
 
@@ -506,11 +519,13 @@ All API responses (success and error) MUST follow this format:
 **Decision:** **Correlation ID in THREE places for maximum visibility:**
 
 1. **HTTP Response Header:** `X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000`
+
    - Extracted easily by client libraries
    - Available for support tickets automatically
    - Visible in browser DevTools Network tab
 
 2. **Error Message Text:** "Internal Server Error with ID: 550e8400-e29b-41d4-a716-446655440000"
+
    - Visible to end users in error messages
    - Easy for support tickets ("Tell us the error ID you see")
    - Helps users report issues
@@ -520,6 +535,7 @@ All API responses (success and error) MUST follow this format:
    - Enables structured logging on frontend
 
 **Implementation Guidance:**
+
 - Middleware: Generate UUID v4 if not in incoming request `X-Correlation-ID` header
 - Handler: Attach correlation ID to all logged context
 - Response: Include in header + message text + optional body field
@@ -529,7 +545,7 @@ All API responses (success and error) MUST follow this format:
 
 ## Open Questions
 
-*(All clarified — stage ready for planning.)*
+_(All clarified — stage ready for planning.)_
 
 ---
 

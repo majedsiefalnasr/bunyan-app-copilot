@@ -173,6 +173,7 @@ if ($e instanceof InvalidStateTransitionException) {
 ### 2.1 Monolog in Laravel
 
 Laravel's logging system is built on **Monolog**, which provides:
+
 - Multiple channels (single, daily, stack, syslog, etc.)
 - Record processors (add context, sensitive data masking)
 - Formatters (line format, JSON format)
@@ -411,16 +412,19 @@ class CorrelationIdMiddleware
 ### 3.3 Example Flow
 
 Request comes in:
+
 ```
 GET /api/v1/projects/123
 ```
 
 Middleware generates/extracts Correlation ID:
+
 ```
 X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
 ```
 
 All logs share this context:
+
 ```json
 {
   "timestamp": "2026-04-11T10:30:15Z",
@@ -433,6 +437,7 @@ All logs share this context:
 ```
 
 Response includes header:
+
 ```
 HTTP/1.1 200 OK
 X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000
@@ -671,7 +676,7 @@ export const useErrorStore = defineStore('error', () => {
   }
 
   function removeToast(id: string) {
-    toasts.value = toasts.value.filter(t => t.id !== id);
+    toasts.value = toasts.value.filter((t) => t.id !== id);
   }
 
   return { toasts, addToast, removeToast };
@@ -812,7 +817,7 @@ public function test_invalid_login_returns_401(): void
 test('displays validation errors on form submission', async ({ page }) => {
   await page.goto('/projects/create');
   await page.click('button:has-text("Create")');
-  
+
   await expect(page.locator('text=Name is required')).toBeVisible();
   await expect(page.locator('[role="alert"]')).toContainText('Validation failed');
 });
@@ -984,4 +989,3 @@ This research explores:
 10. **Performance** — Async logging, sampling, query logging
 
 Each recommendation is production-tested and aligns with Laravel best practices and Bunyan's architecture.
-

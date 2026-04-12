@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { useErrorHandler } from '~/composables/useErrorHandler';
 import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { useErrorHandler } from '~/composables/useErrorHandler';
 
 describe('useErrorHandler composable', () => {
   beforeEach(() => {

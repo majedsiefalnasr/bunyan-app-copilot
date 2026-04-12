@@ -15,6 +15,7 @@ Bunyan ERROR_HANDLING establishes a unified, platform-wide error handling contra
 **Language/Version**: PHP 8.3 (Laravel 11.x) + Vue 3 TypeScript (Nuxt 3.x)
 
 **Primary Dependencies**:
+
 - **Backend**: Laravel (Exceptions, Events, Logging), Laravel Sanctum (auth), Monolog (logging), Laravel Pail (log inspection)
 - **Frontend**: Nuxt 3, Vue 3 Composition API, Pinia (state), @nuxt/ui (toast component), Tailwind CSS v4
 - **Shared**: Arabic i18n (i18n-js), RTL Tailwind logical properties
@@ -22,6 +23,7 @@ Bunyan ERROR_HANDLING establishes a unified, platform-wide error handling contra
 **Storage**: MySQL 8.x with optional logging tables (audit log, request logs)
 
 **Testing**:
+
 - **Backend**: PHPUnit, Laravel feature tests
 - **Frontend**: Vitest, Playwright E2E
 
@@ -30,17 +32,20 @@ Bunyan ERROR_HANDLING establishes a unified, platform-wide error handling contra
 **Project Type**: Full-stack platform feature (core foundation)
 
 **Performance Goals**:
+
 - Error response time < 100ms (including serialization)
 - Logging does NOT impact request throughput (async where applicable)
 - Correlation ID propagates through all request layers with < 1ms overhead
 
 **Constraints**:
+
 - No external error monitoring service (ELK, Sentry); use local file-based logging with 30/90-day rotation
 - Error codes are stable (never modified after deployment; versioning via new codes only)
 - All user-facing error messages multilingual (Arabic/English)
 - Stack traces visible in local/dev only; hidden in production
 
 **Scale/Scope**:
+
 - 12+ error codes (AUTH_INVALID_CREDENTIALS, AUTH_TOKEN_EXPIRED, AUTH_UNAUTHORIZED, RBAC_ROLE_DENIED, RESOURCE_NOT_FOUND, VALIDATION_ERROR, WORKFLOW_INVALID_TRANSITION, WORKFLOW_PREREQUISITES_UNMET, PAYMENT_FAILED, RATE_LIMIT_EXCEEDED, CONFLICT_ERROR, SERVER_ERROR)
 - ~10 middleware + services required
 - ~8 frontend components/composables
@@ -184,6 +189,7 @@ frontend/
 **Goal**: Establish unified error format, error code registry, global exception handling.
 
 **Deliverables**:
+
 - ✅ `app/Enums/ApiErrorCode.php` — PHP enum defining all 12+ error codes with HTTP status, default message
 - ✅ `app/Exceptions/Handler.php` — Global handler catching ValidationException, AuthenticationException, AuthorizationException, ModelNotFoundException, and generic exceptions
 - ✅ `app/Traits/ApiResponseTrait.php` — `success()` and `error()` helper methods for consistent responses
@@ -193,12 +199,14 @@ frontend/
 - ✅ `contracts/error-codes-registry.json` — Documented registry with examples
 
 **Key Decisions**:
+
 - HTTP status codes follow REST conventions: 401 (auth failures), 403 (authorization), 404 (not found), 422 (validation/workflow), 429 (rate limit), 500 (server error)
 - Error codes are semantic, stable identifiers (never change; new codes versioned instead)
 - Validation errors include field-level `details` object
 - Stack traces logged server-side only; never exposed to clients in production
 
 **Tests**:
+
 - [ ] Each exception type maps correctly to error code and HTTP status
 - [ ] Validation errors include field-level details
 - [ ] Server errors do NOT expose stack traces to clients
@@ -211,6 +219,7 @@ frontend/
 **Goal**: Implement structured logging with correlation IDs, request/response tracking.
 
 **Deliverables**:
+
 - ✅ `config/logging.php` — Configure channels (single, daily, stack) with daily rotation, 30-day retention
 - ✅ `app/Http/Middleware/CorrelationIdMiddleware.php` — Generate UUID, propagate via X-Correlation-ID header
 - ✅ `app/Http/Middleware/RequestLoggingMiddleware.php` — Log method, URI, status, response time, payload size
@@ -221,6 +230,7 @@ frontend/
 - ✅ Audit channel for financial/workflow logs (90-day retention)
 
 **Key Decisions**:
+
 - No external service (ELK, Sentry); local files only for simplicity
 - Correlation ID propagates through entire request lifecycle
 - Request/response logging async where possible
@@ -234,6 +244,7 @@ frontend/
 - **Sensitive Data Masking:** Automatic masking via middleware (passwords→`***`, tokens→`tok_****...`, cards→`****-1234`)
 
 **Tests**:
+
 - [ ] Correlation ID generated and present in all logs
 - [ ] Request/response details captured (method, URI, status, time)
 - [ ] Sensitive fields masked or excluded from logs
@@ -249,6 +260,7 @@ frontend/
 **Goal**: Implement error boundary, error interceptor, toast notifications, error pages.
 
 **Deliverables**:
+
 - ✅ `components/errors/GlobalErrorBoundary.vue` — Catches unhandled component errors
 - ✅ `composables/useApi.ts` — API client with error interceptor (modified)
 - ✅ `composables/useErrorHandler.ts` — Centralized error handling logic
@@ -260,12 +272,14 @@ frontend/
 - ✅ RTL-safe error components using Tailwind logical properties
 
 **Key Decisions**:
+
 - Toast auto-dismisses after 5 seconds
 - 401 auto-redirects to login; 403 shows deny page; 5xx shows retry button
 - Error messages use i18n translation keys (user-friendly, not technical)
 - Error components follow Geist design system (shadow-as-border, Geist font, achromatic palette)
 
 **Tests**:
+
 - [ ] Error boundary catches and displays component errors
 - [ ] API error interceptor handles 4xx/5xx responses
 - [ ] Toast notifications display with correct styling
@@ -280,6 +294,7 @@ frontend/
 **Goal**: Comprehensive documentation, error handling guide, full test coverage.
 
 **Deliverables**:
+
 - ✅ `quickstart.md` — Developer reference: error handling patterns, common scenarios
 - ✅ `docs/api/error-codes.md` — Error code reference with examples
 - ✅ `docs/guides/error-handling-guide.md` — How to implement error handling in features
@@ -289,11 +304,13 @@ frontend/
 - ✅ Arabic error message validation tests
 
 **Key Decisions**:
+
 - All error scenarios (validation, auth, workflow, payment, rate limit) covered by tests
 - E2E tests verify user-visible error messages and TODOs
 - Documentation examples include both success and error paths
 
 **Tests**:
+
 - [ ] Exception handler catches all exception types
 - [ ] Error messages correctly localized to Arabic and English
 - [ ] Rate limiting enforced at global and per-endpoint levels
@@ -324,11 +341,12 @@ frontend/
 
 ### 2. Error Code Strategy (Semantic, Stable)
 
-- **Semantic**: Code name reflects the error category (e.g., AUTH_*, WORKFLOW_*, PAYMENT_*)
+- **Semantic**: Code name reflects the error category (e.g., AUTH*\*, WORKFLOW*\_, PAYMENT\_\_)
 - **Stable**: Once assigned, code never changes. New requirements = new codes.
 - **Versioning**: Error code changes are API breaking changes; handled via version bumps.
 
 **Example codes**:
+
 - `AUTH_INVALID_CREDENTIALS` (401)
 - `WORKFLOW_INVALID_TRANSITION` (422)
 - `RATE_LIMIT_EXCEEDED` (429)
@@ -337,12 +355,12 @@ frontend/
 
 ### 3. Logging Strategy (Multi-Channel, Retention)
 
-| Channel        | Retention | Use Case                        | Example                       |
-| -------------- | --------- | ------------------------------- | ----------------------------- |
-| laravel.log    | 30 days   | General application logs        | Requests, responses, info     |
-| audit.log      | 90 days   | Financial, workflow, sensitive  | Payments, approvals, phase closes |
-| requests.log   | 30 days   | HTTP request/response details   | Method, URI, status, duration |
-| errors.log     | 30 days   | Exceptions and errors only      | Stack traces, context         |
+| Channel      | Retention | Use Case                       | Example                           |
+| ------------ | --------- | ------------------------------ | --------------------------------- |
+| laravel.log  | 30 days   | General application logs       | Requests, responses, info         |
+| audit.log    | 90 days   | Financial, workflow, sensitive | Payments, approvals, phase closes |
+| requests.log | 30 days   | HTTP request/response details  | Method, URI, status, duration     |
+| errors.log   | 30 days   | Exceptions and errors only     | Stack traces, context             |
 
 **Rationale**: Separate channels allow for retention policies (audit = longer) and filtering for debugging.
 
@@ -361,11 +379,11 @@ frontend/
 
 ### 5. Rate Limiting (Hybrid Global + Per-Endpoint)
 
-| Context     | Limit        | HTTP Status | Error Code               |
-| ----------- | ------------ | ----------- | ------------------------ |
-| Global      | 100 req/min  | 429         | RATE_LIMIT_EXCEEDED      |
-| Auth        | 10 req/min   | 429         | RATE_LIMIT_EXCEEDED      |
-| Payment     | 10 req/min   | 429         | RATE_LIMIT_EXCEEDED      |
+| Context | Limit       | HTTP Status | Error Code          |
+| ------- | ----------- | ----------- | ------------------- |
+| Global  | 100 req/min | 429         | RATE_LIMIT_EXCEEDED |
+| Auth    | 10 req/min  | 429         | RATE_LIMIT_EXCEEDED |
+| Payment | 10 req/min  | 429         | RATE_LIMIT_EXCEEDED |
 
 **Rationale**: Protects against brute-force (auth) and fraud (payment) while allowing normal API usage.
 
@@ -388,6 +406,7 @@ frontend/
 - **Technical errors** (stack traces, DB errors): English only (for developers)
 
 **Structure**:
+
 ```
 resources/lang/ar/validation.php    # "The field is required"
 resources/lang/ar/auth.php          # "Invalid credentials"
@@ -403,6 +422,7 @@ resources/lang/ar/workflow.php      # "Cannot transition from draft to complete"
 ### 1. API Response Format
 
 Frontend relies on consistent response format:
+
 - Success: `{ success: true, data: {...} }`
 - Error: `{ success: false, error: { code: "...", message: "..." } }`
 
@@ -413,6 +433,7 @@ Frontend relies on consistent response format:
 ### 2. Error Codes
 
 Backend defines error codes in enum; frontend matches codes to user-friendly messages and UI actions:
+
 - `401` → Redirect to login
 - `403` → Show access denied page
 - `422` → Show field-level validation errors
@@ -520,25 +541,25 @@ RateLimitByRoleMiddleware (exit)  # Record response
 
 ### Backend
 
-| Package                | Version  | Purpose                                           |
-| ---------------------- | -------- | ------------------------------------------------- |
-| Laravel                | 11.x     | Framework, routing, ORM                           |
-| Laravel Sanctum        | Latest   | Authentication (already in stack)                 |
-| Monolog                | ^3.0     | Logging (Laravel's logging engine)                |
-| Laravel Pail           | ^1.0     | Log inspection CLI (optional but useful)          |
-| PHP                    | 8.3+     | Language                                          |
+| Package         | Version | Purpose                                  |
+| --------------- | ------- | ---------------------------------------- |
+| Laravel         | 11.x    | Framework, routing, ORM                  |
+| Laravel Sanctum | Latest  | Authentication (already in stack)        |
+| Monolog         | ^3.0    | Logging (Laravel's logging engine)       |
+| Laravel Pail    | ^1.0    | Log inspection CLI (optional but useful) |
+| PHP             | 8.3+    | Language                                 |
 
 ### Frontend
 
-| Package         | Version | Purpose                                      |
-| --------------- | ------- | -------------------------------------------- |
-| Nuxt            | 3.x     | Framework                                    |
-| Vue             | 3.x     | UI framework                                 |
-| Pinia           | ^1.0    | State management                             |
-| @nuxt/ui        | Latest  | UI components (Toast, etc.)                  |
-| i18n-js         | ^0.9    | Frontend i18n (or Nuxt i18n module)          |
-| Tailwind CSS    | 4.x     | Styling                                      |
-| TypeScript      | ^5.0    | Type safety                                  |
+| Package      | Version | Purpose                             |
+| ------------ | ------- | ----------------------------------- |
+| Nuxt         | 3.x     | Framework                           |
+| Vue          | 3.x     | UI framework                        |
+| Pinia        | ^1.0    | State management                    |
+| @nuxt/ui     | Latest  | UI components (Toast, etc.)         |
+| i18n-js      | ^0.9    | Frontend i18n (or Nuxt i18n module) |
+| Tailwind CSS | 4.x     | Styling                             |
+| TypeScript   | ^5.0    | Type safety                         |
 
 ---
 
@@ -547,12 +568,15 @@ RateLimitByRoleMiddleware (exit)  # Record response
 ### High-Risk Areas
 
 1. **Correlation ID Propagation**: If not propagated through all layers, debugging becomes difficult
+
    - **Mitigation**: Test correlation ID presence in all logs; add logging to middleware tests
 
 2. **Rate Limiting Accuracy**: If not configured correctly, may block legitimate users or fail to block attackers
+
    - **Mitigation**: Load testing; verify per-role limits; monitor false positives
 
 3. **Sensitive Data in Logs**: Accidental logging of passwords/tokens/cards is a security risk
+
    - **Mitigation**: Implement masking in logger; code review logging statements; audit logs regularly
 
 4. **Localization Completeness**: Missing error messages in Arabic = poor UX
@@ -591,9 +615,9 @@ RateLimitByRoleMiddleware (exit)  # Record response
 ### Downstream
 
 - **All subsequent stages** — Every feature uses error contract
-- **RBAC & Authentication** — Uses error codes (AUTH_*, RBAC_*)
-- **Workflow Engine** — Uses error codes (WORKFLOW_*)
-- **Payment Processing** — Uses error codes (PAYMENT_*)
+- **RBAC & Authentication** — Uses error codes (AUTH*\*, RBAC*\*)
+- **Workflow Engine** — Uses error codes (WORKFLOW\_\*)
+- **Payment Processing** — Uses error codes (PAYMENT\_\*)
 - **Field Reporting** — Uses error codes (validation, business rules)
 
 ---
@@ -601,21 +625,25 @@ RateLimitByRoleMiddleware (exit)  # Record response
 ## Next Steps
 
 1. **Phase 0 (Research)**: Generate `research.md` with deep dives on:
+
    - Laravel exception handling internals
    - Monolog logging patterns
    - Nuxt error boundaries and composables
    - Pinia state management for errors
 
 2. **Phase 1 (Design)**: Generate:
+
    - `data-model.md` (optional audit log schema)
    - `contracts/` (API response schemas, error code registry)
    - Start implementing exception handler + error codes
 
 3. **Phase 2 (Implementation)**: Execute tasks from Phase 1 and 2
+
    - Exception handler, logging middleware, correlation IDs
    - Frontend error boundary, interceptor, toasts
 
 4. **Phase 3 (Testing)**: Full test coverage
+
    - Unit tests (Exception handler, error formatter)
    - Feature tests (HTTP error responses, rate limiting)
    - E2E tests (Error UI flows)

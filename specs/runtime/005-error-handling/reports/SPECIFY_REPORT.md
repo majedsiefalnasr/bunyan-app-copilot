@@ -3,7 +3,7 @@
 **Stage:** ERROR_HANDLING  
 **Phase:** 01_PLATFORM_FOUNDATION  
 **Branch:** spec/005-error-handling  
-**Generated:** 2026-04-11  
+**Generated:** 2026-04-11
 
 ## Executive Summary
 
@@ -11,10 +11,10 @@ The ERROR_HANDLING stage specification has been successfully generated with **13
 
 ## Specification Artifacts
 
-| Artifact | Location | Size | Status |
-| -------- | -------- | ---- | ------ |
-| Full Specification | `spec.md` | 6.5 KB | ✅ Complete |
-| Quality Checklist | `checklists/requirements.md` | 8.2 KB | ✅ Complete |
+| Artifact           | Location                     | Size   | Status      |
+| ------------------ | ---------------------------- | ------ | ----------- |
+| Full Specification | `spec.md`                    | 6.5 KB | ✅ Complete |
+| Quality Checklist  | `checklists/requirements.md` | 8.2 KB | ✅ Complete |
 
 ## Coverage Summary
 
@@ -36,14 +36,14 @@ The ERROR_HANDLING stage specification has been successfully generated with **13
 
 ### User Stories Breakdown
 
-| ID | Title | Criteria | Phase |
-| --- | ----- | -------- | ----- |
-| US1 | Platform-Wide Error Response Contract | 9 | 1 |
-| US2 | Backend Exception Handling | 11 | 1-2 |
-| US3 | API Response Helper | 6 | 1 |
-| US4 | Structured Logging | 8 | 2 |
-| US5 | Frontend Error Handling | 8 | 3 |
-| US6 | Error Code Registry & Documentation | 6 | 4 |
+| ID  | Title                                 | Criteria | Phase |
+| --- | ------------------------------------- | -------- | ----- |
+| US1 | Platform-Wide Error Response Contract | 9        | 1     |
+| US2 | Backend Exception Handling            | 11       | 1-2   |
+| US3 | API Response Helper                   | 6        | 1     |
+| US4 | Structured Logging                    | 8        | 2     |
+| US5 | Frontend Error Handling               | 8        | 3     |
+| US6 | Error Code Registry & Documentation   | 6        | 4     |
 
 ### Error Codes Defined (12)
 
@@ -65,10 +65,12 @@ The ERROR_HANDLING stage specification has been successfully generated with **13
 ### [NEEDS CLARIFICATION] Items (3)
 
 1. **Structured Logging Storage** (Medium impact)
+
    - Question: Local files vs. external ELK stack?
    - Resolution: Pending team decision — non-blocking for Phase 1
 
 2. **Rate Limiting Strategy** (Medium impact)
+
    - Question: Global or per-endpoint? What limits?
    - Resolution: Pending specification — impacts RATE_LIMIT_EXCEEDED implementation
 
@@ -95,14 +97,14 @@ The ERROR_HANDLING stage specification has been successfully generated with **13
 
 ## Quality Metrics
 
-| Metric | Target | Actual | Status |
-| ------ | ------ | ------ | ------ |
-| Sections | 10+ | 13 | ✅ Exceeds |
-| User Stories | 5+ | 6 | ✅ Good |
-| Acceptance Criteria | 30+ | 38 | ✅ Comprehensive |
-| Error Codes | 8+ | 12 | ✅ Adequate |
-| [NEEDS CLARIFICATION] | <5 | 3 | ✅ Minimal |
-| Architecture Compliance | High | High | ✅ Enforced |
+| Metric                  | Target | Actual | Status           |
+| ----------------------- | ------ | ------ | ---------------- |
+| Sections                | 10+    | 13     | ✅ Exceeds       |
+| User Stories            | 5+     | 6      | ✅ Good          |
+| Acceptance Criteria     | 30+    | 38     | ✅ Comprehensive |
+| Error Codes             | 8+     | 12     | ✅ Adequate      |
+| [NEEDS CLARIFICATION]   | <5     | 3      | ✅ Minimal       |
+| Architecture Compliance | High   | High   | ✅ Enforced      |
 
 ## Next Steps
 

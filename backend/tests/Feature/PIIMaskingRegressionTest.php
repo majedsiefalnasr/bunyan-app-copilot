@@ -33,21 +33,21 @@ class PIIMaskingRegressionTest extends TestCase
     private array $sensitivePatterns = [
         // Full credit cards (16 digits in various formats)
         '/\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/' => 'Full credit card number',
-        
+
         // Passwords (common in logs as plaintext)
         '/password["\']?\s*[:=]\s*["\']?[^"\'\s,}]+["\']?/i' => 'Password field unmasked',
-        
+
         // API keys/tokens (various formats)
         '/api[_-]?key["\']?\s*[:=]\s*[sk_]?[a-z0-9]{20,}/i' => 'API key unmasked',
         '/token["\']?\s*[:=]\s*["\']?[a-z0-9]{40,}["\']?/i' => 'Token unmasked',
-        
+
         // OAuth tokens
         '/access[_-]?token["\']?\s*[:=]\s*["\']?[a-z0-9_-]{30,}["\']?/i' => 'Access token unmasked',
         '/refresh[_-]?token["\']?\s*[:=]\s*["\']?[a-z0-9_-]{30,}["\']?/i' => 'Refresh token unmasked',
-        
+
         // Social security numbers (SSN)
         '/\b\d{3}-\d{2}-\d{4}\b/' => 'Social security number unmasked',
-        
+
         // Bank account numbers
         '/account[_-]?number["\']?\s*[:=]\s*\d{8,17}/i' => 'Bank account number unmasked',
     ];
@@ -92,11 +92,11 @@ class PIIMaskingRegressionTest extends TestCase
 
         // Check logs for unmasked passwords
         $logs = $this->readLogFiles();
-        
+
         foreach ($logs as $logContent) {
             // Should not contain plaintext passwords
             $unmasked = preg_match('/password["\']?\s*[:=]\s*["\']?[^*\s,}]+["\']?/i', $logContent, $matches);
-            
+
             // Allow false positives like "password_reset" or "password_field"
             if ($unmasked && !$this->isAllowedPattern($matches[0])) {
                 $this->fail("Found unmasked password in logs: " . $matches[0]);
@@ -132,7 +132,7 @@ class PIIMaskingRegressionTest extends TestCase
             if (stripos($logContent, 'token') !== false) {
                 // Verify it's either masked or it's just the word "token" in field names
                 $unmaskedToken = preg_match('/token["\']?\s*[:=]\s*["\']?[a-z0-9_]{20,}["\']?/i', $logContent);
-                
+
                 if ($unmaskedToken) {
                     // Check if it looks like a masked token
                     $maskedToken = preg_match('/tok_\*{4,}/', $logContent);
@@ -205,7 +205,7 @@ class PIIMaskingRegressionTest extends TestCase
         // Check that error details don't expose sensitive field names
         if (isset($json['error']['details'])) {
             $details = json_encode($json['error']['details']);
-            
+
             // Field names should be masked or generic
             $this->assertStringNotContainsString('password', strtolower($details),
                 "Sensitive field names should not appear in error details");

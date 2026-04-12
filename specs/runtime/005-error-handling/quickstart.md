@@ -8,20 +8,20 @@ A quick reference guide for implementing proper error handling in Bunyan feature
 
 ## 1. Quick Reference: Error Codes
 
-| Code                           | HTTP | Use When                                  | Category    |
-| ------------------------------ | ---- | ----------------------------------------- | ----------- |
-| `AUTH_INVALID_CREDENTIALS`     | 401  | Wrong email/password                      | Auth        |
-| `AUTH_TOKEN_EXPIRED`           | 401  | Token > 24 hours old                      | Auth        |
-| `AUTH_UNAUTHORIZED`            | 403  | User lacks permission                     | Auth        |
-| `RBAC_ROLE_DENIED`             | 403  | Role not allowed for endpoint             | Auth        |
-| `RESOURCE_NOT_FOUND`           | 404  | Resource does not exist                   | Data        |
-| `VALIDATION_ERROR`             | 422  | Input validation failed                   | Input       |
-| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition                  | Workflow    |
-| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites not met                     | Workflow    |
-| `PAYMENT_FAILED`               | 422  | Payment processing error                  | Payment     |
-| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests                         | Rate Limit  |
-| `CONFLICT_ERROR`               | 409  | Duplicate/uniqueness violation            | Data        |
-| `SERVER_ERROR`                 | 500  | Unexpected exception                      | System      |
+| Code                           | HTTP | Use When                       | Category   |
+| ------------------------------ | ---- | ------------------------------ | ---------- |
+| `AUTH_INVALID_CREDENTIALS`     | 401  | Wrong email/password           | Auth       |
+| `AUTH_TOKEN_EXPIRED`           | 401  | Token > 24 hours old           | Auth       |
+| `AUTH_UNAUTHORIZED`            | 403  | User lacks permission          | Auth       |
+| `RBAC_ROLE_DENIED`             | 403  | Role not allowed for endpoint  | Auth       |
+| `RESOURCE_NOT_FOUND`           | 404  | Resource does not exist        | Data       |
+| `VALIDATION_ERROR`             | 422  | Input validation failed        | Input      |
+| `WORKFLOW_INVALID_TRANSITION`  | 422  | Invalid state transition       | Workflow   |
+| `WORKFLOW_PREREQUISITES_UNMET` | 422  | Prerequisites not met          | Workflow   |
+| `PAYMENT_FAILED`               | 422  | Payment processing error       | Payment    |
+| `RATE_LIMIT_EXCEEDED`          | 429  | Too many requests              | Rate Limit |
+| `CONFLICT_ERROR`               | 409  | Duplicate/uniqueness violation | Data       |
+| `SERVER_ERROR`                 | 500  | Unexpected exception           | System     |
 
 ---
 
@@ -385,7 +385,7 @@ export function useErrorHandler() {
       // Handle field-level errors separately
       return {
         message: t('errors.validation_failed'),
-        details: error.details,  // Pass to form
+        details: error.details, // Pass to form
       };
     }
 
@@ -452,11 +452,16 @@ showToast({
 <!-- pages/error-404.vue -->
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+  <div
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
+  >
     <div class="text-center max-w-md">
       <h1 class="text-6xl font-bold text-gray-900 mb-2">404</h1>
       <p class="text-xl text-gray-600 mb-6">{{ $t('errors.not_found') }}</p>
-      <NuxtLink to="/" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      <NuxtLink
+        to="/"
+        class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
         {{ $t('errors.go_home') }}
       </NuxtLink>
     </div>
@@ -466,11 +471,16 @@ showToast({
 <!-- pages/error-403.vue -->
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+  <div
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100"
+  >
     <div class="text-center max-w-md">
       <h1 class="text-6xl font-bold text-red-900 mb-2">403</h1>
       <p class="text-xl text-red-700 mb-6">{{ $t('errors.access_denied') }}</p>
-      <a href="mailto:support@bunyan.example" class="inline-block px-6 py-3 bg-red-600 text-white rounded-lg">
+      <a
+        href="mailto:support@bunyan.example"
+        class="inline-block px-6 py-3 bg-red-600 text-white rounded-lg"
+      >
         {{ $t('errors.contact_support') }}
       </a>
     </div>
@@ -562,7 +572,7 @@ test('displays validation errors on form submission', async ({ page }) => {
 
 test('displays correlation ID on server error', async ({ page }) => {
   // Force 500 error (mock API)
-  await page.route('**/api/**', route => {
+  await page.route('**/api/**', (route) => {
     route.abort('failed');
   });
 
@@ -661,21 +671,26 @@ public function show($id): JsonResponse
 ## 15. Support Workflow
 
 **Customer reports error:**
+
 > "I can't submit the form. Getting an error."
 
 **Support asks:**
+
 > "What's the error ID at the bottom right?"
 
 **Customer provides:**
+
 > "Error ID: 550e8400-e29b-41d4-a716-446655440000"
 
 **Support queries logs:**
+
 ```bash
 # In Laravel Pail or log files
 tail -f storage/logs/laravel.log | grep 550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Support finds:**
+
 - All request logs for that correlation ID
 - Validation errors, auth errors, rate limits
 - Exact timestamp and user context
@@ -691,4 +706,3 @@ tail -f storage/logs/laravel.log | grep 550e8400-e29b-41d4-a716-446655440000
 - [contracts/error-response.json](contracts/error-response.json) — API contract
 - [contracts/error-codes-registry.json](contracts/error-codes-registry.json) — Error code reference
 - [contracts/correlation-id-flow.json](contracts/correlation-id-flow.json) — Request tracing
-

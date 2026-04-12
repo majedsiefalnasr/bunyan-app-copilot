@@ -3,7 +3,7 @@
 **Stage:** ERROR_HANDLING  
 **Phase:** 01_PLATFORM_FOUNDATION  
 **Branch:** spec/005-error-handling  
-**Generated:** 2026-04-11  
+**Generated:** 2026-04-11
 
 ## Executive Summary
 
@@ -11,14 +11,14 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 
 ## Plan Artifacts Generated
 
-| Artifact | Location | Status | Purpose |
-| --- | --- | --- | --- |
-| **plan.md** | `specs/runtime/005-error-handling/plan.md` | ✅ Complete | 4-phase delivery roadmap with 50+ tasks |
-| **research.md** | `specs/runtime/005-error-handling/research.md` | ✅ Complete | Technical deep dives on logging, correlation IDs, rate limiting |
-| **data-model.md** | `specs/runtime/005-error-handling/data-model.md` | ✅ Complete | Optional database schema for audit/request logs |
-| **contracts/** | `specs/runtime/005-error-handling/contracts/` | ✅ Complete | API contracts (error response, error codes, correlation ID flow) |
-| **quickstart.md** | `specs/runtime/005-error-handling/quickstart.md` | ✅ Complete | Developer reference guide with patterns and examples |
-| **checklists/** | `specs/runtime/005-error-handling/checklists/` | ✅ Complete | 96-item verification checklists (5 domains) |
+| Artifact          | Location                                         | Status      | Purpose                                                          |
+| ----------------- | ------------------------------------------------ | ----------- | ---------------------------------------------------------------- |
+| **plan.md**       | `specs/runtime/005-error-handling/plan.md`       | ✅ Complete | 4-phase delivery roadmap with 50+ tasks                          |
+| **research.md**   | `specs/runtime/005-error-handling/research.md`   | ✅ Complete | Technical deep dives on logging, correlation IDs, rate limiting  |
+| **data-model.md** | `specs/runtime/005-error-handling/data-model.md` | ✅ Complete | Optional database schema for audit/request logs                  |
+| **contracts/**    | `specs/runtime/005-error-handling/contracts/`    | ✅ Complete | API contracts (error response, error codes, correlation ID flow) |
+| **quickstart.md** | `specs/runtime/005-error-handling/quickstart.md` | ✅ Complete | Developer reference guide with patterns and examples             |
+| **checklists/**   | `specs/runtime/005-error-handling/checklists/`   | ✅ Complete | 96-item verification checklists (5 domains)                      |
 
 ## Implementation Strategy
 
@@ -29,6 +29,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 **Duration:** ~2 weeks  
 **Dependencies:** STAGE_01 (done)  
 **Deliverables:**
+
 - Error code enum (`app/Enums/ApiErrorCode.php`) — 12 semantic codes with HTTP mappings
 - Global exception handler (`app/Exceptions/Handler.php`) — Transforms 5+ exception types
 - API response helper trait (`app/Traits/ApiResponseTrait.php`) — `success()` and `error()` methods
@@ -36,6 +37,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - Documentation — Error code registry, mapping reference
 
 **Key Tasks:**
+
 - [ ] Define error code enum with all 12 codes
 - [ ] Implement exception handler with type-specific mapping
 - [ ] Create response helpers with consistent format
@@ -45,6 +47,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - [ ] Validate all error responses follow contract
 
 **Success Criteria:**
+
 - All endpoints return `{ success, data, error }` format
 - Validation errors include field-level `details`
 - Server errors don't expose stack traces
@@ -57,6 +60,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 **Duration:** ~2 weeks  
 **Dependencies:** Phase 1 complete  
 **Deliverables:**
+
 - Logging configuration (`config/logging.php`) — Daily rotation, 30/90-day retention
 - Correlation ID middleware (`app/Http/Middleware/CorrelationIdMiddleware.php`)
 - Request logging middleware (`app/Http/Middleware/RequestLoggingMiddleware.php`)
@@ -65,6 +69,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - Structured logging with context — `user_id`, `correlation_id`, `endpoint`
 
 **Key Tasks:**
+
 - [ ] Configure logging channels with daily driver
 - [ ] Implement correlation ID UUID generation + propagation
 - [ ] Implement request/response payload logging
@@ -75,6 +80,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - [ ] Performance test: Logging adds < 50ms overhead
 
 **Success Criteria:**
+
 - All requests have unique correlation ID
 - Correlation ID appears in logs, response header, error message
 - Sensitive data automatically masked
@@ -88,6 +94,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 **Duration:** ~2 weeks  
 **Dependencies:** Phase 1 complete  
 **Deliverables:**
+
 - Global error boundary component (`components/errors/GlobalErrorBoundary.vue`)
 - API error interceptor (`composables/useApi.ts` — enhanced)
 - Error handler composable (`composables/useErrorHandler.ts`)
@@ -97,6 +104,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - i18n translations (`locales/ar.json`, `locales/en.json`)
 
 **Key Tasks:**
+
 - [ ] Create error boundary for component fallback UI
 - [ ] Enhance API client with error interceptor for all 12 error codes
 - [ ] Implement toast system with auto-dismiss (5s)
@@ -107,6 +115,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - [ ] Test Arabic/English error message display
 
 **Success Criteria:**
+
 - All error codes handled by frontend
 - User-friendly error messages (not technical jargon)
 - Error pages styled per Geist design system
@@ -120,6 +129,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 **Duration:** ~1 week  
 **Dependencies:** Phases 1-3 complete  
 **Deliverables:**
+
 - API error reference document (auto-generated from error code enum)
 - Error handling guide for developers
 - Architecture decision record (ADR)
@@ -127,6 +137,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - Manual testing guide for QA
 
 **Key Tasks:**
+
 - [ ] Generate OpenAPI/Swagger error code documentation
 - [ ] Write error handling guide (backend + frontend patterns)
 - [ ] Document rate limiting strategy and overrides
@@ -137,6 +148,7 @@ The technical plan for ERROR_HANDLING has been successfully generated with compr
 - [ ] Security audit: No sensitive data leaked in errors/logs
 
 **Success Criteria:**
+
 - Error codes documented with examples
 - Developers can find and implement patterns quickly
 - Architecture decisions recorded and justified
@@ -212,6 +224,7 @@ locales/
 ### High Risk Items
 
 1. **Performance: Logging Overhead**
+
    - Risk: Async job queue or database indexes cause > 50ms overhead
    - Mitigation: Performance testing in Phase 2; batch optimization designed
    - Contingency: Fallback to synchronous logging if async fails
@@ -224,6 +237,7 @@ locales/
 ### Medium Risk Items
 
 3. **Upstream Capability: Rate Limiting Middleware**
+
    - Risk: Third-party package incompatibility or missing features
    - Mitigation: Use Laravel's built-in ThrottleRequests + custom per-role logic
    - Contingency: Implement custom rate limiting if package fails
@@ -257,10 +271,10 @@ locales/
 
 ## Guardian Validations
 
-| Guardian | Verdict | Status |
-| --- | --- | --- |
-| **Architecture Guardian** | ✅ **PASS** | All 5 violations resolved; clean governance alignment |
-| **API Designer** | ✅ **PASS** | All 6 violations resolved; specification ready for implementation |
+| Guardian                  | Verdict     | Status                                                            |
+| ------------------------- | ----------- | ----------------------------------------------------------------- |
+| **Architecture Guardian** | ✅ **PASS** | All 5 violations resolved; clean governance alignment             |
+| **API Designer**          | ✅ **PASS** | All 6 violations resolved; specification ready for implementation |
 
 ---
 
@@ -268,13 +282,13 @@ locales/
 
 **96 total verification items across 5 domains:**
 
-| Domain | Items | Purpose |
-| --- | --- | --- |
-| Security | 21 | Stack traces, sensitive data, RBAC, injection attacks |
-| Performance | 16 | < 50ms overhead, async queueing, indexes |
-| Accessibility & Localization | 18 | Arabic/English, RTL, keyboard access, ARIA |
-| API Contract Compliance | 22 | Response format, error codes, HTTP status, headers |
-| Frontend-Backend Integration | 15 | Error handling, toast system, end-to-end flows |
+| Domain                       | Items | Purpose                                               |
+| ---------------------------- | ----- | ----------------------------------------------------- |
+| Security                     | 21    | Stack traces, sensitive data, RBAC, injection attacks |
+| Performance                  | 16    | < 50ms overhead, async queueing, indexes              |
+| Accessibility & Localization | 18    | Arabic/English, RTL, keyboard access, ARIA            |
+| API Contract Compliance      | 22    | Response format, error codes, HTTP status, headers    |
+| Frontend-Backend Integration | 15    | Error handling, toast system, end-to-end flows        |
 
 All checklists available in `specs/runtime/005-error-handling/checklists/`
 

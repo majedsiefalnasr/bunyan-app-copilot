@@ -59,35 +59,35 @@
 
 ### Exception Handler Implementation
 
-- [X] T019 [P] [US2] Modify `backend/app/Exceptions/Handler.php` to implement JSON response rendering for API requests — AC: `render()` method detects JSON requests via `$request->expectsJson()` or Accept header; returns JSON responses for API requests (not HTML); calls `response()->json()` with proper contract format; passes `phpstan` analysis
+- [x] T019 [P] [US2] Modify `backend/app/Exceptions/Handler.php` to implement JSON response rendering for API requests — AC: `render()` method detects JSON requests via `$request->expectsJson()` or Accept header; returns JSON responses for API requests (not HTML); calls `response()->json()` with proper contract format; passes `phpstan` analysis
 
-- [X] T020 [P] [US2] Implement exception handling for `ValidationException` in Handler — AC: Catches `ValidationException`; returns 422 HTTP status; `error.code = VALIDATION_ERROR`; `error.details` contains field-level validation messages (from Laravel validator); tested via feature test
+- [x] T020 [P] [US2] Implement exception handling for `ValidationException` in Handler — AC: Catches `ValidationException`; returns 422 HTTP status; `error.code = VALIDATION_ERROR`; `error.details` contains field-level validation messages (from Laravel validator); tested via feature test
 
-- [X] T021 [P] [US2] Implement exception handling for `AuthenticationException` in Handler — AC: Catches `AuthenticationException`; returns 401 HTTP status; `error.code = AUTH_INVALID_CREDENTIALS` or `AUTH_TOKEN_EXPIRED` (determined by exception context); message localized; tested via feature test
+- [x] T021 [P] [US2] Implement exception handling for `AuthenticationException` in Handler — AC: Catches `AuthenticationException`; returns 401 HTTP status; `error.code = AUTH_INVALID_CREDENTIALS` or `AUTH_TOKEN_EXPIRED` (determined by exception context); message localized; tested via feature test
 
-- [X] T022 [P] [US2] Implement exception handling for `AuthorizationException` in Handler — AC: Catches `AuthorizationException`; returns 403 HTTP status; `error.code = AUTH_UNAUTHORIZED`; does NOT expose role information in message; tested via feature test
+- [x] T022 [P] [US2] Implement exception handling for `AuthorizationException` in Handler — AC: Catches `AuthorizationException`; returns 403 HTTP status; `error.code = AUTH_UNAUTHORIZED`; does NOT expose role information in message; tested via feature test
 
-- [X] T023 [P] [US2] Implement exception handling for `ModelNotFoundException` in Handler — AC: Catches `ModelNotFoundException`; returns 404 HTTP status; `error.code = RESOURCE_NOT_FOUND`; message user-friendly (en/ar); tested via feature test
+- [x] T023 [P] [US2] Implement exception handling for `ModelNotFoundException` in Handler — AC: Catches `ModelNotFoundException`; returns 404 HTTP status; `error.code = RESOURCE_NOT_FOUND`; message user-friendly (en/ar); tested via feature test
 
-- [X] T024 [P] [US2] Implement exception handling for throttling/rate limit exceptions in Handler — AC: Catches rate limit exception (Laravel ThrottleRequestsException or custom); returns 429 HTTP status; `error.code = RATE_LIMIT_EXCEEDED`; includes `Retry-After` header with delay in seconds; AC from CHK-API-024
+- [x] T024 [P] [US2] Implement exception handling for throttling/rate limit exceptions in Handler — AC: Catches rate limit exception (Laravel ThrottleRequestsException or custom); returns 429 HTTP status; `error.code = RATE_LIMIT_EXCEEDED`; includes `Retry-After` header with delay in seconds; AC from CHK-API-024
 
-- [X] T025 [P] [US2] Implement default exception handling for unhandled exceptions in Handler — AC: Catches all other `Throwable` exceptions; returns 500 HTTP status; `error.code = SERVER_ERROR`; message generic (does NOT expose stack trace or error details to client); logs full exception server-side with structured context
+- [x] T025 [P] [US2] Implement default exception handling for unhandled exceptions in Handler — AC: Catches all other `Throwable` exceptions; returns 500 HTTP status; `error.code = SERVER_ERROR`; message generic (does NOT expose stack trace or error details to client); logs full exception server-side with structured context
 
-- [X] T026 [US2] Implement structured logging in exception handler with correlation ID and context — AC: Each exception logged with: timestamp, exception type, message, stack trace, user_id (if authenticated), endpoint, correlation_id (from request); logged to `storage/logs/errors.log`; structured JSON format for production
+- [x] T026 [US2] Implement structured logging in exception handler with correlation ID and context — AC: Each exception logged with: timestamp, exception type, message, stack trace, user_id (if authenticated), endpoint, correlation_id (from request); logged to `storage/logs/errors.log`; structured JSON format for production
 
-- [X] T027 [P] [US2] Write feature tests for global exception handler in `backend/tests/Feature/ExceptionHandlerTest.php` — AC: All exception types tested; correct HTTP status for each; correct error codes; validation errors include field details; server errors do NOT expose stack traces; 100% exception handler coverage
+- [x] T027 [P] [US2] Write feature tests for global exception handler in `backend/tests/Feature/ExceptionHandlerTest.php` — AC: All exception types tested; correct HTTP status for each; correct error codes; validation errors include field details; server errors do NOT expose stack traces; 100% exception handler coverage
 
 ### Security Hardening — Post-Remediation (CRITICAL)
 
 - [ ] T078 [P] [US2] Create `backend/app/Http/Middleware/RateLimitByRoleMiddleware.php` with role-based rate limiting — AC: Enforces global 100 req/min limit via user IP; enforces per-user 10 req/min limit on auth/payment endpoints (identified by route tags or controller namespaces); returns 429 RATE_LIMIT_EXCEEDED when exceeded; includes `Retry-After` header with seconds to reset; passes feature test with 1000+ concurrent requests
 
-- [X] T079 [P] [US2] Enhance T025 exception handler with production/dev APP_DEBUG conditional — AC: Modified `backend/app/Exceptions/Handler.php` to check `app('env') === 'production'`; in production: error response has generic "Server error. Please try again." message, NO stack trace; in local/dev: error response includes full stack trace for debugging; tested via feature test with APP_DEBUG toggle
+- [x] T079 [P] [US2] Enhance T025 exception handler with production/dev APP_DEBUG conditional — AC: Modified `backend/app/Exceptions/Handler.php` to check `app('env') === 'production'`; in production: error response has generic "Server error. Please try again." message, NO stack trace; in local/dev: error response includes full stack trace for debugging; tested via feature test with APP_DEBUG toggle
 
-- [X] T080 [P] [US2] Create custom `backend/app/Exceptions/RoleNotAllowedException.php` exception distinct from `AuthorizationException` — AC: New exception class extends `AuthorizationException` with role-specific context; handler catches this separately; returns 403 with `error.code = RBAC_ROLE_DENIED` (vs AUTH_UNAUTHORIZED for generic auth); enables role-based error logging and monitoring; documented in exception hierarchy diagram
+- [x] T080 [P] [US2] Create custom `backend/app/Exceptions/RoleNotAllowedException.php` exception distinct from `AuthorizationException` — AC: New exception class extends `AuthorizationException` with role-specific context; handler catches this separately; returns 403 with `error.code = RBAC_ROLE_DENIED` (vs AUTH_UNAUTHORIZED for generic auth); enables role-based error logging and monitoring; documented in exception hierarchy diagram
 
-- [X] T081 [P] [US4] Enhance T033 correlation ID middleware with UUID v4 validation — AC: Modify `CorrelationIdMiddleware` to validate incoming `X-Correlation-ID` header matches UUID v4 regex pattern; reject malformed correlation IDs with 400 Bad Request; log validation failure with IP and attempted ID; prevents header injection attacks; tested via feature test with invalid correlation IDs (XSS payloads, SQL patterns)
+- [x] T081 [P] [US4] Enhance T033 correlation ID middleware with UUID v4 validation — AC: Modify `CorrelationIdMiddleware` to validate incoming `X-Correlation-ID` header matches UUID v4 regex pattern; reject malformed correlation IDs with 400 Bad Request; log validation failure with IP and attempted ID; prevents header injection attacks; tested via feature test with invalid correlation IDs (XSS payloads, SQL patterns)
 
-- [X] T082 [P] [US2] Implement error response payload masking in `backend/app/Exceptions/Handler.php` — AC: Before JSON serialization, call `SensitiveFields::mask($error['details'])` to mask error details; prevents field names (e.g., "password") from appearing in 422 responses; ensures consistent masking across request logging and error responses; tested via feature test verifying no sensitive field names in 422 error details
+- [x] T082 [P] [US2] Implement error response payload masking in `backend/app/Exceptions/Handler.php` — AC: Before JSON serialization, call `SensitiveFields::mask($error['details'])` to mask error details; prevents field names (e.g., "password") from appearing in 422 responses; ensures consistent masking across request logging and error responses; tested via feature test verifying no sensitive field names in 422 error details
 
 ### Response Helper Validation
 
@@ -101,49 +101,49 @@
 
 ### Logging Configuration
 
-- [X] T030 [P] [US4] Configure `backend/config/logging.php` with multiple channels (single, daily, stack, errors, audit) — AC: `single` channel for development; `daily` channel rotates by date; `stack` combines multiple channels; `errors` channel for exception logs only; `audit` channel for financial/workflow logs; retention policies set (30 days general, 90 days audit); tested via configuration validation
+- [x] T030 [P] [US4] Configure `backend/config/logging.php` with multiple channels (single, daily, stack, errors, audit) — AC: `single` channel for development; `daily` channel rotates by date; `stack` combines multiple channels; `errors` channel for exception logs only; `audit` channel for financial/workflow logs; retention policies set (30 days general, 90 days audit); tested via configuration validation
 
-- [X] T031 [P] [US4] Set up JSON formatter for production logging in `backend/config/logging.php` — AC: Production environment uses JSON format (queryable); local environment uses human-readable format; both formats include timestamp, level, message, context fields
+- [x] T031 [P] [US4] Set up JSON formatter for production logging in `backend/config/logging.php` — AC: Production environment uses JSON format (queryable); local environment uses human-readable format; both formats include timestamp, level, message, context fields
 
-- [X] T032 [P] [US4] Configure log file rotation and retention policies in `backend/config/logging.php` — AC: Daily channel rotates each day; files retained for 30 days (general) and 90 days (audit); Laravel `rotateDaily()` and `days()` methods configured; cleanup handled by Laravel schedule
+- [x] T032 [P] [US4] Configure log file rotation and retention policies in `backend/config/logging.php` — AC: Daily channel rotates each day; files retained for 30 days (general) and 90 days (audit); Laravel `rotateDaily()` and `days()` methods configured; cleanup handled by Laravel schedule
 
 ### Correlation ID Middleware
 
-- [X] T033 [P] [US4] Create `backend/app/Http/Middleware/CorrelationIdMiddleware.php` generating UUID per request — AC: Generates UUID v4 if not in request; preserves existing correlation ID from `X-Correlation-ID` header if present; makes available via `$request->correlationId()` or `request()->correlationId()`; tested via middleware test
+- [x] T033 [P] [US4] Create `backend/app/Http/Middleware/CorrelationIdMiddleware.php` generating UUID per request — AC: Generates UUID v4 if not in request; preserves existing correlation ID from `X-Correlation-ID` header if present; makes available via `$request->correlationId()` or `request()->correlationId()`; tested via middleware test
 
-- [X] T034 [P] [US4] Implement correlation ID propagation in `CorrelationIdMiddleware` via Log context binding — AC: Correlation ID added to Log context using `Log::withContext(['correlation_id' => $id])`; available in all subsequent logs; returned in response header `X-Correlation-ID`; tested via integration test
+- [x] T034 [P] [US4] Implement correlation ID propagation in `CorrelationIdMiddleware` via Log context binding — AC: Correlation ID added to Log context using `Log::withContext(['correlation_id' => $id])`; available in all subsequent logs; returned in response header `X-Correlation-ID`; tested via integration test
 
-- [X] T035 [P] [US4] Register `CorrelationIdMiddleware` in `backend/app/Http/Kernel.php` middleware stack — AC: Middleware in global `$middleware` array (not just `$routeMiddleware`); executes for all requests before other middleware; accessible via `Request` bag throughout request lifecycle
+- [x] T035 [P] [US4] Register `CorrelationIdMiddleware` in `backend/app/Http/Kernel.php` middleware stack — AC: Middleware in global `$middleware` array (not just `$routeMiddleware`); executes for all requests before other middleware; accessible via `Request` bag throughout request lifecycle
 
 ### Request/Response Logging Middleware
 
-- [X] T036 [P] [US4] Create `backend/app/Http/Middleware/RequestResponseLoggingMiddleware.php` logging HTTP details — AC: Logs method, URI, query parameters, status code, response time (milliseconds), payload size; includes user_id and user_role if authenticated; excludes sensitive fields; uses correlation_id from context; tested via middleware test
+- [x] T036 [P] [US4] Create `backend/app/Http/Middleware/RequestResponseLoggingMiddleware.php` logging HTTP details — AC: Logs method, URI, query parameters, status code, response time (milliseconds), payload size; includes user_id and user_role if authenticated; excludes sensitive fields; uses correlation_id from context; tested via middleware test
 
-- [X] T037 [P] [US4] Implement sensitive data masking in `backend/app/Support/SensitiveFields.php` — AC: Registry of sensitive field names (password, token, api_key, credit_card, ssn, etc.); masking rules: passwords→`***`, tokens→`tok_****...`, card→`****-1234`; masking applied via method `mask(array $data): array`; tested via unit test with regex validation
+- [x] T037 [P] [US4] Implement sensitive data masking in `backend/app/Support/SensitiveFields.php` — AC: Registry of sensitive field names (password, token, api\*key, credit_card, ssn, etc.); masking rules: passwords→`***`, tokens→`tok*\***\*...`, card→`\*\***-1234`; masking applied via method `mask(array $data): array`; tested via unit test with regex validation
 
-- [X] T038 [P] [US4] Integrate sensitive field masking into `RequestResponseLoggingMiddleware` — AC: Request/response payloads masked before logging; passwords never appear in logs; tokens truncated; card numbers masked; applies masking before serialization to JSON; tested via feature test with payload capturing
+- [x] T038 [P] [US4] Integrate sensitive field masking into `RequestResponseLoggingMiddleware` — AC: Request/response payloads masked before logging; passwords never appear in logs; tokens truncated; card numbers masked; applies masking before serialization to JSON; tested via feature test with payload capturing
 
-- [X] T039 [P] [US4] Register `RequestResponseLoggingMiddleware` in `backend/app/Http/Kernel.php` — AC: Middleware in global `$middleware` array after correlation ID middleware; executes for all requests; logs to `storage/logs/requests.log` or configured channel
+- [x] T039 [P] [US4] Register `RequestResponseLoggingMiddleware` in `backend/app/Http/Kernel.php` — AC: Middleware in global `$middleware` array after correlation ID middleware; executes for all requests; logs to `storage/logs/requests.log` or configured channel
 
 ### Database Migrations for Audit Logs (Optional)
 
-- [X] T040 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_audit_logs_table.php` for audit log storage — AC: Table has columns: id, correlation_id, request_id, user_id, action, resource_type, resource_id, old_values (JSON), new_values (JSON), status, error_code, ip_address, user_agent, duration_ms, created_at; indexes on (user_id, created_at), (correlation_id), (resource_type, resource_id); uses `bigIncrements` for id
+- [x] T040 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_audit_logs_table.php` for audit log storage — AC: Table has columns: id, correlation_id, request_id, user_id, action, resource_type, resource_id, old_values (JSON), new_values (JSON), status, error_code, ip_address, user_agent, duration_ms, created_at; indexes on (user_id, created_at), (correlation_id), (resource_type, resource_id); uses `bigIncrements` for id
 
-- [X] T041 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_request_logs_table.php` for request log storage — AC: Table has columns: id, correlation_id, request_id, method, uri, status_code, response_time_ms, payload_size_bytes, user_id, user_role, ip_address, created_at; indexes on (user_id, created_at), (correlation_id), (status_code), (created_at)
+- [x] T041 [P] [US4] Create migration `backend/database/migrations/[timestamp]_create_request_logs_table.php` for request log storage — AC: Table has columns: id, correlation_id, request_id, method, uri, status_code, response_time_ms, payload_size_bytes, user_id, user_role, ip_address, created_at; indexes on (user_id, created_at), (correlation_id), (status_code), (created_at)
 
-- [X] T042 [P] [US4] Create `backend/app/Models/AuditLog.php` Eloquent model for audit logs — AC: Model uses `timestamps` (created_at only, no updated_at); `fillable` array includes all audit columns; relationships to User model; query scopes for filtering by user, correlation_id, action; `withCasts` for JSON columns
+- [x] T042 [P] [US4] Create `backend/app/Models/AuditLog.php` Eloquent model for audit logs — AC: Model uses `timestamps` (created_at only, no updated_at); `fillable` array includes all audit columns; relationships to User model; query scopes for filtering by user, correlation_id, action; `withCasts` for JSON columns
 
-- [X] T043 [P] [US4] Create Laravel job `backend/app/Jobs/LogAuditEventJob.php` for async audit logging — AC: Job accepts: user_id, action, resource_type, resource_id, old_values, new_values, correlation_id, ip_address, user_agent; writes to database asynchronously; handles failures gracefully (retry logic); uses `dispatched_async`
+- [x] T043 [P] [US4] Create Laravel job `backend/app/Jobs/LogAuditEventJob.php` for async audit logging — AC: Job accepts: user_id, action, resource_type, resource_id, old_values, new_values, correlation_id, ip_address, user_agent; writes to database asynchronously; handles failures gracefully (retry logic); uses `dispatched_async`
 
 ### Logging Tests
 
-- [X] T044 [US4] Write unit tests for `CorrelationIdMiddleware` in `backend/tests/Unit/Middleware/CorrelationIdMiddlewareTest.php` — AC: Correlation ID generated for each request; existing correlation ID preserved; UUID v4 format validated; makes available in request; available in Log context; correlation ID returned in response header
+- [x] T044 [US4] Write unit tests for `CorrelationIdMiddleware` in `backend/tests/Unit/Middleware/CorrelationIdMiddlewareTest.php` — AC: Correlation ID generated for each request; existing correlation ID preserved; UUID v4 format validated; makes available in request; available in Log context; correlation ID returned in response header
 
-- [X] T045 [US4] Write unit tests for `RequestResponseLoggingMiddleware` in `backend/tests/Unit/Middleware/RequestResponseLoggingMiddlewareTest.php` — AC: HTTP method, URI, status code logged; response time captured; user_id included; sensitive fields masked; correlation ID present in log; output tested via mock logger
+- [x] T045 [US4] Write unit tests for `RequestResponseLoggingMiddleware` in `backend/tests/Unit/Middleware/RequestResponseLoggingMiddlewareTest.php` — AC: HTTP method, URI, status code logged; response time captured; user_id included; sensitive fields masked; correlation ID present in log; output tested via mock logger
 
-- [X] T046 [US4] Write integration tests for logging behavior in `backend/tests/Feature/LoggingIntegrationTest.php` — AC: End-to-end logging verified via file inspection; correlation IDs propagate through middleware chain; request/response details captured; sensitive data masked; performance overhead < 50ms (99th percentile, CHK-PERF-001)
+- [x] T046 [US4] Write integration tests for logging behavior in `backend/tests/Feature/LoggingIntegrationTest.php` — AC: End-to-end logging verified via file inspection; correlation IDs propagate through middleware chain; request/response details captured; sensitive data masked; performance overhead < 50ms (99th percentile, CHK-PERF-001)
 
-- [X] T047 [US4] Write performance test for logging overhead in `backend/tests/Feature/LoggingPerformanceTest.php` — AC: Logging adds < 50ms per request (99th percentile); 1000-request stress test; measures with/without logging; failure if overhead exceeds threshold; addresses CHK-PERF-001
+- [x] T047 [US4] Write performance test for logging overhead in `backend/tests/Feature/LoggingPerformanceTest.php` — AC: Logging adds < 50ms per request (99th percentile); 1000-request stress test; measures with/without logging; failure if overhead exceeds threshold; addresses CHK-PERF-001
 
 ---
 
@@ -151,47 +151,47 @@
 
 ### Setup & Components
 
-- [X] T048 [P] [US5] Create error boundary component `frontend/components/errors/GlobalErrorBoundary.vue` — AC: Catches component render errors via `onErrorCaptured`; displays user-friendly fallback UI; provides "Reload" and "Back" buttons; logs error with correlation ID; RTL-safe using Tailwind logical properties
+- [x] T048 [P] [US5] Create error boundary component `frontend/components/errors/GlobalErrorBoundary.vue` — AC: Catches component render errors via `onErrorCaptured`; displays user-friendly fallback UI; provides "Reload" and "Back" buttons; logs error with correlation ID; RTL-safe using Tailwind logical properties
 
-- [X] T049 [P] [US5] Wrap root app in error boundary in `frontend/app.vue` — AC: Error boundary component wraps router-view or page content; catches all descendant component errors; does NOT block normal app rendering; tested via snapshot test
+- [x] T049 [P] [US5] Wrap root app in error boundary in `frontend/app.vue` — AC: Error boundary component wraps router-view or page content; catches all descendant component errors; does NOT block normal app rendering; tested via snapshot test
 
-- [X] T050 [P] [US5] Create `frontend/composables/useToast.ts` composable for toast notifications — AC: `showToast(message, type, duration)` method; supports error, warning, success, info types; auto-dismisses after duration (default 5 seconds); accessible via `useToast()`; Pinia store integration
+- [x] T050 [P] [US5] Create `frontend/composables/useToast.ts` composable for toast notifications — AC: `showToast(message, type, duration)` method; supports error, warning, success, info types; auto-dismisses after duration (default 5 seconds); accessible via `useToast()`; Pinia store integration
 
-- [X] T051 [P] [US5] Create `frontend/components/errors/ErrorToast.vue` component displaying toast notifications — AC: Displays notification from Pinia store; auto-dismisses; positioned top-right; supports all types (error, warning, success, info); RTL-safe; Geist design system styling (shadow-as-border)
+- [x] T051 [P] [US5] Create `frontend/components/errors/ErrorToast.vue` component displaying toast notifications — AC: Displays notification from Pinia store; auto-dismisses; positioned top-right; supports all types (error, warning, success, info); RTL-safe; Geist design system styling (shadow-as-border)
 
-- [X] T052 [P] [US5] Create `frontend/stores/errorStore.ts` Pinia store for error state management — AC: State: toasts array, currentError object; actions: `addToast()`, `removeToast()`, `setError()`, `clearError()`; reactive and properly typed with TypeScript; mounted in `nuxt.config.ts`
+- [x] T052 [P] [US5] Create `frontend/stores/errorStore.ts` Pinia store for error state management — AC: State: toasts array, currentError object; actions: `addToast()`, `removeToast()`, `setError()`, `clearError()`; reactive and properly typed with TypeScript; mounted in `nuxt.config.ts`
 
 ### API Error Interceptor
 
-- [X] T053 [P] [US5] Modify `frontend/composables/useApi.ts` to add error interceptor for API responses — AC: Interceptor detects response.success=false or 4xx/5xx status; extracts error code and message from response; handles special cases: 401 (redirect to /login), 403 (navigate to /error-403), 5xx (show retry); preserves correlation ID
+- [x] T053 [P] [US5] Modify `frontend/composables/useApi.ts` to add error interceptor for API responses — AC: Interceptor detects response.success=false or 4xx/5xx status; extracts error code and message from response; handles special cases: 401 (redirect to /login), 403 (navigate to /error-403), 5xx (show retry); preserves correlation ID
 
-- [X] T054 [P] [US5] Implement error message transformation in `useApi.ts` using `useErrorHandler` — AC: Maps error codes to user-friendly messages via i18n; calls `useToast().showToast()` for error display; does NOT expose internal error details; handles missing/malformed responses gracefully
+- [x] T054 [P] [US5] Implement error message transformation in `useApi.ts` using `useErrorHandler` — AC: Maps error codes to user-friendly messages via i18n; calls `useToast().showToast()` for error display; does NOT expose internal error details; handles missing/malformed responses gracefully
 
-- [X] T055 [P] [US5] Create `frontend/composables/useErrorHandler.ts` for centralized error handling logic — AC: `handleError(error, context)` method transforms backend error to UI action; maps error codes to messages, toast types, navigation actions; supports Arabic/English localization; reusable across pages/components
+- [x] T055 [P] [US5] Create `frontend/composables/useErrorHandler.ts` for centralized error handling logic — AC: `handleError(error, context)` method transforms backend error to UI action; maps error codes to messages, toast types, navigation actions; supports Arabic/English localization; reusable across pages/components
 
 ### Error Pages
 
-- [X] T056 [P] [US5] Create `frontend/pages/error-404.vue` not found error page — AC: Displays "Resource Not Found" message; includes icon or illustration; has "Back to Home" button; RTL-safe; uses i18n for text; matches Geist design system
+- [x] T056 [P] [US5] Create `frontend/pages/error-404.vue` not found error page — AC: Displays "Resource Not Found" message; includes icon or illustration; has "Back to Home" button; RTL-safe; uses i18n for text; matches Geist design system
 
-- [X] T057 [P] [US5] Create `frontend/pages/error-403.vue` access denied error page — AC: Displays "Access Denied" message; shows contact admin link; includes explanation; RTL-safe; uses i18n for text; matches Geist design system
+- [x] T057 [P] [US5] Create `frontend/pages/error-403.vue` access denied error page — AC: Displays "Access Denied" message; shows contact admin link; includes explanation; RTL-safe; uses i18n for text; matches Geist design system
 
-- [X] T058 [P] [US5] Create `frontend/pages/error-500.vue` server error page — AC: Displays "Something Went Wrong" message; has "Retry" button and "Back" button; includes correlation ID display (for support reference); RTL-safe; uses i18n for text; matches Geist design system
+- [x] T058 [P] [US5] Create `frontend/pages/error-500.vue` server error page — AC: Displays "Something Went Wrong" message; has "Retry" button and "Back" button; includes correlation ID display (for support reference); RTL-safe; uses i18n for text; matches Geist design system
 
 ### i18n Localization
 
-- [X] T059 [P] [US5] Update `frontend/locales/ar.json` with Arabic error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages user-friendly and RTL-compliant; uses i18n dot notation (e.g., `errors.validation_error`); tested via snapshot
+- [x] T059 [P] [US5] Update `frontend/locales/ar.json` with Arabic error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages user-friendly and RTL-compliant; uses i18n dot notation (e.g., `errors.validation_error`); tested via snapshot
 
-- [X] T060 [P] [US5] Update `frontend/locales/en.json` with English error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages match Arabic semantics; tested via snapshot
+- [x] T060 [P] [US5] Update `frontend/locales/en.json` with English error messages for all error codes — AC: Translation keys for: validation errors, auth errors, workflow errors, payment errors, rate limit, server error; messages match Arabic semantics; tested via snapshot
 
 ### Frontend Tests
 
-- [X] T061 [US5] Write unit tests for error boundary in `frontend/tests/unit/GlobalErrorBoundary.test.ts` — AC: Tests error capture; fallback UI rendering; reload/back button functionality; error logging; 100% component coverage
+- [x] T061 [US5] Write unit tests for error boundary in `frontend/tests/unit/GlobalErrorBoundary.test.ts` — AC: Tests error capture; fallback UI rendering; reload/back button functionality; error logging; 100% component coverage
 
-- [X] T062 [US5] Write unit tests for toast system in `frontend/tests/unit/useToast.test.ts` — AC: Tests `useToast()` composable; adding/removing toasts; auto-dismiss timer; multi-toast stacking; persistence across time
+- [x] T062 [US5] Write unit tests for toast system in `frontend/tests/unit/useToast.test.ts` — AC: Tests `useToast()` composable; adding/removing toasts; auto-dismiss timer; multi-toast stacking; persistence across time
 
-- [X] T063 [US5] Write feature tests for API error interceptor in `frontend/tests/unit/useApi.test.ts` — AC: Tests 401/403/4xx/5xx response handling; error message extraction; toast display; special case redirects; correlation ID preservation
+- [x] T063 [US5] Write feature tests for API error interceptor in `frontend/tests/unit/useApi.test.ts` — AC: Tests 401/403/4xx/5xx response handling; error message extraction; toast display; special case redirects; correlation ID preservation
 
-- [X] T064 [US5] Write E2E tests for error pages in `frontend/tests/e2e/errorPages.test.ts` (Playwright) — AC: 404 page renders correctly; 403 page renders correctly; 500 page renders correctly; buttons functional; text localized (en/ar); RTL layout verified
+- [x] T064 [US5] Write E2E tests for error pages in `frontend/tests/e2e/errorPages.test.ts` (Playwright) — AC: 404 page renders correctly; 403 page renders correctly; 500 page renders correctly; buttons functional; text localized (en/ar); RTL layout verified
 
 ---
 
@@ -199,43 +199,43 @@
 
 ### Documentation
 
-- [X] T065 [P] Create `specs/runtime/005-error-handling/quickstart.md` developer quick reference — AC: Shows: error response format example, common error codes, exception handler usage, API response helper usage, logging patterns, frontend error handling, i18n setup; includes code snippets for each pattern
+- [x] T065 [P] Create `specs/runtime/005-error-handling/quickstart.md` developer quick reference — AC: Shows: error response format example, common error codes, exception handler usage, API response helper usage, logging patterns, frontend error handling, i18n setup; includes code snippets for each pattern
 
-- [X] T066 [P] Create `docs/api/error-codes.md` comprehensive error code reference — AC: Lists all 12 error codes; for each code: code value, HTTP status, description, example scenario, example request/response pair, client handling strategy; searchable table of contents; syntax-highlighted examples
+- [x] T066 [P] Create `docs/api/error-codes.md` comprehensive error code reference — AC: Lists all 12 error codes; for each code: code value, HTTP status, description, example scenario, example request/response pair, client handling strategy; searchable table of contents; syntax-highlighted examples
 
-- [X] T067 [P] Create `docs/guides/error-handling-guide.md` comprehensive error handling implementation guide — AC: Backend patterns (exception handler, api response helper, logging); frontend patterns (error boundary, API interceptor, toast, error pages); testing strategies; localization best practices; migration guide for existing endpoints
+- [x] T067 [P] Create `docs/guides/error-handling-guide.md` comprehensive error handling implementation guide — AC: Backend patterns (exception handler, api response helper, logging); frontend patterns (error boundary, API interceptor, toast, error pages); testing strategies; localization best practices; migration guide for existing endpoints
 
-- [X] T068 Create `specs/runtime/005-error-handling/research.md` phase research document — AC: Documents technology choices (monitoring strategy, logging library selection, framework features used); rationale for each choice; alternatives considered; links to external documentation
+- [x] T068 Create `specs/runtime/005-error-handling/research.md` phase research document — AC: Documents technology choices (monitoring strategy, logging library selection, framework features used); rationale for each choice; alternatives considered; links to external documentation
 
 ### Cross-Cutting Testing
 
-- [X] T069 [US1-US6] Write comprehensive integration test `backend/tests/Feature/ErrorHandlingIntegrationTest.php` — AC: Tests end-to-end error flow: client request → backend handling → error response → client reception; covers all 6 user stories; authentication flow tested; workflow errors tested; payment errors tested; rate limiting tested
+- [x] T069 [US1-US6] Write comprehensive integration test `backend/tests/Feature/ErrorHandlingIntegrationTest.php` — AC: Tests end-to-end error flow: client request → backend handling → error response → client reception; covers all 6 user stories; authentication flow tested; workflow errors tested; payment errors tested; rate limiting tested
 
-- [X] T070 [US1-US6] Write E2E test suite for complete error workflows in `frontend/tests/e2e/errorWorkflows.test.ts` — AC: E2E tests for: validation error display, auth error redirect, not found page, access denied page, server error with retry, rate limit feedback; screenshots captured for each state; tested in both Arabic and English locales
+- [x] T070 [US1-US6] Write E2E test suite for complete error workflows in `frontend/tests/e2e/errorWorkflows.test.ts` — AC: E2E tests for: validation error display, auth error redirect, not found page, access denied page, server error with retry, rate limit feedback; screenshots captured for each state; tested in both Arabic and English locales
 
-- [X] T071 Arabic/RTL accessibility verification test — AC: All error messages display correctly in RTL mode; text alignment proper (right-aligned for Arabic); component layouts RTL-safe using Tailwind logical properties; tested with manual RTL toggle; verified in both Firefox and Chrome
+- [x] T071 Arabic/RTL accessibility verification test — AC: All error messages display correctly in RTL mode; text alignment proper (right-aligned for Arabic); component layouts RTL-safe using Tailwind logical properties; tested with manual RTL toggle; verified in both Firefox and Chrome
 
-- [X] T072 Performance regression test for logging overhead — AC: Validates logging adds < 50ms (99th percentile, CHK-PERF-001); runs 5000 requests with full logging; measures 50th, 95th, 99th percentile response times; fails if 99th percentile > 50ms baseline
+- [x] T072 Performance regression test for logging overhead — AC: Validates logging adds < 50ms (99th percentile, CHK-PERF-001); runs 5000 requests with full logging; measures 50th, 95th, 99th percentile response times; fails if 99th percentile > 50ms baseline
 
-- [X] T073 Sensitive data masking verification in logs — AC: Captures actual log output; validates passwords replaced with `***`; validates tokens masked as `tok_****...`; validates card numbers masked as `****-1234`; no plaintext sensitive data in any log file; automated scan of log files
+- [x] T073 Sensitive data masking verification in logs — AC: Captures actual log output; validates passwords replaced with `***`; validates tokens masked as `tok_****...`; validates card numbers masked as `****-1234`; no plaintext sensitive data in any log file; automated scan of log files
 
 ### Security & RBAC Testing — Post-Remediation (CRITICAL)
 
-- [X] T083 [US2] Create RBAC role-based integration test matrix in `backend/tests/Feature/RBACErrorMatrixTest.php` — AC: Tests all 5 roles (Customer, Contractor, Field Engineer, Supervising Architect, Admin) × 5 endpoint types (Customer, Contractor, Admin, Architect, Field Engineer) = 25 scenarios; each role accessing endpoint exclusive to another role returns 403 RBAC_ROLE_DENIED; error code verified; error message does NOT expose role names; all 25 test cases passing
+- [x] T083 [US2] Create RBAC role-based integration test matrix in `backend/tests/Feature/RBACErrorMatrixTest.php` — AC: Tests all 5 roles (Customer, Contractor, Field Engineer, Supervising Architect, Admin) × 5 endpoint types (Customer, Contractor, Admin, Architect, Field Engineer) = 25 scenarios; each role accessing endpoint exclusive to another role returns 403 RBAC_ROLE_DENIED; error code verified; error message does NOT expose role names; all 25 test cases passing
 
-- [X] T084 [US2] Create attack simulation test suite in `backend/tests/Feature/SecurityAttackSimulationTest.php` — AC: Tests brute-force attack (1000 req/min to /api/login) → 429 RATE_LIMIT_EXCEEDED; tests header injection (malicious correlation ID with XSS payload) → rejected; tests X-Forwarded-For spoofing → rate limiting still effective; all attack scenarios logged and monitored; security audit trail verified
+- [x] T084 [US2] Create attack simulation test suite in `backend/tests/Feature/SecurityAttackSimulationTest.php` — AC: Tests brute-force attack (1000 req/min to /api/login) → 429 RATE_LIMIT_EXCEEDED; tests header injection (malicious correlation ID with XSS payload) → rejected; tests X-Forwarded-For spoofing → rate limiting still effective; all attack scenarios logged and monitored; security audit trail verified
 
-- [X] T085 [US4] Create PII masking regression test suite in `backend/tests/Feature/PIIMaskingRegressionTest.php` — AC: Automated scan of all log files for sensitive data (passwords, tokens, credit cards, SSN, email); fails if any sensitive pattern found unmasked; detects false positives (e.g., "admin" in error messages); tests field-level error details masking in 422 responses; prevents PII leaks on each deployment
+- [x] T085 [US4] Create PII masking regression test suite in `backend/tests/Feature/PIIMaskingRegressionTest.php` — AC: Automated scan of all log files for sensitive data (passwords, tokens, credit cards, SSN, email); fails if any sensitive pattern found unmasked; detects false positives (e.g., "admin" in error messages); tests field-level error details masking in 422 responses; prevents PII leaks on each deployment
 
 ### Validation & Sign-Off
 
-- [X] T086 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
+- [x] T086 [US1-US6] Verify all 6 user stories acceptance criteria met — AC: Requirement traceability document created; each UC mapped to tests; all tests passing; manual verification of visual components; documentation complete
 
-- [X] T087 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
+- [x] T087 [US1-US6] Verify all 96 checklist items from `specs/runtime/005-error-handling/checklists/` — AC: Every checkbox item in requirements.md, security.md, api-contract-compliance.md, performance.md, frontend-backend-integration.md, accessibility-localization.md verified; traceability document created showing test/code mapping
 
-- [X] T088 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
+- [x] T088 [US1-US6] Composer/npm run lint, typecheck, test suite passing — AC: `composer run lint` passes (PHPStan level 8, Pint formatting); `npm run lint` passes (ESLint, Prettier); `npm run typecheck` passes (TypeScript strict mode); `php artisan test` passes (all tests); `npm run test` passes (all frontend tests)
 
-- [X] T089 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
+- [x] T089 Correlation ID end-to-end validation — AC: Correlation ID successfully propagates from request middleware through exception handler through logs through response; evidence: sample logs showing matching correlation IDs per request; sample response headers showing X-Correlation-ID
 
 ---
 
@@ -253,23 +253,28 @@
 ### Parallelizable Work Streams
 
 **Backend Phase 1** (after T013):
+
 - Contracts/documentation (T014-T018) can run in parallel
 
 **Backend Phase 2** (after T027):
+
 - Logging configuration (T030-T032)
 - Middleware (T033-T039)
 - Database migrations (T040-T043)
 - All can run in parallel, tests follow
 
 **Frontend Phase** (independent):
+
 - Can start as soon as backend API contract (T019-T018) is defined
 - Error boundary, toast, pages can be built in parallel
 - i18n setup can be parallel
 
 **Documentation** (after Phase completion):
+
 - T065-T068 can run in parallel after implementation complete
 
 **Testing** (last for integration tests):
+
 - Unit tests (T008, T013, T027, T044-T047, T061-T063) run as components complete
 - Integration tests (T069-T073) after all phases complete
 - E2E tests (T070) after frontend complete

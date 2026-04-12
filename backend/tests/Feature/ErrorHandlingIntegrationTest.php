@@ -27,7 +27,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete authentication error flow.
-     * 
+     *
      * Flow: Login attempt → Bad credentials → 401 response → Client redirects to login
      */
     public function test_authentication_error_flow_end_to_end(): void
@@ -64,7 +64,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete authorization error flow (RBAC).
-     * 
+     *
      * Flow: Authenticated request → Role denied → 403 RBAC_ROLE_DENIED → Client shows error
      */
     public function test_rbac_authorization_error_flow_end_to_end(): void
@@ -87,7 +87,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete validation error flow.
-     * 
+     *
      * Flow: Invalid input → Validation fails → 422 response with field errors → Client displays them
      */
     public function test_validation_error_flow_end_to_end(): void
@@ -118,7 +118,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete workflow error flow.
-     * 
+     *
      * Flow: Invalid state transition → Workflow engine rejects → 422 WORKFLOW_INVALID_TRANSITION
      */
     public function test_workflow_error_flow_end_to_end(): void
@@ -141,7 +141,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete resource not found error flow.
-     * 
+     *
      * Flow: Request missing resource → Model not found → 404 response
      */
     public function test_resource_not_found_flow_end_to_end(): void
@@ -161,7 +161,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test complete rate limiting error flow.
-     * 
+     *
      * Flow: Exceeds rate limit → 429 response with Retry-After header
      */
     public function test_rate_limiting_error_flow_end_to_end(): void
@@ -173,7 +173,7 @@ class ErrorHandlingIntegrationTest extends TestCase
         for ($i = 0; $i < 10; $i++) {
             $response = $this->withHeader('X-Forwarded-For', $attacker_ip)
                 ->postJson('/api/v1/test/error/auth-invalid-credentials');
-            
+
             $this->assertNotEqual(429, $response->status());
         }
 
@@ -194,7 +194,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test error response format compliance end-to-end.
-     * 
+     *
      * Verify all responses (success and error) match contract exactly.
      */
     public function test_all_error_responses_comply_with_contract(): void
@@ -251,7 +251,7 @@ class ErrorHandlingIntegrationTest extends TestCase
 
     /**
      * Test correlation ID propagation end-to-end.
-     * 
+     *
      * Verify correlation ID passes through:
      * Request → Middleware → Logs → Response
      */
