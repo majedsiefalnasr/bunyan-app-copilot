@@ -1,8 +1,5 @@
 <script setup lang="ts">
-    import {
-        forgotPasswordSchema,
-        type ForgotPasswordFormData,
-    } from '~/app/config/validation/auth';
+    import { forgotPasswordSchema, type ForgotPasswordFormData } from '~/config/validation/auth';
 
     definePageMeta({
         layout: 'auth',

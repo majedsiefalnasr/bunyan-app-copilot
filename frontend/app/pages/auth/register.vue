@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { registerSchema } from '~/app/config/validation/auth';
+    import { registerSchema } from '~/config/validation/auth';
 
     definePageMeta({
         layout: 'auth',

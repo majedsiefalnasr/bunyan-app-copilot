@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { loginSchema, type LoginFormData } from '~/app/config/validation/auth';
+    import { loginSchema, type LoginFormData } from '~/config/validation/auth';
 
     definePageMeta({
         layout: 'auth',

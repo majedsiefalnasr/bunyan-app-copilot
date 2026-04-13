@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { resetPasswordSchema } from '~/app/config/validation/auth';
+    import { resetPasswordSchema } from '~/config/validation/auth';
 
     definePageMeta({
         layout: 'auth',
