@@ -8,17 +8,17 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: HIGH
 Last Updated: 2026-04-13T00:00:00Z
 
-Scope Defined:
+Scope Planned:
 
-- RBAC middleware (RoleMiddleware, PermissionMiddleware) for all protected routes
-- 5 user roles with 32 permissions across 10 domain groups
-- Admin-only API endpoints for role/permission management
-- Frontend role-based navigation and permission-based UI visibility
-- 7 clarifications resolved (caching, atomicity, self-lockout, permission drift)
+- 2 middleware (RoleMiddleware, PermissionMiddleware)
+- 2 services (RoleService, PermissionService)
+- 6 Admin API endpoints
+- Seeder updates (26→32 permissions + RolePermissionSeeder)
+- Frontend role-based navigation and admin role management
 
 Deferred Scope:
 
@@ -26,10 +26,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Clarifications resolved — planning authorized
+- Technical plan compliant — task generation authorized
 
 Notes:
-All specification ambiguities resolved. Ready for technical planning.
+Technical plan complete. Task breakdown in progress.
 
 ## Objective
 
