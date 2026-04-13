@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 // Ambient declarations to satisfy typecheck until Nuxt auto-generated types are available
 declare function defineNuxtConfig<T = unknown>(config: T): T;
 declare function useRoute(): unknown;
@@ -21,3 +22,29 @@ declare module '*.vue' {
     const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>;
     export default component;
 }
+
+// Additional minimal ambient declarations for auth composables and validation
+declare module '~app/config/validation/auth' {
+    export const loginSchema: any;
+    export const registerSchema: any;
+    export const resetPasswordSchema: any;
+    export const forgotPasswordSchema: any;
+    export type LoginFormData = any;
+    export type RegisterFormData = any;
+    export type ResetPasswordFormData = any;
+}
+
+declare function useAuth(): any;
+declare function useAuthStore(): any;
+declare function definePageMeta(meta?: any): any;
+declare function useLocalePath(...args: any[]): any;
+
+declare const route: any;
+
+declare global {
+    interface PageMeta {
+        middleware?: any;
+    }
+}
+
+export {};
