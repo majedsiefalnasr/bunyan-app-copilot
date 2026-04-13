@@ -48,3 +48,16 @@ declare global {
 }
 
 export {};
+
+// Wildcard module to satisfy imports like '~/app/...' or similar aliases
+declare module '~/*' {
+    const value: any;
+    export default value;
+}
+
+// Provide minimal '#imports' module types for Nuxt auto-imported symbols
+declare module '#imports' {
+    export function useAuth(...args: any[]): any;
+    export function useAuthStore(...args: any[]): any;
+    export function useRoute(...args: any[]): any;
+}
