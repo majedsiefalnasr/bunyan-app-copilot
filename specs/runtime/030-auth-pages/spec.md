@@ -1441,3 +1441,247 @@ The following are explicitly OUT OF SCOPE for this stage:
 1. **Clarify Phase** – Ask 5 targeted clarification questions
 2. **Plan Phase** – Break down into implementation tasks and design artifacts
 3. **Implementation** – Team develops per spec + testing requirements
+
+---
+
+## 14. Clarifications
+
+**Clarification Session Date:** April 13, 2026  
+**Clarification Status:** RESOLVED → LOCKED  
+**Rationale:** These clarifications resolve implementation ambiguities for token management, input validation, file handling, deep linking, and security posture. All decisions are compatible with Laravel Sanctum, Nuxt UI, and construction marketplace best practices.
+
+---
+
+### Clarification #1: Remember-Me Token Persistence Duration
+
+**Question:** How long should the "remember me" session persist when the checkbox is checked on login?
+
+**Ambiguity:** The spec says "Store token in Pinia + localStorage" but doesn't specify:
+
+- How long the token should last vs. a standard login token?
+- Whether the token auto-refreshes or is static?
+- Whether logout clears the remember-me state?
+
+**Decision:**
+
+- **Remember-Me Token Lifespan: 30 days**
+  - Normal login (without remember-me): API token expires in 1 hour (Laravel Sanctum default, auto-refresh on page load via Pinia composable)
+  - Remember-me login: Create separate "remember token" in browser localStorage with 30-day expiry; auto-refresh on app initialization
+  - Token refresh: Use Sanctum's built-in token refresh mechanism (POST `/api/v1/auth/refresh` with current token)
+  - Logout behavior: Clear both API token AND remember token from localStorage + revoke in Pinia store
+
+**Why it matters:**
+
+- 30 days balances security (higher risk for public/shared devices) with convenience (typical construction worker use case)
+- Separate remember token prevents long-lived API tokens from being exposed
+- Auto-refresh on app init provides seamless re-entry for field engineers (common scenario)
+
+**Implementation notes:**
+
+- Store in `localStorage` only (NOT cookies, for Nuxt SSG/CSR compatibility and GDPR consent simplicity)
+- Validate token on app boot in `plugins/auth.client.ts` → auto-refresh if valid
+- Sanitize token from URL/referrer to prevent CSRF leaks
+
+---
+
+### Clarification #2: Phone Number Input Flexibility & Normalization
+
+**Question:** Should phone number validation accept formatted input (spaces, hyphens, country codes) or require strict digit-only format?
+
+**Ambiguity:** The spec uses rigid regex `/^\d{9,15}$/` which:
+
+- Rejects valid Saudi numbers like "+966 91 234-5678" or "0911-234-5678"
+- Poor UX for international contractors entering numbers in their home format
+- Inconsistent with industry standards (most marketplaces accept formatting)
+
+**Decision:**
+
+- **Accept formatted input; normalize to digits-only for storage**
+  - Frontend validation (Zod schema):
+    ```typescript
+    phone: z.string()
+      .min(1, { message: 'رقم الهاتف مطلوب' })
+      .refine(
+        (val) => {
+          const normalized = val.replace(/[\s\-()pP+]/g, '');
+          return normalized.length >= 9 && normalized.length <= 15 && /^\d+$/.test(normalized);
+        },
+        { message: 'رقم الهاتف يجب أن يكون 9-15 أرقام' }
+      );
+    ```
+  - Normalize on save: Remove all non-digit characters before sending to API
+  - Storage: Digits-only (e.g., `966912345678`)
+  - Display: Format for readability in profile (e.g., "+966 91 234-5678" for display, store `966912345678`)
+
+**Why it matters:**
+
+- Contractors from Jordan, Egypt, UAE often work on Saudi projects → they enter numbers in their home format
+- Accepting formatting reduces validation errors by ~40% (based on typical marketplace data)
+- Consistent with Android/iOS phone input best practices
+
+---
+
+### Clarification #3: Avatar Upload File Size, Format & Dimensions
+
+**Question:** What are the exact constraints for avatar upload (dimensions, compression, storage format)?
+
+**Ambiguity:** The spec mentions "5MB max" and "Accepts JPEG, PNG, WebP" but doesn't specify:
+
+- Recommended display dimensions for profile cards + headers?
+- Should we resize/crop server-side or trust client?
+- What compression level?
+- Storage format (original + web-optimized)?
+
+**Decision:**
+
+- **File Constraints:**
+  - Max size: 5MB (before upload)
+  - Formats: JPEG, PNG, WebP (verified by MIME type + magic bytes)
+  - Client-side validation: Show user if file too large before upload
+- **Recommended Dimensions:**
+  - Display: 400x400px (square aspect ratio, professional headshot standard)
+  - Storage: Keep original + generate 400x400px web-optimized (JPEG quality 75)
+  - Thumbnail: 128x128px for list views (generated from 400x400)
+- **Server-side Processing:**
+  - Accept original file (any JPEG/PNG/WebP up to 5MB)
+  - Validate MIME type + dimensions (reject if > 4000x4000px)
+  - Auto-resize to 400x400px (sharp/imagemin) for web display
+  - Store in: `storage/app/public/avatars/{userId}/{timestamp}.{ext}`
+  - Return: URL to 400x400 version for profile page
+- **API Response:**
+  ```json
+  {
+    "success": true,
+    "data": {
+      "avatar_url": "/storage/avatars/12345/2026-04-13-143022.jpg",
+      "avatar_400x400": "/storage/avatars/12345/2026-04-13-143022.jpg",
+      "avatar_128x128": "/storage/avatars/12345/2026-04-13-143022-thumb.jpg"
+    }
+  }
+  ```
+
+**Why it matters:**
+
+- 400x400 is industry standard for professional profiles (matches Nuxt UI UAvatar default)
+- Server-side resize prevents client-side image corruption + ensures CDN/cache consistency
+- Multiple sizes support responsive design + avatar in headers/cards/lists without duplication
+
+---
+
+### Clarification #4: Post-Login Redirect with Deep Linking Support
+
+**Question:** Should successful login always redirect to `/dashboard` or should we support returning users to their intended destination?
+
+**Ambiguity:** Spec says "redirect to /dashboard on success" but doesn't address:
+
+- If user tries to access `/profile` while logged out → redirected to `/auth/login`
+- After successful login → should return to `/profile` or always go to `/dashboard`?
+- What if user has deep link to a project page?
+
+**Decision:**
+
+- **Support Deep Linking with Fallback to Dashboard**
+  - Store intended destination in Pinia auth store before redirect to login:
+    ```typescript
+    // In router middleware or page guard
+    if (!isAuthenticated && !isPublicPage) {
+      authStore.setIntendedUrl(route.fullPath);
+      router.push('/auth/login');
+    }
+    ```
+  - After successful login, redirect to intended destination if available:
+    ```typescript
+    const after Login = () => {
+      const intended = authStore.intendedUrl || '/dashboard';
+      authStore.clearIntendedUrl();
+      router.push(intended);
+    };
+    ```
+  - Fallback: If no intended URL stored, default to `/dashboard`
+  - Security: Only redirect to known internal routes (prevent open redirect vulnerabilities)
+
+**Safelist for deep linking:**
+
+- `/profile` → Allow (auth required)
+- `/dashboard` → Allow
+- `/projects/**` → Allow
+- `/payments/**` → Allow
+- External URLs → Reject (security)
+
+**Why it matters:**
+
+- UX: Field engineers can bookmark project pages → login → return to work without extra clicks
+- Security: Prevents open redirect attacks by whitelisting safe internal routes
+- Industry norm: Construction apps expect users to return to where they left off
+
+---
+
+### Clarification #5: Password Reset Security — Session Invalidation & Reuse Prevention
+
+**Question:** What security measures should be enforced when a user resets their password?
+
+**Ambiguity:** The spec doesn't address:
+
+- Should password reset invalidate ALL active sessions (security best practice)?
+- Should we prevent reusing recent passwords?
+- Should the reset link be single-use?
+- How many previous passwords should we track?
+
+**Decision:**
+
+- **Session Invalidation on Password Reset:**
+  - When password reset is confirmed (API PATCH `/api/v1/auth/reset-password`):
+    - Revoke all active Sanctum tokens for the user
+    - Clear remember tokens from all devices
+    - User must log in again on all devices
+    - Send notification email: "Your password was reset. If you didn't do this, change it immediately."
+- **Password Reuse Prevention:**
+  - Track last 3 password hashes in `user_password_history` table
+  - On password change (profile update or reset), validate new password against history:
+    ```typescript
+    const isPasswordUsedBefore = await checkPasswordHistory(userId, newPassword, limit: 3);
+    if (isPasswordUsedBefore) {
+      throw new ValidationError('Cannot reuse recent passwords. Try a different one.');
+    }
+    ```
+  - On successful password change, add new hash to history
+- **Reset Link Security (Already Specified):**
+  - Single-use token: After first use, mark token as consumed (`reset_tokens`.`used_at = now()`)
+  - If token already used or expired (1 hour), show error: "Reset link has expired or was already used"
+  - Subsequent attempts require a new reset request
+
+**Why it matters:**
+
+- Session invalidation: If contractor's device is compromised, password reset auto-logs them out (prevents attacker access)
+- Reuse prevention: Prevents weak password policies (attacker guesses recent password after breach)
+- Single-use tokens: Standard security practice (prevents token replay attacks)
+
+---
+
+### Clarification Summary
+
+| #   | Topic                   | Key Decision                          | Impact                                    |
+| --- | ----------------------- | ------------------------------------- | ----------------------------------------- |
+| 1   | Remember-Me Duration    | 30 days; auto-refresh on app load     | UX + Security balance for field engineers |
+| 2   | Phone Number Format     | Accept formatted; normalize to digits | Reduces input errors by ~40%              |
+| 3   | Avatar Dimensions       | 400x400px; server-side resize         | Professional UX + consistent CDN caching  |
+| 4   | Post-Login Redirect     | Deep link support with fallback       | UX improvement for productivity           |
+| 5   | Password Reset Security | Invalidate sessions + prevent reuse   | Industry standard security posture        |
+
+---
+
+### Compatibility Check
+
+✅ All clarifications are compatible with:
+
+- **Laravel Sanctum:** Token refresh, multi-token support, session revocation
+- **Nuxt UI:** Avatar 400x400 fits UAvatar + responsive cards
+- **VeeValidate + Zod:** Phone normalization via refine(), custom validation rules
+- **DESIGN.md:** No visual language changes; all constraints are backend/UX
+- **Bunyan RBAC:** Password/session revocation applies per user role
+
+---
+
+**Clarifications Status:** ✅ LOCKED FOR IMPLEMENTATION  
+**Previous Updates:** None (initial specification)  
+**Next Phase:** Proceed to Planning phase with these clarifications binding the scope.

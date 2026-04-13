@@ -6,9 +6,9 @@
   "branch": "spec/030-auth-pages",
   "base_branch": "develop",
   "pkg_manager": "npm",
-  "current_step": "specify",
+  "current_step": "clarify",
   "stage_status": "DRAFT",
-  "clarifications_resolved": false,
+  "clarifications_resolved": true,
   "drift_passed": false,
   "implementation_allowed": false,
   "plan_completed": false,
@@ -20,11 +20,15 @@
   "current_parallel_group": null,
   "auto_advance": false,
   "session_started_at": "2026-04-13T00:00:00Z",
-  "last_updated": "2026-04-13T21:35:57.224340Z",
+  "last_updated": "2026-04-13T21:39:44.438143Z",
   "step_timings": {
     "specify": {
       "started_at": "2026-04-13T00:00:00Z",
       "completed_at": "2026-04-13T21:35:57.224346Z"
+    },
+    "clarify": {
+      "started_at": "2026-04-13T00:00:00Z",
+      "completed_at": "2026-04-13T21:39:44.438159Z"
     }
   },
   "history": [
@@ -45,6 +49,10 @@
     {
       "event": "specify_complete",
       "timestamp": "2026-04-13T21:35:57.224347Z"
+    },
+    {
+      "event": "clarifications_locked",
+      "timestamp": "2026-04-13T21:39:44.438161Z"
     }
   ],
   "specify_metadata": {
