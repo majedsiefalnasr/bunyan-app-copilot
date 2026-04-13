@@ -6,7 +6,7 @@
   "branch": "spec/004-rbac-system",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "auto_advance": true,
   "clarifications_resolved": false,
@@ -21,11 +21,17 @@
   "current_parallel_group": null,
   "session_started_at": "2026-04-13T00:00:00Z",
   "last_updated": "2026-04-13T00:00:00Z",
-  "step_timings": {},
+  "step_timings": {
+    "specify": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" }
+  },
   "history": [
     {
       "event": "branch_created",
       "branch": "spec/004-rbac-system",
+      "timestamp": "2026-04-13T00:00:00Z"
+    },
+    {
+      "event": "specify_complete",
       "timestamp": "2026-04-13T00:00:00Z"
     }
   ]

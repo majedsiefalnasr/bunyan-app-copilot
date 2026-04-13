@@ -8,20 +8,27 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
-Risk Level: UNKNOWN
-Initiated: 2026-04-13T00:00:00Z
+Step: specify
+Risk Level: HIGH
+Last Updated: 2026-04-13T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- RBAC middleware (RoleMiddleware, PermissionMiddleware) for all protected routes
+- 5 user roles with 32 permissions across 10 domain groups
+- Admin-only API endpoints for role/permission management
+- Frontend role-based navigation and permission-based UI visibility
+
+Deferred Scope:
+
+- Custom role creation, per-user permission overrides, multi-tenancy
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 
