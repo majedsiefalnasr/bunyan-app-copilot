@@ -8,7 +8,7 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: HIGH
 Last Updated: 2026-04-13T00:00:00Z
 
@@ -18,6 +18,7 @@ Scope Defined:
 - 5 user roles with 32 permissions across 10 domain groups
 - Admin-only API endpoints for role/permission management
 - Frontend role-based navigation and permission-based UI visibility
+- 7 clarifications resolved (caching, atomicity, self-lockout, permission drift)
 
 Deferred Scope:
 
@@ -25,10 +26,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 

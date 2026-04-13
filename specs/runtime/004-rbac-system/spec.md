@@ -318,3 +318,87 @@ When assigning a role:
 3. `hasPermission('projects.create')` composable checks against cached permissions
 4. Navigation items use `v-if="hasRole('admin')"` or `v-if="hasPermission('roles.manage')"`
 5. Route middleware checks role before page navigation (redirect to dashboard if unauthorized)
+
+---
+
+## Clarifications
+
+_Clarification pass completed 2026-04-13. Autopilot mode — decisions derived from codebase evidence, Laravel best practices, and AGENTS.md conventions._
+
+### CLR-001: RBAC Middleware — `hasAnyRole()` vs `hasAllRoles()`
+
+**Question**: Should the `RoleMiddleware` check if the user has _any_ of the listed roles (OR logic) or _all_ of them (AND logic)?
+
+**Decision**: **`hasAnyRole()` (OR logic) only.** The middleware signature `role:admin,contractor` means the user must have at least one of the listed roles. This matches the existing `User::hasAnyRole(UserRole ...$roles)` method in the codebase, the spec's User Story 2 Scenario 4 ("Admin OR Supervising Architect"), and standard Laravel middleware conventions. A `hasAllRoles()` variant is not needed because Bunyan uses single-role-per-user (the `users.role` enum is a single value, not an array), making AND logic logically impossible.
+
+**Spec impact**: FR-001 is confirmed as-is. No `hasAllRoles` middleware is needed.
+
+### CLR-002: Permission Caching Strategy
+
+**Question**: How should permissions be cached — per-request eager load, per-session in Redis, or another approach?
+
+**Decision**: **Per-request eager loading only (no Redis, no session cache).** On each authenticated request, the `RoleMiddleware` / `PermissionMiddleware` eager-loads the user's role with its permissions via `$user->load('roles.permissions')`. This is:
+
+- Simpler (no cache invalidation complexity).
+- Consistent (permission changes take effect on the next request immediately, satisfying the edge case "Permission cache invalidation").
+- Performant (2 queries max: user→roles, roles→permissions; well within the ≤5ms NFR-001 budget for a local MySQL join on small tables).
+
+Redis caching MAY be introduced in a future performance optimization stage if permission tables grow significantly. For now, per-request eager loading is sufficient and avoids premature optimization.
+
+**Spec impact**: NFR-001 clarified. Add to Technical Notes: "Permissions are eager-loaded per-request. No cross-request caching is used in this stage."
+
+### CLR-003: Admin Self-Lockout Prevention
+
+**Question**: How exactly should the system prevent an Admin from removing their own Admin role?
+
+**Decision**: **Server-side validation in `RoleService::assignRole()`.** Before updating a user's role, the service checks: if `$targetUser->id === $currentAdmin->id` AND the new role is not `admin`, throw a `ValidationException` with error code `VALIDATION_ERROR` and message "Cannot remove Admin role from your own account." This is implemented as a business rule in the service layer (not middleware, not controller). The frontend should also disable the role dropdown when viewing the current Admin's own record (presentation-only guard).
+
+**Spec impact**: Encode in FR-003 scope. Error code: `VALIDATION_ERROR` (HTTP 422), not `RBAC_ROLE_DENIED`, because this is a business rule violation, not an authorization failure.
+
+### CLR-004: Role Assignment Atomicity — Enum + Pivot Sync Failure
+
+**Question**: What happens if the `users.role` enum column update succeeds but the `role_user` pivot sync fails within the transaction?
+
+**Decision**: **Database transaction with full rollback.** The spec's "Role Sync Strategy" section already mandates wrapping in a DB transaction, which means if _either_ step fails, both are rolled back. The implementation in `RoleService::assignRole()` will use `DB::transaction()`. If the pivot sync throws (e.g., invalid role ID, constraint violation), the enum update is rolled back and a `SERVER_ERROR` (500) is returned. The service MUST NOT catch exceptions inside the transaction closure — let them bubble up so the transaction manager rolls back correctly.
+
+**Spec impact**: NFR-007 confirmed. Add explicit note: "If any step within the role assignment transaction fails, the entire operation is rolled back. No partial state is possible."
+
+### CLR-005: Seeder Idempotency — `updateOrCreate` Implications
+
+**Question**: The existing seeders use `updateOrCreate`. Should the spec mandate `firstOrCreate` instead to prevent overwriting manual Admin changes to role/permission metadata?
+
+**Decision**: **Keep `updateOrCreate` (current codebase pattern).** Rationale:
+
+- `updateOrCreate` ensures the seeder is the source of truth for role/permission definitions, which is correct for a fixed-role system where roles are not user-created.
+- If an Admin changes a role's `display_name` via the API, running the seeder again will revert it — this is _intentional_ because the seeder defines the canonical role metadata.
+- The spec explicitly states "five roles are fixed — no role CRUD" and "permission mappings come from seeders."
+- For role-permission _assignments_ (pivot data), the seeder should use `syncWithoutDetaching()` to add default permissions without removing any Admin-added ones.
+
+**Spec impact**: Add to Technical Notes: "Role and Permission seeders use `updateOrCreate` (canonical metadata). Role-permission pivot seeding uses `syncWithoutDetaching` to preserve Admin-added permission assignments."
+
+### CLR-006: Frontend Route Middleware — Unauthorized Redirect Behavior
+
+**Question**: Where should unauthorized users be redirected when they attempt to access a role-restricted page?
+
+**Decision**: **Redirect to the user's role-specific dashboard with a toast notification.** Behavior:
+
+1. If the user is **authenticated but lacks the required role**: redirect to `/{locale}/dashboard` (the generic dashboard route, which itself redirects to the role-specific dashboard). Show an Arabic toast: "ليس لديك صلاحية للوصول إلى هذه الصفحة" ("You do not have permission to access this page").
+2. If the user is **unauthenticated**: handled by the existing `auth` middleware — redirect to `/{locale}/auth/login` (already implemented).
+3. The role middleware MUST run _after_ the auth middleware in the middleware pipeline to ensure the user object is available.
+
+**Spec impact**: FR-019 clarified with redirect target and toast behavior. Middleware ordering: `auth` → `role` → page component.
+
+### CLR-007: Permission Name Drift — Spec vs. Existing Seeder
+
+**Question** (surfaced during analysis): The spec defines permission names like `users.manage`, `users.deactivate`, `projects.update`, `projects.delete`, but the existing `PermissionSeeder` uses different names: `users.edit`, `users.delete`, `users.restore`, `projects.edit`, `projects.delete`, `projects.manage`. Which is canonical?
+
+**Decision**: **The spec is authoritative; the seeder will be updated to match.** The spec's permission naming is more domain-appropriate for Bunyan:
+
+- `users.manage` (broader than `users.edit`) — covers role assignment + profile editing
+- `users.deactivate` (specific action, not a generic `users.delete`)
+- `projects.update` (standard CRUD verb, aligned with REST conventions)
+- New permissions not in the current seeder (`phases.*`, `tasks.*`, `payments.*`, `roles.*`) will be added
+
+The existing seeder also has `transactions.*` permissions not in the spec, plus a `reports.edit` not in the spec. These discrepancies will be resolved during implementation: the seeder will be regenerated from the spec's permission table as the single source of truth.
+
+**Spec impact**: Add note to Assumptions: "The existing `PermissionSeeder` will be updated/replaced to match this spec's permission definitions. The spec's permission table is the canonical source."
