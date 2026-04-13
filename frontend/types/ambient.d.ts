@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Ambient declarations to satisfy typecheck until Nuxt auto-generated types are available
 declare function defineNuxtConfig<T = unknown>(config: T): T;
 declare function useRoute(): unknown;
@@ -46,8 +46,6 @@ declare global {
         middleware?: any;
     }
 }
-
-export {};
 
 // Wildcard module to satisfy imports like '~/app/...' or similar aliases
 declare module '~/*' {
