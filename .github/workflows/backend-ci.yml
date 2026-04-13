@@ -138,7 +138,12 @@ jobs:
         working-directory: backend
         run: |
           cp ci.env .env
-          php artisan key:generate
+          # Ensure a valid APP_KEY is present for encryption and token generation.
+          # Use --force to overwrite empty keys and avoid race conditions in CI.
+          php artisan key:generate --force
+          # Clear config/cache so the newly generated key is picked up by tests.
+          php artisan config:clear
+          php artisan cache:clear
 
       - name: Run Migrations
         working-directory: backend
