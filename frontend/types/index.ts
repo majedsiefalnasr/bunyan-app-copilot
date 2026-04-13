@@ -51,6 +51,7 @@ export interface AuthUser {
   email_verified_at: string | null;
   created_at: string;
   avatar?: string;
+  permissions: string[];
 }
 
 // Direction / i18n
@@ -68,11 +69,13 @@ export interface UiPreferences {
 declare module '#app' {
   interface PageMeta {
     breadcrumb?: BreadcrumbItem[];
+    requiredRole?: UserRoleType | UserRoleType[];
   }
 }
 
 declare module 'vue-router' {
   interface RouteMeta {
     breadcrumb?: BreadcrumbItem[];
+    requiredRole?: UserRoleType | UserRoleType[];
   }
 }
