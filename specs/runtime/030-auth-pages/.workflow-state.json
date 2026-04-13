@@ -6,7 +6,7 @@
   "branch": "spec/030-auth-pages",
   "base_branch": "develop",
   "pkg_manager": "npm",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "clarifications_resolved": false,
   "drift_passed": false,
@@ -18,15 +18,52 @@
   "guardian_verdicts": {},
   "parallel_task_groups": [],
   "current_parallel_group": null,
-  "auto_advance": true,
+  "auto_advance": false,
   "session_started_at": "2026-04-13T00:00:00Z",
-  "last_updated": "2026-04-13T00:00:00Z",
-  "step_timings": {},
+  "last_updated": "2026-04-13T21:35:57.224340Z",
+  "step_timings": {
+    "specify": {
+      "started_at": "2026-04-13T00:00:00Z",
+      "completed_at": "2026-04-13T21:35:57.224346Z"
+    }
+  },
   "history": [
     {
       "event": "branch_created",
       "branch": "spec/030-auth-pages",
       "timestamp": "2026-04-13T00:00:00Z"
+    },
+    {
+      "event": "specify_step_complete",
+      "spec_generated": "spec.md",
+      "requirements_generated": "checklists/requirements.md",
+      "report_generated": "reports/SPECIFY_REPORT.md",
+      "ambiguities_identified": 8,
+      "specification_completeness": "96%",
+      "timestamp": "2026-04-13T15:30:00Z"
+    },
+    {
+      "event": "specify_complete",
+      "timestamp": "2026-04-13T21:35:57.224347Z"
     }
-  ]
+  ],
+  "specify_metadata": {
+    "spec_lines": 1550,
+    "requirements_items": 150,
+    "pages_specified": 6,
+    "components_specified": 20,
+    "schemas_specified": 10,
+    "test_scenarios": 19,
+    "ambiguities": {
+      "total": 8,
+      "decided": 2,
+      "assumed": 5,
+      "open": 0
+    },
+    "design_compliance": "100%",
+    "rtl_coverage": "100%",
+    "accessibility_coverage": "95%",
+    "backend_blockers": 2,
+    "readiness_score": "95%"
+  }
 }
