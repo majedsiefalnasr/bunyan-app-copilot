@@ -137,7 +137,13 @@ jobs:
       - name: Setup Environment
         working-directory: backend
         run: |
-          cp .env.ci .env
+          if [ -f .env.ci ]; then
+            cp .env.ci .env
+          elif [ -f ../.env.ci ]; then
+            cp ../.env.ci .env
+          else
+            cp .env.example .env
+          fi
           php artisan key:generate
 
       - name: Run Migrations

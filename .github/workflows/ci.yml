@@ -64,6 +64,8 @@ jobs:
         run: |
           if [ -f .env.ci ]; then
             cp .env.ci .env
+          elif [ -f ../.env.ci ]; then
+            cp ../.env.ci .env
           else
             cp .env.example .env
           fi
@@ -124,6 +126,17 @@ jobs:
           if [ "$MAJOR" -lt 24 ]; then
             echo "Node.js major version is $MAJOR; CI requires Node.js 24+."
             exit 1
+          fi
+
+      - name: Copy frontend env
+        working-directory: frontend
+        run: |
+          if [ -f .env.ci ]; then
+            cp .env.ci .env
+          elif [ -f ../.env.ci ]; then
+            cp ../.env.ci .env
+          elif [ -f .env.example ]; then
+            cp .env.example .env
           fi
 
       - name: Install dependencies
@@ -192,6 +205,8 @@ jobs:
         run: |
           if [ -f .env.ci ]; then
             cp .env.ci .env
+          elif [ -f ../.env.ci ]; then
+            cp ../.env.ci .env
           else
             cp .env.example .env
           fi
@@ -235,7 +250,7 @@ jobs:
         run: npm run test:e2e
         working-directory: frontend
         env:
-          NUXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
+          NUXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
           CI: true
 
       - name: Upload Playwright report
