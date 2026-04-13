@@ -1,0 +1,32 @@
+{
+  "stage": "RBAC System",
+  "phase": "01_PLATFORM_FOUNDATION",
+  "stage_dir": "specs/runtime/004-rbac-system",
+  "stage_file": "specs/phases/01_PLATFORM_FOUNDATION/STAGE_04_RBAC_SYSTEM.md",
+  "branch": "spec/004-rbac-system",
+  "base_branch": "develop",
+  "pkg_manager": "composer",
+  "current_step": "pre_step",
+  "stage_status": "DRAFT",
+  "auto_advance": true,
+  "clarifications_resolved": false,
+  "drift_passed": false,
+  "implementation_allowed": false,
+  "plan_completed": false,
+  "tasks_total": null,
+  "tasks_completed": null,
+  "deferred_tasks": [],
+  "guardian_verdicts": {},
+  "parallel_task_groups": [],
+  "current_parallel_group": null,
+  "session_started_at": "2026-04-13T00:00:00Z",
+  "last_updated": "2026-04-13T00:00:00Z",
+  "step_timings": {},
+  "history": [
+    {
+      "event": "branch_created",
+      "branch": "spec/004-rbac-system",
+      "timestamp": "2026-04-13T00:00:00Z"
+    }
+  ]
+}
