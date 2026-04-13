@@ -1118,14 +1118,17 @@ theme: {
 
 ### 9.1 Performance Budgets
 
-| Metric                                 | Target          | Why             |
-| -------------------------------------- | --------------- | --------------- |
-| Login form Time to Interactive (TTI)   | <500ms          | Perceived speed |
-| Register wizard navigation (step→step) | <300ms per step | No jank         |
-| API call timeout                       | 10s             | UX feedback     |
-| Auth pages bundle size (gzipped)       | <50KB           | Fast DL         |
-| Token refresh latency                  | <500ms          | Seamless UX     |
-| Verify email OTP submission latency    | <2s             | Real-time       |
+| Metric                                 | Target          | Why                                      |
+| -------------------------------------- | --------------- | ---------------------------------------- |
+| Login form Time to Interactive (TTI)   | <500ms          | Perceived speed                          |
+| Register wizard navigation (step→step) | <300ms per step | No jank                                  |
+| API call timeout                       | 10s             | UX feedback                              |
+| Auth pages bundle size (gzipped)       | 80-120KB        | Realistic budget (includes i18n locales) |
+| First Contentful Paint (FCP)           | <2.5s           | WCAG compliance                          |
+| Largest Contentful Paint (LCP)         | <2.5s           | Core Web Vital                           |
+| Cumulative Layout Shift (CLS)          | <0.1            | Layout stability                         |
+| Token refresh latency                  | <500ms          | Seamless UX                              |
+| Verify email OTP submission latency    | <2s             | Real-time                                |
 
 ### 9.2 Optimization Strategies
 
@@ -1476,9 +1479,75 @@ export const useApi = async (url, options) => {
 
 ---
 
+### 10.14 Districts Caching Strategy (Performance) ⚠️ REMEDIATED
+
+✅ **Implementation (Static JSON Embedded):**
+
+**Why Static JSON (not API)?**
+
+- Saudi Arabia has fixed city/district structure (<300 cities, <2,000 districts total)
+- No frequent updates to geographic data
+- Avoids cascading API calls on register Step 3 (city → districts)
+- Bundle bloat acceptable: Static JSON ~12KB gzipped
+- Performance: Zero API latency on city selection
+
+**Frontend Implementation (`frontend/config/districts.ts`):**
+
+```typescript
+// frontend/config/districts.ts
+export const citiesAndDistricts = {
+  'الرياض': ['الخليج', 'النخيل', 'الرابية', 'الملز', 'العليا', 'قرطبة', ...],
+  'جدة': ['الأسد', 'الروضة', 'النوارية', ...],
+  'الدمام': ['الدانة', 'الشرقية', ...],
+  // ... all Saudi cities + districts
+};
+
+// Register Step 3 form logic
+const cities = computed(() => Object.keys(citiesAndDistricts));
+const districts = computed(() => {
+  if (!selectedCity.value) return [];
+  return citiesAndDistricts[selectedCity.value] || [];
+});
+
+// No API call on city selection → instant dropdown update
+```
+
+**Pinia Store (Session Cache):**
+
+```typescript
+// stores/auth.ts
+const useRegisterStore = defineStore('register', {
+  state: () => ({
+    selectedCity: '',
+    selectedDistrict: '',
+  }),
+  actions: {
+    setCity(city: string) {
+      this.selectedCity = city;
+      this.selectedDistrict = ''; // Reset district on city change
+    },
+  },
+});
+```
+
+**Cascade Logic:**
+
+- User selects city from dropdown → `citiesAndDistricts[city]` auto-filters districts
+- User selects district → store in Pinia session (no persistence needed)
+- Register submit: Include city + district in POST payload
+- No pre-loading, no lazy-loading needed (static data always available)
+
+**Performance Impact:**
+
+- Register Step 3 TTI: **0ms API latency** (meets <300ms target)
+- Bundle size: +12KB gzipped (acceptable tradeoff)
+- User experience: Instant cascading dropdown feedback
+
+---
+
 ## Checklist Verification
 
-- [x] All 10 sections included in plan.md
+- [x] All 14 sections included in plan.md (10.1-10.14)
 - [x] 6 pages fully specified (login, register, forgot, reset, verify, profile)
 - [x] Nuxt UI components verified + RTL support confirmed
 - [x] VeeValidate 4 + Zod patterns correct
@@ -1486,10 +1555,12 @@ export const useApi = async (url, options) => {
 - [x] i18n layer fully scoped (Arabic/English routes)
 - [x] Security checklist complete (CSRF, XSS, token storage, rate limiting, password handling)
 - [x] E2E test scenarios outlined (12 scenarios)
-- [x] Performance targets specified
+- [x] Performance targets specified + Lighthouse metrics (FCP/LCP/CLS)
 - [x] Accessibility requirements defined (WCAG AA)
 - [x] Error handling mapped from backend error codes
 - [x] All decisions align with DESIGN.md (Geist, shadow-as-border, RTL)
+- [x] Districts caching strategy specified (static JSON)
+- [x] Wizard rendering optimization documented (lazy loading + memoization)
 
 ---
 

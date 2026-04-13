@@ -486,13 +486,33 @@ frontend/
 - [ ] T047 [P] Implement avatar upload security (MIME validation, resize, S3 storage) — backend/app/Http/Controllers/UserController.php
 - [ ] T048 [P] Implement password reset hardening (rate limit, 1-hour expiry, single-use, token invalidation, reuse prevention) — backend/app/Http/Controllers/AuthController.php
 - [ ] T049 [P] Implement email verification OTP security (5 attempt limit, 10min expiry, rate limiting) — backend/app/Services/VerificationService.php
+- [ ] T050A [P] **CRITICAL** Create audit logging infrastructure (migrations + service) — backend/app/Models/AuditLog.php
+  - Create migration: create_failed_login_attempts_table (user_id, email, ip_address, user_agent, timestamp, count)
+  - Create migration: create_otp_audit_log_table (user_id, email, ip_address, otp_code_hash, attempt_number, timestamp)
+  - Create migration: create_user_password_history_table (user_id, password_hash, changed_at)
+  - Create AuditLog model + repository
+  - Create AuditLogService with methods: logFailedLogin(), logOtpAttempt(), logPasswordChange()
+  - Wire into AuthService event listeners
 - [ ] T050 [P] Add HTTP-only cookie enforcement + token rotation on refresh — backend/config/sanctum.php + AuthService.php
 
 ### Frontend Tasks (Frontend team)
 
 - [ ] T051 Add debounce to PasswordStrength component (300ms) — frontend/components/Auth/PasswordStrength.vue
 - [ ] T052 Implement request queue in useApi composable (prevent concurrent token refresh race) — frontend/composables/useApi.ts
-- [ ] T053 [P] Add districts static data or caching strategy — frontend/config/districts.ts (or Pinia plugin)
+- [ ] T053 [P] **CRITICAL** Add districts static data (embedded JSON) — frontend/config/districts.ts
+  - Approach: Static JSON embedded in bundle (recommended for Middle East market)
+  - Rationale: Saudi Arabia has fixed city/district structure (not frequently changing)
+  - Implementation: Create frontend/config/districts.ts with structure: { cityName: [districts] }
+  - Data: All major Saudi cities (Riyadh, Jeddah, Dammam, Medina, etc.) + districts
+  - Size target: <15KB gzipped
+  - Cascade logic: On city selection → filter districts from same-key array (NO API call)
+  - Pinia cache: Store selected city/district in registerStore.ts (user session only)
+- [ ] T057A [P] **CRITICAL** Optimize multi-step register wizard rendering (component splitting + memoization)
+  - Lazy-load wizard steps: Use Vue defineAsyncComponent() for each step component (4 separate chunks)
+  - Form field memoization: Wrap UFormGroup fields with Suspense + memoization to prevent sibling re-renders
+  - Register wizard performance: Keystroke in Step 1 should NOT trigger re-renders in Steps 2-4
+  - Testing: Performance profiler confirms <100ms render time per keystroke
+  - File: frontend/components/Auth/RegisterWizard.vue
 - [ ] T054 [P] Add rate limit countdown UI (60s timer on login error 429) — frontend/pages/auth/login.vue
 - [ ] T055 [P] Add account lockout UI handling (show message, disable form for 15min) — frontend/pages/auth/login.vue
 - [ ] T056 [P] Add OTP rate limit handling (5 attempts, then lock 10min) — frontend/pages/auth/verify-email.vue
@@ -520,10 +540,15 @@ frontend/
 | Category                   | Count  | Effort       |
 | -------------------------- | ------ | ------------ |
 | **Phase 0-10** (Original)  | 43     | 172-256h     |
-| **Phase 11** (Remediation) | 27     | 40-50h       |
-| **TOTAL**                  | **70** | **212-306h** |
+| **Phase 11** (Remediation) | 29     | 42-52h       |
+| **TOTAL**                  | **72** | **214-308h** |
 
 **Parallelization gain:** ~45% time savings (with 6+ team members on backend + frontend concurrently)
+
+**New CRITICAL Tasks Added:**
+
+- T050A: Audit logging infrastructure (4 migrations + service)
+- T057A: Multi-step wizard rendering optimization (lazy loading + memoization)
 
 ---
 

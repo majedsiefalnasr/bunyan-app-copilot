@@ -407,11 +407,16 @@ export const forgotPasswordSchema = z.object({
 1. User enters email
 2. Clicks "إرسال رابط إعادة التعيين" button
 3. API validates email:
-   - Success: Show green UAlert "تحقق من بريدك الإلكتروني"
-   - Not found: Show red UAlert "البريد الإلكتروني غير مسجل" (for security, show generic message)
-4. Email backend service sends reset link with token
+   - Backend returns 200 OK with generic message (ALWAYS, regardless of email existence)
+   - Message: "إذا كان حسابك موجود، ستتلقى بريد إعادة تعيين / If your account exists, you'll receive a password reset email"
+   - Frontend displays generic success alert (green)
+   - Backend silently sends reset email ONLY if account exists (no indicator to user)
+   - If email does NOT exist: Backend logs attempt, no email sent, user sees same message
+4. Email backend service sends reset link with token (if account exists)
 5. User checks email, clicks link → `/auth/reset-password?token=xyz`
 ```
+
+**Security Hardening (CRITICAL FIX #1):** This flow prevents account enumeration attacks. BOTH cases (email found / not found) return identical responses, so attackers cannot determine whether an email is registered.
 
 ---
 
