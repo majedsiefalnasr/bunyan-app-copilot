@@ -1,5 +1,5 @@
 ---
-description: "Performance guardian for Bunyan. Enforces query optimization, caching, API response times, and frontend performance budgets."
+description: 'Performance guardian for Bunyan. Enforces query optimization, caching, API response times, and frontend performance budgets.'
 ---
 
 ## User Input

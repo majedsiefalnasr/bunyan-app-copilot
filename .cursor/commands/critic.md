@@ -1,5 +1,5 @@
 ---
-description: "Challenges assumptions, finds edge cases, identifies over-engineering, spots logic gaps."
+description: 'Challenges assumptions, finds edge cases, identifies over-engineering, spots logic gaps.'
 ---
 
 ## User Input

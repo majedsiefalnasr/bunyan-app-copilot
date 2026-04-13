@@ -65,57 +65,48 @@ Initialize Bunyan full-stack construction marketplace with:
 ### Backend (Laravel) — 25+ Items
 
 - **Project Configuration**
-
   - Laravel 11 with PHP 8.2+ requirement
   - Composer.json with scripts: dev, test, test:coverage, lint, lint:fix, analyze
   - .env template with DB, Redis, API_URL vars
   - package.json for npm dependencies (ES linting, frontend tooling)
 
 - **Error Handling**
-
   - Exception handler with standard JSON response format
   - Error contract: { success: bool, data: null, message: string, errors: {} }
   - HTTP status code mapping
 
 - **Authentication**
-
   - Laravel Sanctum configuration
   - User model with roles migration
   - Personal access tokens for API auth
   - Authentication middleware foundation
 
 - **Validation**
-
   - Form Request base class
   - Custom validation rule examples
   - Server-side validation (never client-only)
 
 - **Eloquent ORM**
-
   - Base Model with relationships, scopes, casts
   - Repository pattern starter with example
   - Query builder methods (no raw SQL outside repositories)
 
 - **Services & Business Logic**
-
   - Service class template
   - Clear separation: Service → Repository → Model
   - Dependency injection via constructor
 
 - **API Controllers**
-
   - Base API controller extending Illuminate\Routing\Controller
   - Standard response methods (success, error)
   - Thin controllers delegating to services
 
 - **RBAC Foundation**
-
   - 5-role enum (Customer, Contractor, Supervising Architect, Field Engineer, Admin)
   - Gate & Policy definitions
   - Middleware for route protection
 
 - **Testing**
-
   - PHPUnit configuration with test database
   - Feature test example (API endpoint test)
   - Unit test example (service test)
@@ -129,70 +120,59 @@ Initialize Bunyan full-stack construction marketplace with:
 ### Frontend (Nuxt.js) — 20+ Items
 
 - **Nuxt Configuration**
-
   - nuxt.config.ts with module registration
   - Auto-imports enabled for components and composables
   - App config for theming
 
 - **Nuxt UI**
-
   - @nuxt/ui module installed and configured
   - UButton, UCard, UForm, UTable component examples
   - Tailwind CSS v4 integration
   - Theming system setup
 
 - **Internationalization (i18n)**
-
   - @nuxtjs/i18n module configuration
   - Arabic (ar-SA) and English (en-US) locales
   - RTL mode automatic switching
   - Translation key structure defined
 
 - **RTL Support**
-
   - Tailwind CSS logical properties (start, end, ps, pe, ms, me)
   - CSS logical properties (margin-inline, padding-block, etc.)
   - dir="rtl" on <html> element
 
 - **Layouts**
-
   - default.vue — Standard page layout with header, nav, main, footer
   - auth.vue — Login/register form layout
   - admin.vue — Admin dashboard layout with sidebar
 
 - **Pinia Store**
-
   - User store (authentication state)
   - Theme store (light/dark, Arabic/English)
   - API composable for backend communication
 
 - **Form Validation**
-
   - VeeValidate + Zod integration
   - Form component with error display
   - Real-time validation examples
 
 - **API Integration**
-
   - $fetch composable wrapper
   - Standard error handling
   - CORS configuration
 
 - **TypeScript**
-
   - tsconfig.json with strict mode
   - Type definitions for API responses
   - Composable type exports
 
 - **Testing**
-
   - Vitest configuration
   - Vue Test Utils setup
   - Component test example
   - Composable test example
 
 - **Playwright E2E**
-
   - playwright.config.ts setup
   - Example E2E test (login flow)
   - Screenshots and video recording config
@@ -205,26 +185,22 @@ Initialize Bunyan full-stack construction marketplace with:
 ### DevOps & Infrastructure — 15+ Items
 
 - **Local Development (Docker Compose)**
-
   - MySQL 8.x service with persistent volume
   - Redis service
   - Node watcher for frontend build
   - Network configuration
 
 - **Git Workflow**
-
   - Husky hooks: pre-commit, pre-push
   - lint-staged configuration selective file filtering
   - Automatic PHP-CS-Fixer, ESLint, Prettier on staged files
 
 - **GitHub Actions**
-
   - CI workflow trigger on PR
   - Steps: Lint, Type Check, Test, Analysis
   - Artifact storage for coverage reports
 
 - **Monorepo Structure**
-
   - backend/ — Laravel application
   - frontend/ — Nuxt.js application
   - docs/ — Architecture docs, ADRs
@@ -232,7 +208,6 @@ Initialize Bunyan full-stack construction marketplace with:
   - specs/ — This workflow system
 
 - **Environment Configuration**
-
   - backend/.env.example — Database, Redis, app settings
   - frontend/.env.example — API_URL, i18n locale
   - .env.docker for Docker services

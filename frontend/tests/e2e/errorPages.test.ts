@@ -1,142 +1,142 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Error Pages', () => {
-    test('404 error page renders correctly', async ({ page }) => {
-        // Navigate to 404 error display page
-        await page.goto('/ar/not-found');
+  test('404 error page renders correctly', async ({ page }) => {
+    // Navigate to 404 error display page
+    await page.goto('/ar/not-found');
 
-        // Check for page elements - use heading selector
-        const heading = page.locator('h1', {
-            has: page.locator('text=/Page Not Found|الصفحة غير موجودة/i'),
-        });
-        await expect(heading).toBeVisible();
-
-        // Check buttons exist within the error container
-        const errorContainer = page
-            .locator('div')
-            .filter({ has: page.locator('h1') })
-            .first();
-        const buttons = errorContainer.locator('button');
-        await expect(buttons).toHaveCount(2);
+    // Check for page elements - use heading selector
+    const heading = page.locator('h1', {
+      has: page.locator('text=/Page Not Found|الصفحة غير موجودة/i'),
     });
+    await expect(heading).toBeVisible();
 
-    test('403 error page renders correctly', async ({ page }) => {
-        // Navigate to 403 error display page
-        await page.goto('/ar/access-denied');
+    // Check buttons exist within the error container
+    const errorContainer = page
+      .locator('div')
+      .filter({ has: page.locator('h1') })
+      .first();
+    const buttons = errorContainer.locator('button');
+    await expect(buttons).toHaveCount(2);
+  });
 
-        // Check for page elements
-        const heading = page.locator('h1', { has: page.locator('text=/Access Denied|تم الرفض/i') });
-        await expect(heading).toBeVisible();
+  test('403 error page renders correctly', async ({ page }) => {
+    // Navigate to 403 error display page
+    await page.goto('/ar/access-denied');
 
-        // Check buttons exist within the error container
-        const errorContainer = page
-            .locator('div')
-            .filter({ has: page.locator('h1') })
-            .first();
-        const buttons = errorContainer.locator('button');
-        await expect(buttons).toHaveCount(2);
+    // Check for page elements
+    const heading = page.locator('h1', { has: page.locator('text=/Access Denied|تم الرفض/i') });
+    await expect(heading).toBeVisible();
+
+    // Check buttons exist within the error container
+    const errorContainer = page
+      .locator('div')
+      .filter({ has: page.locator('h1') })
+      .first();
+    const buttons = errorContainer.locator('button');
+    await expect(buttons).toHaveCount(2);
+  });
+
+  test('500 error page renders correctly', async ({ page }) => {
+    // Navigate to 500 error display page
+    await page.goto('/ar/server-error');
+
+    // Check for page elements
+    const heading = page.locator('h1', {
+      has: page.locator('text=/Something Went Wrong|حدث خطأ/i'),
     });
+    await expect(heading).toBeVisible();
 
-    test('500 error page renders correctly', async ({ page }) => {
-        // Navigate to 500 error display page
-        await page.goto('/ar/server-error');
+    // Check buttons exist within the error container
+    const errorContainer = page
+      .locator('div')
+      .filter({ has: page.locator('h1') })
+      .first();
+    const buttons = errorContainer.locator('button');
+    await expect(buttons).toHaveCount(2);
+  });
 
-        // Check for page elements
-        const heading = page.locator('h1', {
-            has: page.locator('text=/Something Went Wrong|حدث خطأ/i'),
-        });
-        await expect(heading).toBeVisible();
+  test('404 page buttons are functional', async ({ page }) => {
+    await page.goto('/ar/not-found');
 
-        // Check buttons exist within the error container
-        const errorContainer = page
-            .locator('div')
-            .filter({ has: page.locator('h1') })
-            .first();
-        const buttons = errorContainer.locator('button');
-        await expect(buttons).toHaveCount(2);
-    });
+    // Test Go Home button using role selector within error container
+    const errorContainer = page
+      .locator('div')
+      .filter({ has: page.locator('h1') })
+      .first();
+    const homeButton = errorContainer.getByRole('button').first();
+    await expect(homeButton).toBeVisible();
+    await homeButton.click();
 
-    test('404 page buttons are functional', async ({ page }) => {
-        await page.goto('/ar/not-found');
+    // Should navigate to home with current locale prefix or plain home
+    const url = page.url();
+    expect(/\/(ar|en)?(?:\/)?$/.test(url.replace('http://localhost:3000', ''))).toBeTruthy();
+  });
 
-        // Test Go Home button using role selector within error container
-        const errorContainer = page
-            .locator('div')
-            .filter({ has: page.locator('h1') })
-            .first();
-        const homeButton = errorContainer.getByRole('button').first();
-        await expect(homeButton).toBeVisible();
-        await homeButton.click();
+  test('403 page buttons are functional', async ({ page }) => {
+    await page.goto('/ar/access-denied');
 
-        // Should navigate to home with current locale prefix or plain home
-        const url = page.url();
-        expect(/\/(ar|en)?(?:\/)?$/.test(url.replace('http://localhost:3000', ''))).toBeTruthy();
-    });
+    // Test Go Home button using role selector within error container
+    const errorContainer = page
+      .locator('div')
+      .filter({ has: page.locator('h1') })
+      .first();
+    const homeButton = errorContainer.getByRole('button').first();
+    await expect(homeButton).toBeVisible();
+    await homeButton.click();
 
-    test('403 page buttons are functional', async ({ page }) => {
-        await page.goto('/ar/access-denied');
+    // Should navigate to home with current locale prefix or plain home
+    const url = page.url();
+    expect(/\/(ar|en)?(?:\/)?$/.test(url.replace('http://localhost:3000', ''))).toBeTruthy();
+  });
 
-        // Test Go Home button using role selector within error container
-        const errorContainer = page
-            .locator('div')
-            .filter({ has: page.locator('h1') })
-            .first();
-        const homeButton = errorContainer.getByRole('button').first();
-        await expect(homeButton).toBeVisible();
-        await homeButton.click();
+  test('500 page displays correlation ID if available', async ({ page }) => {
+    // Navigate to 500 page
+    await page.goto('/ar/server-error');
 
-        // Should navigate to home with current locale prefix or plain home
-        const url = page.url();
-        expect(/\/(ar|en)?(?:\/)?$/.test(url.replace('http://localhost:3000', ''))).toBeTruthy();
-    });
+    // Correlation ID might not be visible initially, but check support reference section
+    const supportRef = page.locator('text=/Support Reference|مرجع الدعم/i');
 
-    test('500 page displays correlation ID if available', async ({ page }) => {
-        // Navigate to 500 page
-        await page.goto('/ar/server-error');
+    // The element should either exist or not, depending on state
+    const exists = await supportRef.isVisible().catch(() => false);
+    expect(typeof exists).toBe('boolean');
+  });
 
-        // Correlation ID might not be visible initially, but check support reference section
-        const supportRef = page.locator('text=/Support Reference|مرجع الدعم/i');
+  test('error pages support RTL layout', async ({ page }) => {
+    // Test Arabic RTL layout
+    await page.goto('/ar/not-found');
 
-        // The element should either exist or not, depending on state
-        const exists = await supportRef.isVisible().catch(() => false);
-        expect(typeof exists).toBe('boolean');
-    });
+    // Check if page is in RTL mode
+    const htmlElement = page.locator('html');
+    const dir = await htmlElement.getAttribute('dir');
 
-    test('error pages support RTL layout', async ({ page }) => {
-        // Test Arabic RTL layout
-        await page.goto('/ar/not-found');
+    // Should be 'rtl' for Arabic
+    expect(dir).toBe('rtl');
+  });
 
-        // Check if page is in RTL mode
-        const htmlElement = page.locator('html');
-        const dir = await htmlElement.getAttribute('dir');
+  test('error pages support LTR layout', async ({ page }) => {
+    // Test English LTR layout
+    await page.goto('/en/not-found');
 
-        // Should be 'rtl' for Arabic
-        expect(dir).toBe('rtl');
-    });
+    // Wait a bit for locale to update (i18n takes a moment)
+    await page.waitForTimeout(100);
 
-    test('error pages support LTR layout', async ({ page }) => {
-        // Test English LTR layout
-        await page.goto('/en/not-found');
+    // Check if page is in LTR mode
+    const htmlElement = page.locator('html');
+    const dir = await htmlElement.getAttribute('dir');
 
-        // Wait a bit for locale to update (i18n takes a moment)
-        await page.waitForTimeout(100);
+    // Should be 'ltr' for English
+    expect(dir).toBe('ltr');
+  });
 
-        // Check if page is in LTR mode
-        const htmlElement = page.locator('html');
-        const dir = await htmlElement.getAttribute('dir');
+  test('error page text is localized', async ({ page }) => {
+    // Test Arabic localization first
+    await page.goto('/ar/not-found');
+    await expect(page.getByText(/الصفحة غير موجودة/i)).toBeVisible();
 
-        // Should be 'ltr' for English
-        expect(dir).toBe('ltr');
-    });
-
-    test('error page text is localized', async ({ page }) => {
-        // Test Arabic localization first
-        await page.goto('/ar/not-found');
-        await expect(page.getByText(/الصفحة غير موجودة/i)).toBeVisible();
-
-        // Test English localization
-        await page.goto('/en/not-found');
-        await page.waitForTimeout(100);
-        await expect(page.getByText(/Page Not Found/i)).toBeVisible();
-    });
+    // Test English localization
+    await page.goto('/en/not-found');
+    await page.waitForTimeout(100);
+    await expect(page.getByText(/Page Not Found/i)).toBeVisible();
+  });
 });

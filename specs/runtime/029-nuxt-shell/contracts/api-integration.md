@@ -69,9 +69,9 @@ Accept-Language: ar
 
 ```typescript
 // In useAuth().fetchCurrentUser()
-const response = await api.apiFetch("/api/v1/auth/me");
+const response = await api.apiFetch('/api/v1/auth/me');
 if (response.success && response.data) {
-  store.setUser(response.data, useCookie("auth_token").value!);
+  store.setUser(response.data, useCookie('auth_token').value!);
 }
 ```
 
@@ -124,7 +124,7 @@ No request body.
 ```typescript
 async function logout() {
   try {
-    await api.apiFetch("/api/v1/auth/logout", { method: "DELETE" });
+    await api.apiFetch('/api/v1/auth/logout', { method: 'DELETE' });
   } catch {
     // Swallowed — local cleanup must happen regardless of API result
   } finally {

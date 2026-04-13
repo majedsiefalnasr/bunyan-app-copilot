@@ -519,13 +519,11 @@ All API responses (success and error) MUST follow this format:
 **Decision:** **Correlation ID in THREE places for maximum visibility:**
 
 1. **HTTP Response Header:** `X-Correlation-ID: 550e8400-e29b-41d4-a716-446655440000`
-
    - Extracted easily by client libraries
    - Available for support tickets automatically
    - Visible in browser DevTools Network tab
 
 2. **Error Message Text:** "Internal Server Error with ID: 550e8400-e29b-41d4-a716-446655440000"
-
    - Visible to end users in error messages
    - Easy for support tickets ("Tell us the error ID you see")
    - Helps users report issues

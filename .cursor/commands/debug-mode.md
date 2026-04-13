@@ -1,5 +1,5 @@
 ---
-description: "Debug your application to find and fix a bug. Systematic diagnosis, reproduction, and resolution."
+description: 'Debug your application to find and fix a bug. Systematic diagnosis, reproduction, and resolution.'
 ---
 
 ## User Input

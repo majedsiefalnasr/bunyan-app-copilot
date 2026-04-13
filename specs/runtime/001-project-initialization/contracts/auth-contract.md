@@ -369,19 +369,19 @@ Content-Type: application/json
 
 ```javascript
 // After login
-localStorage.setItem("token", response.data.token);
+localStorage.setItem('token', response.data.token);
 
 // Before making API requests
-const token = localStorage.getItem("token");
-fetch("/api/v1/me", {
+const token = localStorage.getItem('token');
+fetch('/api/v1/me', {
   headers: {
     Authorization: `Bearer ${token}`,
-    Accept: "application/json",
+    Accept: 'application/json',
   },
 });
 
 // On logout
-localStorage.removeItem("token");
+localStorage.removeItem('token');
 ```
 
 **Note:** For production, consider:
@@ -462,12 +462,12 @@ Route::post('/auth/register', [AuthController::class, 'register'])
 **Client must include credentials:**
 
 ```javascript
-fetch("/api/v1/auth/login", {
-  method: "POST",
-  credentials: "include", // Include cookies if using cookie-based auth
+fetch('/api/v1/auth/login', {
+  method: 'POST',
+  credentials: 'include', // Include cookies if using cookie-based auth
   headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
   body: JSON.stringify({ email, password }),
 });

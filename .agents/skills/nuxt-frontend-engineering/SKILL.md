@@ -70,18 +70,18 @@ export function useApi() {
   const apiFetch = $fetch.create({
     baseURL: config.public.apiBaseUrl,
     headers: {
-      Accept: "application/json",
-      "Accept-Language": "ar",
+      Accept: 'application/json',
+      'Accept-Language': 'ar',
     },
     onRequest({ options }) {
       if (auth.token) {
-        options.headers.set("Authorization", `Bearer ${auth.token}`);
+        options.headers.set('Authorization', `Bearer ${auth.token}`);
       }
     },
     onResponseError({ response }) {
       if (response.status === 401) {
         auth.logout();
-        navigateTo("/auth/login");
+        navigateTo('/auth/login');
       }
     },
   });
@@ -101,7 +101,7 @@ export default defineNuxtRouteMiddleware((to) => {
   if (!requiredRoles || requiredRoles.length === 0) return;
 
   if (!auth.user || !requiredRoles.includes(auth.user.role)) {
-    return navigateTo("/dashboard");
+    return navigateTo('/dashboard');
   }
 });
 ```
@@ -110,31 +110,25 @@ export default defineNuxtRouteMiddleware((to) => {
 
 ```vue
 <script setup lang="ts">
-definePageMeta({
-  middleware: ["auth", "role"],
-  roles: ["customer", "admin"],
-});
+  definePageMeta({
+    middleware: ['auth', 'role'],
+    roles: ['customer', 'admin'],
+  });
 
-const { apiFetch } = useApi();
-const { data: projects, status } = await useAsyncData("projects", () =>
-  apiFetch("/api/v1/projects")
-);
+  const { apiFetch } = useApi();
+  const { data: projects, status } = await useAsyncData('projects', () =>
+    apiFetch('/api/v1/projects')
+  );
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto px-4">
-    <h1 class="text-3xl font-semibold text-[#171717] tracking-tight mb-6">
-      مشاريعي
-    </h1>
+    <h1 class="text-3xl font-semibold text-[#171717] tracking-tight mb-6">مشاريعي</h1>
     <div v-if="status === 'pending'" class="flex justify-center py-12">
       <USkeleton class="h-48 w-full" />
     </div>
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <ProjectCard
-        v-for="project in projects?.data"
-        :key="project.id"
-        :project="project"
-      />
+      <ProjectCard v-for="project in projects?.data" :key="project.id" :project="project" />
     </div>
   </div>
 </template>
@@ -145,19 +139,19 @@ const { data: projects, status } = await useAsyncData("projects", () =>
 ```typescript
 // stores/auth.ts
 export const useAuthStore = defineStore(
-  "auth",
+  'auth',
   () => {
     const user = ref<User | null>(null);
     const token = ref<string | null>(null);
 
     const isAuthenticated = computed(() => !!token.value);
-    const isAdmin = computed(() => user.value?.role === "admin");
-    const isCustomer = computed(() => user.value?.role === "customer");
+    const isAdmin = computed(() => user.value?.role === 'admin');
+    const isCustomer = computed(() => user.value?.role === 'customer');
 
     async function login(credentials: LoginCredentials) {
       const { apiFetch } = useApi();
-      const response = await apiFetch("/api/v1/auth/login", {
-        method: "POST",
+      const response = await apiFetch('/api/v1/auth/login', {
+        method: 'POST',
         body: credentials,
       });
       token.value = response.data.token;
@@ -167,7 +161,7 @@ export const useAuthStore = defineStore(
     function logout() {
       user.value = null;
       token.value = null;
-      navigateTo("/auth/login");
+      navigateTo('/auth/login');
     }
 
     return { user, token, isAuthenticated, isAdmin, isCustomer, login, logout };
@@ -183,10 +177,10 @@ export const useAuthStore = defineStore(
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ["@nuxt/ui", "@nuxtjs/i18n", "@pinia/nuxt"],
+  modules: ['@nuxt/ui', '@nuxtjs/i18n', '@pinia/nuxt'],
   app: {
     head: {
-      htmlAttrs: { dir: "rtl", lang: "ar" },
+      htmlAttrs: { dir: 'rtl', lang: 'ar' },
     },
   },
 });

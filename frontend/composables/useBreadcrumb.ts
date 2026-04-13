@@ -10,21 +10,21 @@ import type { BreadcrumbItem } from '../types/index';
 const _manualBreadcrumbs = useState<BreadcrumbItem[] | null>('breadcrumbs.manual', () => null);
 
 export function useBreadcrumb() {
-    const route = useRoute();
+  const route = useRoute();
 
-    const breadcrumbs = computed<BreadcrumbItem[]>(() => {
-        if (_manualBreadcrumbs.value !== null) return _manualBreadcrumbs.value;
-        if (Array.isArray(route.meta.breadcrumb)) return route.meta.breadcrumb as BreadcrumbItem[];
-        return [];
-    });
+  const breadcrumbs = computed<BreadcrumbItem[]>(() => {
+    if (_manualBreadcrumbs.value !== null) return _manualBreadcrumbs.value;
+    if (Array.isArray(route.meta.breadcrumb)) return route.meta.breadcrumb as BreadcrumbItem[];
+    return [];
+  });
 
-    function setBreadcrumbs(items: BreadcrumbItem[]) {
-        _manualBreadcrumbs.value = items;
-    }
+  function setBreadcrumbs(items: BreadcrumbItem[]) {
+    _manualBreadcrumbs.value = items;
+  }
 
-    function clearBreadcrumbs() {
-        _manualBreadcrumbs.value = null;
-    }
+  function clearBreadcrumbs() {
+    _manualBreadcrumbs.value = null;
+  }
 
-    return { breadcrumbs, setBreadcrumbs, clearBreadcrumbs };
+  return { breadcrumbs, setBreadcrumbs, clearBreadcrumbs };
 }

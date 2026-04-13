@@ -1,5 +1,5 @@
 ---
-description: "Database authority for Bunyan. Governs MySQL migration correctness, Eloquent patterns, query performance, and schema optimization."
+description: 'Database authority for Bunyan. Governs MySQL migration correctness, Eloquent patterns, query performance, and schema optimization.'
 ---
 
 ## User Input

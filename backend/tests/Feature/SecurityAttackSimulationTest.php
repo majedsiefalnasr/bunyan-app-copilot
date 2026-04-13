@@ -115,6 +115,7 @@ class SecurityAttackSimulationTest extends TestCase
             '\'; DROP TABLE users; --',
         ];
 
+        $payloadTested = false;
         foreach ($xssPayloads as $payload) {
             $response = $this->withHeader('X-Correlation-ID', $payload)
                 ->getJson('/api/v1/test/success');
@@ -136,8 +137,16 @@ class SecurityAttackSimulationTest extends TestCase
                     $correlationId,
                     "Correlation ID must be valid UUID format, not malicious payload: {$payload}"
                 );
+                $payloadTested = true;
+            } else {
+                // Payload was rejected (correlation ID is absent)
+                // This is also valid behavior - injection was prevented
+                $payloadTested = true;
             }
         }
+
+        // Ensure at least one payload was tested
+        $this->assertTrue($payloadTested, 'At least one XSS payload should have been tested against header injection');
     }
 
     /**

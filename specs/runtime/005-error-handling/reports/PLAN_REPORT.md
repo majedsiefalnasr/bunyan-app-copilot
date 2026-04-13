@@ -224,7 +224,6 @@ locales/
 ### High Risk Items
 
 1. **Performance: Logging Overhead**
-
    - Risk: Async job queue or database indexes cause > 50ms overhead
    - Mitigation: Performance testing in Phase 2; batch optimization designed
    - Contingency: Fallback to synchronous logging if async fails
@@ -237,7 +236,6 @@ locales/
 ### Medium Risk Items
 
 3. **Upstream Capability: Rate Limiting Middleware**
-
    - Risk: Third-party package incompatibility or missing features
    - Mitigation: Use Laravel's built-in ThrottleRequests + custom per-role logic
    - Contingency: Implement custom rate limiting if package fails

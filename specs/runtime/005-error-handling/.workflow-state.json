@@ -208,12 +208,7 @@
         "TESTING_GUIDE.md",
         "PR_SUMMARY.md"
       ],
-      "reviewers": [
-        "Architecture Guardian",
-        "Security Auditor",
-        "QA Engineer",
-        "Code Reviewer"
-      ],
+      "reviewers": ["Architecture Guardian", "Security Auditor", "QA Engineer", "Code Reviewer"],
       "approval_status": "APPROVED",
       "timestamp": "2026-04-12T11:00:00Z"
     },

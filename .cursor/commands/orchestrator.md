@@ -1,5 +1,5 @@
 ---
-description: "Execute full SpecKit Hard Mode workflow: specify → clarify → plan → tasks → analyze → implement → closure. Accepts stage/phase/package-manager parameters and routes to sub-commands."
+description: 'Execute full SpecKit Hard Mode workflow: specify → clarify → plan → tasks → analyze → implement → closure. Accepts stage/phase/package-manager parameters and routes to sub-commands.'
 ---
 
 ## User Input

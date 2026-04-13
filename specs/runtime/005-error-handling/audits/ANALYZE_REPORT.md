@@ -46,19 +46,16 @@ Three critical security tests were added to tasks.md post-analysis to clear guar
 #### CRITICAL VIOLATIONS (4)
 
 1. **Rate Limiting Middleware Not Tasked**
-
    - Spec defines 100 req/min (global), 10 req/min (auth/payment) but no task creates middleware
    - Risk: Brute-force attacks unmitigated; auth endpoints vulnerable
    - Remediation: Add task "T0XX: Create RateLimitByRoleMiddleware" with role-based override logic
 
 2. **Correlation ID Header Injection Vulnerability**
-
    - Plan shows code accepts X-Correlation-ID without format validation
    - Risk: XSS/SQL injection patterns in header → logged and potentially reflected in errors
    - Remediation: Add validation task "T0XX: Validate UUID v4 format; reject non-conforming with 400"
 
 3. **RBAC Error Code Implementation Ambiguity**
-
    - Spec defines AUTH_UNAUTHORIZED vs RBAC_ROLE_DENIED distinction; tasks don't clarify
    - Risk: Cannot differentiate role denials; debugging difficult; potential info leakage
    - Remediation: Add task "T0XX: Create RoleNotAllowedException distinct from AuthorizationException"
@@ -71,13 +68,11 @@ Three critical security tests were added to tasks.md post-analysis to clear guar
 #### HIGH VIOLATIONS (3)
 
 5. **Error Response Details Not Masked**
-
    - Masking implemented in logging middleware but not in error response serialization
    - Risk: Error details with sensitive field names/values leaked in 422 responses
    - Remediation: Add task "T0XX: Filter error.details via SensitiveFields before JSON serialization"
 
 6. **Correlation ID Format Validation Missing**
-
    - Acceptance criteria requires UUID v4 validation; implementation code doesn't validate
    - Risk: Malformed IDs bypass tracing; special characters could inject into logs
    - Remediation: Add validation subtask to T033: "Regex validation for UUID v4 format"
@@ -191,7 +186,6 @@ Three critical security tests were added to tasks.md post-analysis to clear guar
 #### CLARIFICATIONS NEEDED (2)
 
 1. **Custom Exception Hierarchy:** Spec should explicitly define which exceptions map to which error codes
-
    - Fix: Update T031-T032 with exception class diagram (AuthenticationException → AUTH_INVALID_CREDENTIALS)
 
 2. **Error Code Enum Extension:** How will new codes be added in future stages?

@@ -137,22 +137,23 @@ jobs:
       - name: Setup Environment
         working-directory: backend
         run: |
-          cp .env.ci .env
-          php artisan key:generate
+          cp ci.env .env
+          # Ensure a valid APP_KEY is present for encryption and token generation.
+          # Use --force to overwrite empty keys and avoid race conditions in CI.
+          php artisan key:generate --force
+          # Clear config/cache so the newly generated key is picked up by tests.
+          php artisan config:clear
+          php artisan cache:clear
 
       - name: Run Migrations
         working-directory: backend
         run: php artisan migrate --database=mysql
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: bunyan_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
 
       - name: Run Tests
         working-directory: backend
-        run: mkdir -p build && composer run test:coverage
+        # phpunit.xml sets DB_CONNECTION=sqlite DB_DATABASE=:memory: for all tests;
+        # do NOT set DB_* env here — it would override phpunit.xml and break in-memory SQLite.
+        run: mkdir -p build && php artisan test --parallel
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v3

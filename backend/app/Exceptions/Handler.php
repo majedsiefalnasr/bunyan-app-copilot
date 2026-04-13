@@ -9,6 +9,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -98,14 +99,34 @@ class Handler extends ExceptionHandler
     private function renderJsonResponse($request, Throwable $e): JsonResponse
     {
         return match (true) {
+            $e instanceof ApiException => $this->handleApiException($e),
             $e instanceof ValidationException => $this->handleValidationException($e),
             $e instanceof RoleNotAllowedException => $this->handleRoleNotAllowedException($e),
             $e instanceof AuthenticationException => $this->handleAuthenticationException($e),
             $e instanceof AuthorizationException => $this->handleAuthorizationException($e),
+            $e instanceof InvalidSignatureException => $this->handleInvalidSignatureException($e),
             $e instanceof ModelNotFoundException => $this->handleModelNotFoundException($e),
             str_contains(get_class($e), 'ThrottleRequestsException') => $this->handleRateLimitException($e),
             default => $this->handleGenericException($e),
         };
+    }
+
+    private function handleApiException(ApiException $e): JsonResponse
+    {
+        $error = [
+            'code' => $e->getErrorCode()->value,
+            'message' => $e->getMessage(),
+        ];
+
+        if ($e->getDetails() !== null) {
+            $error['details'] = $e->getDetails();
+        }
+
+        return response()->json([
+            'success' => false,
+            'data' => null,
+            'error' => $error,
+        ], $e->getStatusCode());
     }
 
     /**
@@ -214,6 +235,18 @@ class Handler extends ExceptionHandler
      *
      * Returns 429 Too Many Requests with Retry-After header.
      */
+    private function handleInvalidSignatureException(InvalidSignatureException $e): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'data' => null,
+            'error' => [
+                'code' => ApiErrorCode::AUTH_UNAUTHORIZED->value,
+                'message' => 'Invalid or expired signature.',
+            ],
+        ], 403);
+    }
+
     private function handleRateLimitException(Throwable $e): JsonResponse
     {
         return response()->json([

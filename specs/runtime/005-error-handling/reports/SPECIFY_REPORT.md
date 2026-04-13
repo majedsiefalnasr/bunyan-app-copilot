@@ -65,12 +65,10 @@ The ERROR_HANDLING stage specification has been successfully generated with **13
 ### [NEEDS CLARIFICATION] Items (3)
 
 1. **Structured Logging Storage** (Medium impact)
-
    - Question: Local files vs. external ELK stack?
    - Resolution: Pending team decision — non-blocking for Phase 1
 
 2. **Rate Limiting Strategy** (Medium impact)
-
    - Question: Global or per-endpoint? What limits?
    - Resolution: Pending specification — impacts RATE_LIMIT_EXCEEDED implementation
 

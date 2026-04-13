@@ -1,5 +1,5 @@
 ---
-description: "Validate current branch follows feature branch naming conventions"
+description: 'Validate current branch follows feature branch naming conventions'
 ---
 
 # Validate Feature Branch

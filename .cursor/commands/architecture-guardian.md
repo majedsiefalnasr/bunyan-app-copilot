@@ -1,5 +1,5 @@
 ---
-description: "Architecture authority for Bunyan. Enforces clean architecture, modular boundaries, RBAC, SOLID principles, and deployment safety."
+description: 'Architecture authority for Bunyan. Enforces clean architecture, modular boundaries, RBAC, SOLID principles, and deployment safety.'
 ---
 
 ## User Input
