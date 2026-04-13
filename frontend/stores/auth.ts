@@ -64,6 +64,16 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value.role === roleOrRoles;
   }
 
+  /**
+   * Presentation-layer permission helper.
+   * Checks if the user has a specific permission from the permissions array.
+   * SECURITY NOTE: Presentation-only — all enforcement is server-side.
+   */
+  function hasPermission(permissionName: string): boolean {
+    if (!user.value) return false;
+    return user.value.permissions?.includes(permissionName) ?? false;
+  }
+
   return {
     token,
     user,
@@ -75,6 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
     clearAuth,
     initFromCookie,
     hasRole,
+    hasPermission,
   };
 });
 

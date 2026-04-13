@@ -160,4 +160,48 @@ describe('auth store', () => {
     const result = await store.initFromCookie();
     expect(result).toBe(false);
   });
+
+  // ── hasPermission ───────────────────────────────────────────────────
+
+  it('hasPermission returns false when no user', () => {
+    const store = useAuthStore();
+    expect(store.hasPermission('projects.view')).toBe(false);
+  });
+
+  it('hasPermission returns true when user has the permission', () => {
+    const store = useAuthStore();
+    store.setUser({
+      id: 1,
+      name: 'G',
+      email: 'g@h.com',
+      role: 'admin',
+      permissions: ['projects.view', 'projects.create', 'users.manage'],
+    } as never);
+    expect(store.hasPermission('projects.view')).toBe(true);
+    expect(store.hasPermission('projects.create')).toBe(true);
+  });
+
+  it('hasPermission returns false when user lacks the permission', () => {
+    const store = useAuthStore();
+    store.setUser({
+      id: 1,
+      name: 'H',
+      email: 'h@i.com',
+      role: 'customer',
+      permissions: ['projects.view', 'orders.view'],
+    } as never);
+    expect(store.hasPermission('users.manage')).toBe(false);
+  });
+
+  it('hasPermission returns false when permissions array is empty', () => {
+    const store = useAuthStore();
+    store.setUser({
+      id: 1,
+      name: 'I',
+      email: 'i@j.com',
+      role: 'customer',
+      permissions: [],
+    } as never);
+    expect(store.hasPermission('projects.view')).toBe(false);
+  });
 });

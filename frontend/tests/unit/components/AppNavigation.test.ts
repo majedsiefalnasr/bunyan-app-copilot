@@ -68,14 +68,15 @@ describe('NAV_ITEMS_BY_ROLE navigation configuration', () => {
     expect(routes.every((r) => !r.startsWith('/admin'))).toBe(true);
   });
 
-  it('Admin has 7 nav items', () => {
-    expect(NAV_ITEMS_BY_ROLE[UserRole.Admin]).toHaveLength(7);
+  it('Admin has 8 nav items', () => {
+    expect(NAV_ITEMS_BY_ROLE[UserRole.Admin]).toHaveLength(8);
   });
 
   it('Admin includes users and configuration', () => {
     const keys = NAV_ITEMS_BY_ROLE[UserRole.Admin].map((i) => i.labelKey);
     expect(keys).toContain('nav.users');
     expect(keys).toContain('nav.configuration');
+    expect(keys).toContain('nav.roles');
   });
 
   it('FieldEngineer includes submit_report', () => {

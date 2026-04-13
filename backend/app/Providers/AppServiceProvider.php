@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
+use App\Repositories\PermissionRepository;
+use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepository::class, fn () => new UserRepository(new User));
+        $this->app->bind(RoleRepository::class, fn () => new RoleRepository(new Role));
+        $this->app->bind(PermissionRepository::class, fn () => new PermissionRepository(new Permission));
     }
 
     /**
@@ -27,6 +35,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Admin superuser bypass — Admin bypasses all Gate/Policy checks
+        Gate::before(function (User $user, string $ability) {
+            if ($user->hasEnumRole(UserRole::ADMIN)) {
+                return true;
+            }
+        });
+
         // Define a named rate limiter for API routes. Keeps tests stable
         // and enforces a reasonable default threshold for brute-force guards.
         RateLimiter::for('api', function (Request $request) {

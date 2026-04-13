@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminRbacController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestController;
 use Illuminate\Support\Facades\Route;
@@ -70,5 +71,18 @@ Route::middleware('api')->prefix('v1')->group(function () {
             Route::post('email/resend', [AuthController::class, 'resendVerification'])
                 ->middleware('throttle:auth-email-resend');
         });
+    });
+
+    /**
+     * Admin RBAC Endpoints
+     * Role and permission management (admin-only)
+     */
+    Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+        Route::get('roles', [AdminRbacController::class, 'listRoles']);
+        Route::get('roles/{id}', [AdminRbacController::class, 'showRole']);
+        Route::put('roles/{id}/permissions', [AdminRbacController::class, 'syncPermissions']);
+        Route::post('users/{id}/role', [AdminRbacController::class, 'assignRole']);
+        Route::get('users', [AdminRbacController::class, 'listUsers']);
+        Route::get('permissions', [AdminRbacController::class, 'listPermissions']);
     });
 });
