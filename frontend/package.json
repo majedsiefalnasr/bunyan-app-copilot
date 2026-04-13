@@ -16,6 +16,7 @@
     "format:check": "prettier --check \"./**/*.{vue,ts,js,mjs,cjs,json,css,md,mdc}\"",
     "fix": "npm run format && npm run lint:fix",
     "typecheck": "nuxi typecheck",
+    "pretest": "nuxi prepare",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },

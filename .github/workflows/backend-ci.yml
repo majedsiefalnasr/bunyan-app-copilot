@@ -137,23 +137,18 @@ jobs:
       - name: Setup Environment
         working-directory: backend
         run: |
-          cp .env.example .env
+          cp ci.env .env
           php artisan key:generate
-          # Override database config from CI environment
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=bunyan_test" >> .env
-          echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=password" >> .env
-          echo "APP_ENV=testing" >> .env
 
       - name: Run Migrations
         working-directory: backend
-        run: php artisan migrate --database=mysql --force
+        run: php artisan migrate --database=mysql
 
       - name: Run Tests
         working-directory: backend
-        run: mkdir -p build && composer run test -- --coverage --coverage-format=cobertura --coverage-report-file=./build/coverage.xml
+        # phpunit.xml sets DB_CONNECTION=sqlite DB_DATABASE=:memory: for all tests;
+        # do NOT set DB_* env here — it would override phpunit.xml and break in-memory SQLite.
+        run: mkdir -p build && php artisan test --parallel
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v3
