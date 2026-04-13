@@ -471,6 +471,62 @@ frontend/
 
 ---
 
+## Phase 11: Security & Performance Hardening (Remediation)
+
+**Dependency:** Phase 10 complete (T041-T043)  
+**Parallelization:** All [P] — backend + frontend in parallel  
+**Effort:** 8-10 hours total  
+**Status:** NEW — Addresses critical auditor findings
+
+### Backend Tasks (Backend team)
+
+- [ ] T044 [P] Implement rate limiting (10/15min login, 3/60min reset, 5/15min resend) — backend/app/Http/Middleware/RateLimitAuth.php
+- [ ] T045 [P] Implement account lockout (5 failures = 15min lock) — backend/app/Services/AuthService.php
+- [ ] T046 [P] Implement session concurrency limits (max 2 per user) + device fingerprinting — backend/app/Models/PersonalAccessToken.php
+- [ ] T047 [P] Implement avatar upload security (MIME validation, resize, S3 storage) — backend/app/Http/Controllers/UserController.php
+- [ ] T048 [P] Implement password reset hardening (rate limit, 1-hour expiry, single-use, token invalidation, reuse prevention) — backend/app/Http/Controllers/AuthController.php
+- [ ] T049 [P] Implement email verification OTP security (5 attempt limit, 10min expiry, rate limiting) — backend/app/Services/VerificationService.php
+- [ ] T050 [P] Add HTTP-only cookie enforcement + token rotation on refresh — backend/config/sanctum.php + AuthService.php
+
+### Frontend Tasks (Frontend team)
+
+- [ ] T051 Add debounce to PasswordStrength component (300ms) — frontend/components/Auth/PasswordStrength.vue
+- [ ] T052 Implement request queue in useApi composable (prevent concurrent token refresh race) — frontend/composables/useApi.ts
+- [ ] T053 [P] Add districts static data or caching strategy — frontend/config/districts.ts (or Pinia plugin)
+- [ ] T054 [P] Add rate limit countdown UI (60s timer on login error 429) — frontend/pages/auth/login.vue
+- [ ] T055 [P] Add account lockout UI handling (show message, disable form for 15min) — frontend/pages/auth/login.vue
+- [ ] T056 [P] Add OTP rate limit handling (5 attempts, then lock 10min) — frontend/pages/auth/verify-email.vue
+- [ ] T057 [P] Add avatar upload validation (client-side MIME + size check) — frontend/pages/profile/index.vue
+
+### Test Tasks (QA team)
+
+- [ ] T058 [P] Unit tests for rate limiting logic (10/15min threshold) — frontend/tests/security/rate-limiting.spec.ts
+- [ ] T059 [P] Unit tests for account lockout (5 failures → 15min lock) — frontend/tests/security/account-lockout.spec.ts
+- [ ] T060 [P] Unit tests for password reset token expiry (1 hour) — frontend/tests/security/password-reset-expiry.spec.ts
+- [ ] T061 [P] Unit tests for OTP expiry + attempt limits (5 attempts, 10min expiry) — frontend/tests/security/otp-security.spec.ts
+- [ ] T062 [P] Unit tests for auto-refresh queue (prevent concurrent token refresh) — frontend/tests/composables/useApi-queue.spec.ts
+- [ ] T063 [P] Unit tests for password strength debounce (300ms, performance) — frontend/tests/components/PasswordStrength-debounce.spec.ts
+- [ ] T064 [P] E2E test: Verify rate limiting (10 login attempts lock form) — frontend/tests/e2e/security-rate-limiting.spec.ts
+- [ ] T065 [P] E2E test: Verify account lockout (5 failed attempts lock account) — frontend/tests/e2e/security-account-lockout.spec.ts
+- [ ] T066 [P] E2E test: Verify password reset expiry (1-hour token invalid) — frontend/tests/e2e/security-password-reset-expiry.spec.ts
+- [ ] T067 [P] E2E test: Verify OTP rate limiting (5 attempts then lock) — frontend/tests/e2e/security-otp-rate-limiting.spec.ts
+- [ ] T068 [P] E2E test: Verify auto-refresh queue under load (5 concurrent requests) — frontend/tests/e2e/performance-token-refresh-queue.spec.ts
+- [ ] T069 [P] E2E test: Verify avatar upload validation (MIME type, size limits) — frontend/tests/e2e/security-avatar-upload.spec.ts
+
+---
+
+## Updated Task Summary
+
+| Category                   | Count  | Effort       |
+| -------------------------- | ------ | ------------ |
+| **Phase 0-10** (Original)  | 43     | 172-256h     |
+| **Phase 11** (Remediation) | 27     | 40-50h       |
+| **TOTAL**                  | **70** | **212-306h** |
+
+**Parallelization gain:** ~45% time savings (with 6+ team members on backend + frontend concurrently)
+
+---
+
 ## Readiness Assessment
 
 ✅ **Specification Complete** (spec.md reviewed + validated)  

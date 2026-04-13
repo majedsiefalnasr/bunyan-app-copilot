@@ -127,6 +127,63 @@ export const loginSchema = z.object({
 
 ---
 
+### 1.1B: Login Rate Limiting & Account Lockout Security ⚠️ CRITICAL
+
+**Security Auditor Finding:** Initial spec had no rate limiting or account lockout, allowing **credential brute-force attacks** (unlimited attempts, password guessing).
+
+**Hardened Requirements:**
+
+**Frontend:**
+
+- Disable submit button after click (prevent double-submit)
+- Show loading spinner while API request pending
+- Display countdown timer on 429 error: "Too many login attempts. Try again in 15 minutes"
+- Display lockout message on 403 error: "Account locked due to multiple failed attempts. Try again in 15 minutes"
+
+**Backend (Server-side Defense) — MANDATORY:**
+
+- **Rate Limiting (per IP address):**
+  - Max 10 login attempts per 15 minutes per IP
+  - Middleware: `throttle:10,15` on POST `/api/v1/auth/login`
+  - Redis-based rate limiter for distributed deployments
+  - Return 429 `RATE_LIMIT_EXCEEDED` when exceeded
+  - Response header: `Retry-After: 900` (15 minutes in seconds)
+
+- **Account Lockout (per email address):**
+  - Track failed login attempts per email: `login_fails:{email}`
+  - After 5 failed attempts from ANY IP: Lock account for 15 minutes
+  - Store lockout status in cache: `account_locked:{email}:15min`
+  - Return 403 `AUTH_UNAUTHORIZED` with message: "Account locked due to multiple failed login attempts"
+  - Log all failed attempts (email, IP, timestamp, user agent) for audit trail
+
+- **Failed Attempt Tracking:**
+  - Increment counter on incorrect password submission (NOT on invalid email)
+  - On successful login: Reset counter to 0
+  - After rate limit reset: Reset counter to 0
+  - Do NOT notify user of exact attempt count (security best practice: never reveal account existence)
+
+- **Error Responses:**
+
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "AUTH_UNAUTHORIZED",
+    "message": "Account locked due to multiple failed login attempts. Try again after 15 minutes.",
+    "details": null
+  }
+}
+```
+
+**Bypass Conditions:**
+
+- Admin manual unlock (via admin panel) immediately clears lock
+- Legitimate auth via OAuth/SSO (if implemented) does NOT count as failed attempt
+- Email verification after lockout resets attempt counter
+
+---
+
 ### 1.2 Register Page
 
 | Property        | Value                        |
@@ -494,6 +551,66 @@ export const verifyEmailSchema = z.object({
 | Code invalid    | `VALIDATION_ERROR`             | الكود غير صالح              | Invalid code          |
 | Code expired    | `WORKFLOW_PREREQUISITES_UNMET` | انتهت صلاحية الكود          | Code expired          |
 | Resend cooldown | `RATE_LIMIT_EXCEEDED`          | حاول مرة أخرى خلال 60 ثانية | Try again in 60s      |
+
+---
+
+### 1.5B: Email Verification OTP Security Hardening ⚠️ CRITICAL
+
+**Security Auditor Finding:** Initial spec had no explicit OTP rate limiting or brute-force protection, allowing potential **OTP brute-force attacks** (guessing 6-digit code in 1,000,000 attempts).
+
+**Hardened Requirements:**
+
+**Frontend:**
+
+- Max 5 OTP verification attempts per email code
+- After 5 failed attempts: disable input, show error "Too many verification attempts. Request new code."
+- Countdown timer: Show user remaining attempt count "Attempt 3/5"
+- Display: "Code expires in XX minutes" (countdown updates every 5 seconds)
+
+**Backend (Server-side Defense) — MANDATORY:**
+
+- **OTP Generation:**
+  - 6-digit random code (1,000,000 combinations)
+  - Expiry: 10 minutes from generation (shorter than password reset)
+  - Generate via secure random: `random_bytes()` in Laravel
+  - Hash before storage in DB: Store `hash('sha256', otp_code)` in database (never plaintext)
+
+- **OTP Verification:**
+  - Max 5 attempts per OTP code before invalidation
+  - Each wrong attempt: increment counter in cache (`verify_attempts:{email}:{otp_hash}`)
+  - After 5 failed attempts: invalidate code (set exp = 0 immediately)
+  - Lock user: Add entry to `email_verify_lock:{email}` with 10-minute expiry
+  - Return 422 `WORKFLOW_PREREQUISITES_UNMET`: "Max verification attempts exceeded. Request new code."
+
+- **Resend OTP:**
+  - Rate limit: 3 resend requests per hour per email address
+  - Return 429 `RATE_LIMIT_EXCEEDED` if exceeded
+  - Clear old OTP attempt counters when issuing new code
+
+- **Brute-Force Protection:**
+  - Track failed attempts across ALL emails (not per OTP): `verify_failed_attempts::{ip_address}`
+  - After 10 failed attempts globally from same IP: Block IP for 15 minutes
+  - Log all verification attempts for audit trail (name, IP, timestamp)
+
+**Error Responses:**
+
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "WORKFLOW_PREREQUISITES_UNMET",
+    "message": "Invalid verification code. 2 attempts remaining.",
+    "details": null
+  }
+}
+```
+
+**Expiry/Single-Use Enforcement:**
+
+- Generate new OTP code for each resend request (invalidate old code)
+- Verification triggers email_verified flag + token generation
+- Cannot reuse same OTP even across sessions/browsers
 
 ---
 
@@ -1565,6 +1682,61 @@ The following are explicitly OUT OF SCOPE for this stage:
 - 400x400 is industry standard for professional profiles (matches Nuxt UI UAvatar default)
 - Server-side resize prevents client-side image corruption + ensures CDN/cache consistency
 - Multiple sizes support responsive design + avatar in headers/cards/lists without duplication
+
+---
+
+### Clarification #3B: Avatar Upload Security Hardening ⚠️ CRITICAL
+
+**Security Auditor Finding:** Avatar upload had zero security controls in initial spec, allowing potential:
+
+- **File upload attack:** Non-image files disguised with .jpg extension (ZIP bombs, executables)
+- **DoS / Resource exhaustion:** Massive files or high-resolution images with no size/dimension limits
+- **Information disclosure:** Avatar URLs stored in database with no access control
+
+**Hardened Requirements:**
+
+**Frontend (Client-side Defense):**
+
+- MIME type whitelist: only `image/jpeg`, `image/png`, `image/webp`
+- Size validation: reject if > 5MB before upload (prevent server load)
+- Display error clearly: "File too large (max 5MB) or invalid format"
+- Drag-drop area shows format/size requirements inline
+
+**Backend (Server-side Defense) — MANDATORY:**
+
+- **Magic byte validation:** Use `finfo_file()` or `imagesize()` to verify actual file type (not just extension/MIME header)
+  - Reject if magic bytes don't match JPEG/PNG/WebP structure
+  - Example: `PK\x03\x04` = ZIP file → reject even if .jpg extension
+- **Dimension limits:** Reject images > 4000x4000px (prevents memory exhaustion during resize)
+- **File size check:** Exact byte count must be ≤ 5MB
+- **ClamAV scan:** If available, run antivirus scan post-upload (optional but recommended)
+- **Storage:** Upload to S3/CDN with restricted access (not web-accessible initially)
+  - Serve avatar URLs via authenticated `/api/v1/avatars/{id}` endpoint with ACL checks
+  - Cache headers: `Cache-Control: public, max-age=31536000` (1 year, immutable)
+- **Resize safely:** Use `sharp` (Node.js) or `Intervention\Image` (Laravel) to auto-resize
+  - Timeout: 5 second max for resize operation (prevent slowloris attacks)
+  - Output: Always JPEG quality 75 (lossy, smaller file size)
+
+**Error Responses:**
+
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid avatar: file must be JPEG, PNG, or WebP and less than 5MB",
+    "details": {
+      "avatar": ["Invalid image format or size exceeds 5MB"]
+    }
+  }
+}
+```
+
+**Rate Limiting on Avatar Upload:**
+
+- Max 10 avatar uploads per hour per user (prevent spam/abuse)
+- Throttle middleware: `throttle:10,60` on `PATCH /api/v1/user/avatar`
 
 ---
 
