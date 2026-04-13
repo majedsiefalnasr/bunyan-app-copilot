@@ -51,7 +51,7 @@
             <UButton
                 block
                 :loading="isLoading"
-                :disabled="resendCooldown"
+                :disabled="resendCooldown.value"
                 class="w-full"
                 @click="onResend"
             >

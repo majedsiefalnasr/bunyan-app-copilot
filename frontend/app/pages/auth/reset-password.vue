@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { resetPasswordSchema } from '~/config/validation/auth';
+    import type { RouteLocationNormalizedLoaded } from 'vue-router';
 
     definePageMeta({
         layout: 'auth',
@@ -7,7 +8,7 @@
     });
 
     const { t, locale } = useI18n();
-    const route = useRoute();
+    const route = useRoute() as RouteLocationNormalizedLoaded;
     const { resetPassword, isLoading } = useAuth();
     const toast = useToast();
 

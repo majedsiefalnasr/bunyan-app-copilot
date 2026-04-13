@@ -1,19 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Ambient declarations to satisfy typecheck until Nuxt auto-generated types are available
 declare function defineNuxtConfig<T = unknown>(config: T): T;
-declare function useRoute(): unknown;
+declare function useRoute(): any;
 declare function useAsyncData<T = unknown>(
     key: string,
     fetcher: () => Promise<T> | T,
     opts?: unknown
 ): Promise<{ data: T }>;
-declare function queryCollection<T = unknown>(
-    name: string
-): {
-    path: (p: string) => {
-        first: () => Promise<T> | T;
-    };
-};
+// Simple fallback for queryCollection used by content pages
+declare function queryCollection(name: string): any;
 declare function createError(opts: unknown): unknown;
 declare function ref<T = unknown>(value?: T): { value: T | undefined };
 
