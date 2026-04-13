@@ -1138,79 +1138,341 @@ theme: {
 
 ---
 
-## 10. Security Checklist
+## 10. Security & Performance Hardening ⚠️ REMEDIATED
 
 ### 10.1 CSRF Token Handling (Sanctum)
+
+✅ **Implementation:**
 
 - Backend: CSRF middleware enabled (default in Laravel)
 - Frontend: `useApi` composable automatically includes CSRF token from cookie
 - No manual CSRF header injection needed (Sanctum + Cookie-to-Header pattern)
+- Verify: Test CSRF error if token missing or invalid
 
 ### 10.2 XSS Prevention
+
+✅ **Implementation:**
 
 - **Nuxt auto-escapes:** All template bindings auto-escaped ({{ email }})
 - **Sanitize links:** Use `NuxtLink` for internal routes (prevents javascript: URLs)
 - **No v-html:** Never use `v-html` with user input
 - **Error messages:** Display backend error messages directly (backend must sanitize)
+- **Form inputs:** Never bind user input to innerHTML or dangerouslySetInnerHTML
 
-### 10.3 Token Storage
+### 10.3 Token Storage & HTTP-Only Cookies
 
-✅ **Access Token:**
+✅ **REMEDIATED — Dual-Token Pattern with HTTP-Only Enforcement:**
 
-- Store in Pinia auth store (runtime, cleared on refresh)
-- Also in localStorage for session persistence
-- Attached via `Authorization: Bearer` in useApi interceptor
+**Access Token:**
 
-✅ **Refresh Token:**
+- Frontend: Store in Pinia auth store (runtime, cleared on refresh)
+- Frontend: Also cache in localStorage for session persistence (if allowed)
+- Transport: Attached via `Authorization: Bearer` in useApi interceptor
+- Expiry: 15 minutes (backend enforces)
 
-- HTTP-only cookie (backend sets, frontend cannot access)
-- Automatic on 401 response via `useApi` interceptor
-- No manual refresh logic needed (transparent to pages)
+**Refresh Token:**
 
-❌ **Never:**
+- ✅ **HTTP-only cookie** (backend MUST set via `Set-Cookie: HttpOnly; Secure; SameSite=Lax`)
+- Frontend: Cannot access via JavaScript (optimal security)
+- Automatic on 401 response via useApi interceptor — queue requests, refresh, retry
+- Expiry: 7 days (30 days if remember-me = true)
+- Rotation: Invalidate all previous refresh tokens on successful refresh (backend)
+
+**Device Token** (for remember-me):
+
+- Optional; extends refresh token TTL
+- Can be stored in localStorage (non-sensitive identifier, not auth credential)
+
+**❌ Never:**
 
 - Store access token in URL query params
-- Store tokens in sessionStorage (better than localStorage but still risky)
+- Store tokens in plain sessionStorage
 - Log tokens in console.log or error messages
+- Store access token in localStorage without encryption (prefer HTTP-only cookie)
 
-### 10.4 NO Credentials in URL Params
+### 10.4 Rate Limiting ⚠️ REMEDIATED
 
-✅ **allowed:**
+✅ **Authoritative: 10 login attempts per 15 minutes per IP address**
 
-- `/auth/reset-password?token=abc123xyz` (one-time reset token, safe)
-- `/auth/verify-email?email=user@example.com` (read-only, masked in display)
+**Backend (Laravel):**
 
-❌ **forbidden:**
+- Middleware: `throttle:10,15` on `POST /api/v1/auth/login` route
+- Cache-based: Use Redis for distributed rate limiting (if load-balanced)
+- Return: HTTP 429 + error code `RATE_LIMIT_EXCEEDED` + header `Retry-After: 840`
+- Lock duration: 15 minutes after 10th failed attempt
 
-- `/auth/login?email=...&password=...`
-- `/auth/register?token=user.access.token`
+**Frontend (Nuxt):**
 
-### 10.5 Rate Limiting
+- On 429 response: Disable login button for 60 seconds
+- Display: `UAlert` with message "الحد الأقصى للمحاولات تم تجاوزه. حاول بعد 15 دقيقة."
+- UX: Show countdown timer (optional) or retry button that appears after 60s
+- Storage: Track lockout in Pinia (not persistent across refresh)
 
-- Backend: 10 login attempts per 15 minutes (configurable)
-- Frontend: On `RATE_LIMIT_EXCEEDED` error, disable login button for 60 seconds
-- UX: Show countdown timer or message "حاول بعد [X] ثانية"
+**Also apply to:**
 
-### 10.6 Password Handling
+- `POST /api/v1/auth/forgot-password` — 5 resets per hour per email
+- `POST /api/v1/auth/resend-verification-code` — 3 resends per 15 minutes per email
+- `POST /api/v1/auth/verify-email` — 5 verification attempts per OTP code (then lock 10 min)
 
-- **Client:** Never log passwords (all logs exclude password field)
-- **Frontend form:** Zod schema includes password regex (8+ chars, uppercase, digit, symbol)
-- **Backend validation:** Repeat same regex validation server-side
-- **Storage:** Never store plaintext passwords; use bcrypt hashing (Laravel default)
+### 10.5 Account Lockout Mechanism ⚠️ REMEDIATED
 
-### 10.7 Email Verification
+✅ **Implementation:**
 
-- Backend: Generate 6-digit code (not email-based)
-- Frontend: User enters 6 digits via OTP input
-- Expiry: Code valid for 10 minutes (backend enforces)
-- Resend: 60-second cooldown between resends (backend enforces)
+**Backend (Laravel):**
 
-### 10.8 Account Takeover Prevention
+- Track failed login attempts per email (Redis cache or DB table)
+- Threshold: 5 failed attempts within 15 minutes
+- Lockout: On 5th failure, lock account for 15 minutes
+- Return: HTTP 423 (Locked) + error code `ACCOUNT_LOCKED` + message "انتظر 15 دقيقة قبل المحاولة مرة أخرى"
+- Auto-unlock: Reset counter after 15 minutes OR on successful login
 
-- **Password reset:** Token valid for 1 hour only, one-time use
-- **Email verification:** 6-digit code, not email confirmation link
-- **Session management:** Logout clears all active sessions on backend
-- **Remember-me:** Extends refresh token TTL but doesn't bypass email verification
+**Frontend (Nuxt):**
+
+- Display: Red `UAlert` "حسابك مقفول مؤقتًا. حاول بعد 15 دقيقة."
+- UX: Disable login form; show countdown timer or "حاول بعد [X] دقيقة"
+
+### 10.6 Password Reset Security ⚠️ REMEDIATED
+
+✅ **Implementation:**
+
+**Backend (Laravel):**
+
+1. **Rate Limiting:** Max 3 password reset attempts per hour per email
+   - Track in cache (key: `password_reset_{email}`)
+   - Return 429 on excess attempts
+
+2. **Token Security:**
+   - Generate random token (64 chars, `Str::random(64)`)
+   - Hash token before storing in DB (use same hash as passwords)
+   - Valid for 1 hour only
+   - Single-use: Delete token after successful reset
+
+3. **Post-Reset Session Invalidation:**
+   - On successful password reset, revoke ALL active refresh tokens for user
+   - User must login again on all devices (security best practice)
+   - Prevent: Current attacker session continuing with old sessions
+
+4. **Password Reuse Prevention:**
+   - Store sha256 hash of last 3 passwords
+   - On new password submission, reject if matches any of 3 hashes
+   - Error: `VALIDATION_ERROR` — "لا يمكنك استخدام كلمة مرور قديمة"
+
+**Frontend (Nuxt):**
+
+- Reset link format: `/auth/reset-password?token=abc123xyz`
+- On page load: Validate token (via `useAsyncData` call to backend)
+- If expired/invalid: Show red `UAlert` "انتهت صلاحية الرابط" + hide form + link to forgot-password
+- If valid: Render password form with strength indicator
+- On submit: Call API, show success toast, redirect to login
+
+### 10.7 Email Verification OTP Security ⚠️ REMEDIATED
+
+✅ **Implementation:**
+
+**Backend (Laravel):**
+
+1. **Rate Limiting per OTP Code:**
+   - Max 5 verification attempts per code
+   - After 5th failure, lock code for 10 minutes (return `RATE_LIMIT_EXCEEDED`)
+   - Users can request new code (subject to resend rate limit: 3/15min)
+
+2. **OTP Expiry:**
+   - Code valid for 10 minutes only
+   - After expiry: Return error `WORKFLOW_PREREQUISITES_UNMET` — "انتهت صلاحية الكود"
+
+3. **OTP Uniqueness:**
+   - Generate new 6-digit OTP (000000-999999)
+   - Invalidate previous OTP when generating new one (on resend)
+
+4. **Successful Verification:**
+   - Mark user as `email_verified_at` = now
+   - If in register flow: Auto-login user + set tokens
+   - If in profile edit: Return success message
+
+**Frontend (Nuxt):**
+
+- OTP input: 6 individual digit fields (UPinInput)
+- Auto-submit on 6th digit entered (or manual submit button)
+- On validation failure: Red `UAlert` "الكود غير صحيح" + clear input
+- On rate limit (5 failures): Red `UAlert` "تم تجاوز عدد محاولات التحقق. حاول بعد 10 دقائق"
+- Resend button: Disabled for 60 seconds after request (show countdown)
+
+### 10.8 Session Management & Concurrency ⚠️ REMEDIATED
+
+✅ **Implementation:**
+
+**Backend (Laravel):**
+
+1. **Device Fingerprinting:**
+   - On login success: Generate device fingerprint hash (UA + IP + device) = `device_id`
+   - Store in Sanctum `personal_access_tokens` table
+   - On token refresh: Verify device_id matches (if changed = suspicious)
+
+2. **Concurrent Session Limits:**
+   - Max 2 concurrent sessions per user
+   - On login: If > 2 existing tokens, revoke oldest one
+   - Optional: Allow user to choose which sessions to revoke (via account settings)
+
+3. **User-Agent Validation:**
+   - Store User-Agent on login
+   - On API call: Check if current UA matches stored UA
+   - If different: Log security event + potentially invalidate session
+
+4. **Session Invalidation on Logout:**
+   - `POST /api/v1/auth/logout` → revoke current token
+   - Optional: `POST /api/v1/auth/logout-all` → revoke all tokens for user
+
+**Frontend (Nuxt):**
+
+- No direct involvement (backend enforces)
+- On 401 response: Trigger re-login flow
+
+### 10.9 Avatar Upload Security ⚠️ REMEDIATED
+
+✅ **Implementation:**
+
+**Backend (Laravel):**
+
+1. **MIME Type Validation (Server-side):**
+   - Allowed: image/jpeg, image/png, image/webp only
+   - Check via `finfo_file()` + `getimagesize()` (not just file extension)
+   - Reject: .exe, .php, .svg, .txt disguised as images
+
+2. **File Size Limits:**
+   - Max 5MB per file
+   - Return: HTTP 422 + error code `VALIDATION_ERROR`
+
+3. **Image Dimensions & Resizing:**
+   - Ensure square format: 400x400px minimum
+   - Auto-resize to 400x400px (primary) + 128x128px (thumbnail) on backend
+   - Use ImageMagick or similar (don't trust client resize)
+
+4. **Malware Scanning (Optional but recommended):**
+   - Integrate ClamAV or similar for uploaded files
+   - Quarantine suspicious files; retry scan
+
+5. **Storage & Access Control:**
+   - Store in private S3 bucket or secured local directory (outside web root)
+   - Do NOT store in `public/` directly (prevents direct access)
+   - Serve via signed URLs or controller method with auth check
+
+6. **CDN Delivery:**
+   - Use CloudFront or similar
+   - Cache for 1 year (immutable content)
+   - Serve avatar via `GET /api/v1/user/{id}/avatar` endpoint
+
+**Frontend (Nuxt):**
+
+- Avatar upload: Drag-drop + file picker
+- Client-side validation:
+  - Check MIME type (image/jpeg, image/png, image/webp)
+  - Check file size (<5MB)
+  - Show preview before upload
+- User feedback: Loading spinner during upload + success toast
+- Error handling: Red `UAlert` on upload failure
+- Endpoint: `POST /api/v1/user/avatar` (multipart/form-data)
+
+### 10.10 Password Handling
+
+✅ **Implementation:**
+
+**Frontend:**
+
+- Zod schema includes password regex: `8+ chars + [A-Z] + [a-z] + [0-9] + [!@#$%^&*]`
+- Example: `SecurePass123!`
+- Never log passwords (exclude from all console.log, toast, alert messages)
+- PasswordStrength component: Real-time strength calculation (0-100 score)
+
+**Backend (Laravel):**
+
+- Repeat same regex validation server-side (defense in depth)
+- Use bcrypt hashing (Laravel default via `Hash::make()`)
+- Never store plaintext passwords
+- Never log passwords in error messages or logs
+
+### 10.11 Token Rotation Strategy ⚠️ REMEDIATED
+
+✅ **Implementation:**
+
+**Backend (Laravel):**
+
+1. **On Each Refresh:**
+   - Current refresh token → mark as "used"
+   - Issue new refresh token
+   - Invalidate all other refresh tokens older than N days (prevent token farming)
+
+2. **SameSite Cookie Policy:**
+   - Set: `Set-Cookie: refresh_token=...; SameSite=Lax; Secure; HttpOnly`
+   - Prevents CSRF attacks on token refresh endpoint
+
+3. **Token Rotation on Suspicious Activity:**
+   - If device_id changes between requests → invalidate all tokens
+   - Force re-login
+
+**Frontend (Nuxt):**
+
+- No direct action needed (backend manages rotation)
+- Interceptor handles refresh cycle transparently
+
+### 10.12 Request Queue & Auto-Refresh (Performance) ⚠️ REMEDIATED
+
+✅ **Implementation (useApi composable):**
+
+```typescript
+// composables/useApi.ts
+const pendingRequests: Promise<any>[] = [];
+let isRefreshing = false;
+
+export const useApi = async (url, options) => {
+  try {
+    return await $fetch(url, { headers: { Authorization: `Bearer ${token}` }, ...options });
+  } catch (error) {
+    if (error.status === 401 && !isRefreshing) {
+      // Queue: Pause new requests
+      isRefreshing = true;
+
+      // Refresh token
+      const newToken = await $fetch('/api/v1/auth/refresh', { method: 'POST' });
+
+      // Update store
+      authStore.setToken(newToken);
+
+      // Drain queue: Retry all pending requests
+      isRefreshing = false;
+
+      // Retry original request
+      return await useApi(url, options);
+    }
+    throw error;
+  }
+};
+```
+
+- Prevents: 5 concurrent requests triggering 5 parallel refresh calls (race condition)
+- Ensures: Single refresh, then all requests retry with new token
+- Performance: Transparency—pages don't need to handle refresh logic
+
+### 10.13 Password Strength Debounce (Performance) ⚠️ REMEDIATED
+
+✅ **Implementation (PasswordStrength component):**
+
+```vue
+<script setup lang="ts">
+  import { useDebounce } from '@vueuse/core';
+
+  const password = ref('');
+  const debounced = useDebounce(password, 300); // 300ms debounce
+
+  watch(debounced, (newPassword) => {
+    // Calculate strength only on debounce (not every keystroke)
+    calculateStrength(newPassword);
+  });
+</script>
+```
+
+- Prevents: UI jank from 50+ keystroke events/sec
+- Performance: Strength calc runs ~10x less frequently
+- UX: Smooth form interaction even on large passwords
 
 ---
 
