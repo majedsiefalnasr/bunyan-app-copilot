@@ -64,20 +64,22 @@
   const groupedPermissions = computed(() => {
     const groups: Record<string, Permission[]> = {};
     for (const perm of allPermissions.value) {
-      if (!groups[perm.group]) {
-        groups[perm.group] = [];
+      const group = perm.group ?? 'other';
+      if (!groups[group]) {
+        groups[group] = [];
       }
-      groups[perm.group].push(perm);
+      groups[group].push(perm);
     }
     return groups;
   });
 
   function isPermissionSelected(permId: number): boolean {
-    return selectedPermissionIds.value.has(permId);
+    return selectedPermissionIds.value?.has(permId) ?? false;
   }
 
   function togglePermission(permId: number) {
-    const newSet = new Set(selectedPermissionIds.value);
+    const currentSet = selectedPermissionIds.value ?? new Set<number>();
+    const newSet = new Set(currentSet);
     if (newSet.has(permId)) {
       newSet.delete(permId);
     } else {
@@ -91,10 +93,11 @@
   async function savePermissions() {
     isSaving.value = true;
     try {
+      const permIds = Array.from(selectedPermissionIds.value ?? []);
       await $fetch(`/api/v1/admin/roles/${roleId}/permissions`, {
         method: 'PUT',
         body: {
-          permission_ids: Array.from(selectedPermissionIds.value),
+          permission_ids: permIds,
         },
       });
       toast.add({
@@ -123,7 +126,7 @@
         <p class="text-sm text-[#666666] mt-1">{{ role?.description ?? '' }}</p>
       </div>
       <UButton
-        :loading="isSaving"
+        :loading="!!isSaving.value"
         color="primary"
         icon="i-heroicons-check"
         :label="t('save')"

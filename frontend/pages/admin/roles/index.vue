@@ -31,7 +31,7 @@
     { key: 'actions', label: t('rbac.actions') },
   ];
 
-  const rows = computed(() => roles.value?.data ?? []);
+  const rows = computed<RoleRow[]>(() => roles.value?.data ?? []);
 </script>
 
 <template>
@@ -43,20 +43,22 @@
     </div>
 
     <UCard>
-      <UTable :rows="rows" :columns="columns" :loading="status === 'pending'">
+      <UTable :rows="rows" :columns="columns as any" :loading="status === 'pending'">
         <template #name-data="{ row }">
           <UBadge color="neutral" variant="subtle" size="sm">
-            {{ row.name }}
+            {{ (row as unknown as RoleRow).name }}
           </UBadge>
         </template>
 
         <template #permissions_count-data="{ row }">
-          <span class="text-sm text-[#666666]">{{ row.permissions_count }}</span>
+          <span class="text-sm text-[#666666]">{{
+            (row as unknown as RoleRow).permissions_count
+          }}</span>
         </template>
 
         <template #actions-data="{ row }">
           <UButton
-            :to="localePath(`/admin/roles/${row.id}`)"
+            :to="localePath(`/admin/roles/${(row as unknown as RoleRow).id}`)"
             color="neutral"
             variant="ghost"
             size="sm"
