@@ -93,14 +93,12 @@ All 25 Phase 4 tasks (T065-T089) have been implemented and documented. Three cri
 **Attack Scenarios Tested:**
 
 1. **Brute-Force Attack**
-
    - Rapid login attempts (1000 req/min)
    - Rate limit kicks in after 10 requests
    - Returns 429 `RATE_LIMIT_EXCEEDED`
    - `Retry-After` header with delay
 
 2. **Header Injection Attack**
-
    - XSS payloads in `X-Correlation-ID` header
    - Malicious headers rejected
    - Correlation IDs validated (UUID v4 format)

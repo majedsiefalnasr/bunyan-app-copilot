@@ -62,7 +62,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Backend Configuration
 
 - [x] **T003** [P] [US1] Configure MySQL database connection
-
   - **Files:**
     - `backend/.env`
     - `backend/.env.example`
@@ -75,7 +74,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001
 
 - [x] **T004** [P] [US1] Install and configure Laravel Sanctum
-
   - **Files:**
     - `backend/composer.json` (dependency added)
     - `backend/config/sanctum.php` (published)
@@ -120,7 +118,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Frontend Configuration
 
 - [x] **T006** [P] [US2] Install @nuxt/ui module + Tailwind CSS v4
-
   - **Files:**
     - `frontend/package.json` (@nuxt/ui added)
     - `frontend/nuxt.config.ts` (module registration)
@@ -142,7 +139,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T002
 
 - [x] **T007** [P] [US2] Enable TypeScript strict mode + @nuxtjs/i18n
-
   - **Files:**
     - `frontend/tsconfig.json`
     - `fronten d/nuxt.config.ts` (i18n module registration)
@@ -165,7 +161,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T002, T006
 
 - [x] **T008** [P] [US2] Configure RTL support + Tailwind logical properties
-
   - **Files:**
     - `frontend/nuxt.config.ts` (html dir binding)
     - `frontend/tailwind.config.ts` (important: support logical properties)
@@ -206,7 +201,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### User Model & RBAC Foundation
 
 - [x] **T010** [US1] [US3] Create User model with $role enum
-
   - **File:** `backend/app/Models/User.php`
   - **Acceptance Criteria:**
     - [x] `User` extends Authenticatable (Larvel default)
@@ -222,7 +216,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001
 
 - [x] **T011** [US1] [US3] Create users table migration
-
   - **File:** `backend/database/migrations/{timestamp}_create_users_table.php`
   - **Acceptance Criteria:**
     - [x] Migration creates `users` table with all columns per `data-model.md`
@@ -236,7 +229,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001, T003
 
 - [x] **T012** [P] [US3] Create base exception handler with error contract
-
   - **File:** `backend/app/Exceptions/Handler.php`
   - **Acceptance Criteria:**
     - [x] Handler catches all exceptions and formats as standard JSON (see `error-contract.md`)
@@ -265,7 +257,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Layering Infrastructure
 
 - [x] **T014** [P] [US3] Create Form Request base class
-
   - **File:** `backend/app/Http/Requests/BaseFormRequest.php`
   - **Acceptance Criteria:**
     - [x] `BaseFormRequest` extends `FormRequest`
@@ -277,7 +268,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001
 
 - [x] **T015** [P] [US3] Create API Resource base class
-
   - **File:** `backend/app/Http/Resources/BaseResource.php`
   - **Acceptance Criteria:**
     - [x] `BaseResource` extends `JsonResource`
@@ -287,7 +277,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001
 
 - [x] **T016** [P] [US3] Create base Service class
-
   - **File:** `backend/app/Services/BaseService.php`
   - **Acceptance Criteria:**
     - [x] `BaseService` provides common methods: `getById()`, `all()`, `create()`, `update()`, `delete()`
@@ -311,7 +300,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### RBAC & Auth Scaffolding
 
 - [x] **T018** [P] [US1] [US3] Create RBAC Policies structure
-
   - **Files:**
     - `backend/app/Policies/BasePolicy.php`
     - `backend/app/Policies/UserPolicy.php`
@@ -326,7 +314,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T001, T010, T012
 
 - [x] **T019** [P] [US1] Create Auth controller with seed endpoints
-
   - **File:** `backend/app/Http/Controllers/Api/AuthController.php`
   - **Acceptance Criteria:**
     - [x] `AuthController` extends `BaseController`
@@ -380,7 +367,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### State & Composables
 
 - [x] **T022** [US2] [US3] Create Pinia stores (user + theme)
-
   - **Files:**
     - `frontend/stores/user.ts`
     - `frontend/stores/theme.ts`
@@ -397,7 +383,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** T002
 
 - [x] **T023** [P] [US2] [US3] Create API composable for Laravel communication
-
   - **File:** `frontend/composables/useApi.ts`
   - **Acceptance Criteria:**
     - [x] Composable wraps `axios` or native `fetch`
@@ -423,7 +408,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Layouts & Base Components
 
 - [x] **T025** [P] [US2] Create base layouts (default, auth, admin)
-
   - **Files:**
     - `frontend/layouts/default.vue`
     - `frontend/layouts/auth.vue`
@@ -455,7 +439,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Testing Setup (Frontend)
 
 - [x] **T027** [P] [US2] Configure Vitest + Vue Test Utils
-
   - **Files:**
     - `frontend/vitest.config.ts` (already created in T009, now finalized)
     - `frontend/tests/unit/composables/useApi.test.ts`
@@ -491,7 +474,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Docker & Local Development
 
 - [x] **T029** [P] [US4] Create docker-compose.yml
-
   - **File:** `docker-compose.yml` (repo root)
   - **Acceptance Criteria:**
     - [x] Services: MySQL 8.0, Redis 7.0
@@ -505,7 +487,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
   - **Dependencies:** None
 
 - [x] **T030** [P] [US4] Create backend/Dockerfile + .dockerignore
-
   - **Files:**
     - `backend/Dockerfile`
     - `backend/.dockerignore`
@@ -536,7 +517,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Git Automation & Pre-Commit
 
 - [x] **T032** [P] [US4] Install Husky + pre-commit hooks
-
   - **Files:**
     - `.husky/pre-commit`
     - `package.json` (`husky` + `lint-staged` in devDependencies)
@@ -629,7 +609,6 @@ Backend and Frontend scaffolding can execute in parallel to each other, but each
 ### Final Verification
 
 - [x] **T036** Final pre-commit validation
-
   - **Commands:**
 
     ```bash

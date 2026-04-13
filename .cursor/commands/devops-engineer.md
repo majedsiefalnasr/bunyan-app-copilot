@@ -1,5 +1,5 @@
 ---
-description: "DevOps authority for Bunyan. Covers CI/CD, Docker, deployment strategies, and server configuration."
+description: 'DevOps authority for Bunyan. Covers CI/CD, Docker, deployment strategies, and server configuration.'
 ---
 
 ## User Input

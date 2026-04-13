@@ -568,15 +568,12 @@ RateLimitByRoleMiddleware (exit)  # Record response
 ### High-Risk Areas
 
 1. **Correlation ID Propagation**: If not propagated through all layers, debugging becomes difficult
-
    - **Mitigation**: Test correlation ID presence in all logs; add logging to middleware tests
 
 2. **Rate Limiting Accuracy**: If not configured correctly, may block legitimate users or fail to block attackers
-
    - **Mitigation**: Load testing; verify per-role limits; monitor false positives
 
 3. **Sensitive Data in Logs**: Accidental logging of passwords/tokens/cards is a security risk
-
    - **Mitigation**: Implement masking in logger; code review logging statements; audit logs regularly
 
 4. **Localization Completeness**: Missing error messages in Arabic = poor UX
@@ -625,25 +622,21 @@ RateLimitByRoleMiddleware (exit)  # Record response
 ## Next Steps
 
 1. **Phase 0 (Research)**: Generate `research.md` with deep dives on:
-
    - Laravel exception handling internals
    - Monolog logging patterns
    - Nuxt error boundaries and composables
    - Pinia state management for errors
 
 2. **Phase 1 (Design)**: Generate:
-
    - `data-model.md` (optional audit log schema)
    - `contracts/` (API response schemas, error code registry)
    - Start implementing exception handler + error codes
 
 3. **Phase 2 (Implementation)**: Execute tasks from Phase 1 and 2
-
    - Exception handler, logging middleware, correlation IDs
    - Frontend error boundary, interceptor, toasts
 
 4. **Phase 3 (Testing)**: Full test coverage
-
    - Unit tests (Exception handler, error formatter)
    - Feature tests (HTTP error responses, rate limiting)
    - E2E tests (Error UI flows)

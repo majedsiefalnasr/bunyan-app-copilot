@@ -1,5 +1,5 @@
 ---
-description: "Creates DAG-based execution plans with task decomposition, wave scheduling, and pre-mortem risk analysis."
+description: 'Creates DAG-based execution plans with task decomposition, wave scheduling, and pre-mortem risk analysis.'
 ---
 
 ## User Input

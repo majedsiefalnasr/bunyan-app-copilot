@@ -16,10 +16,10 @@ npx nuxi@latest module add ui
 ```typescript
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ["@nuxt/ui"],
+  modules: ['@nuxt/ui'],
   app: {
     head: {
-      htmlAttrs: { dir: "rtl", lang: "ar" },
+      htmlAttrs: { dir: 'rtl', lang: 'ar' },
     },
   },
 });
@@ -45,8 +45,8 @@ Configure via `app.config.ts`:
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: "neutral", // achromatic palette
-      neutral: "neutral",
+      primary: 'neutral', // achromatic palette
+      neutral: 'neutral',
     },
   },
 });
@@ -81,11 +81,7 @@ Functional accents (workflow only):
 
 ```vue
 <template>
-  <UButton
-    label="إنشاء مشروع"
-    color="neutral"
-    class="rounded-[6px] text-sm font-medium"
-  />
+  <UButton label="إنشاء مشروع" color="neutral" class="rounded-[6px] text-sm font-medium" />
   <UButton
     label="إلغاء"
     variant="outline"
@@ -98,21 +94,21 @@ Functional accents (workflow only):
 
 ```vue
 <script setup lang="ts">
-import { z } from "zod";
-import type { FormSubmitEvent } from "#ui/types";
+  import { z } from 'zod';
+  import type { FormSubmitEvent } from '#ui/types';
 
-const schema = z.object({
-  name: z.string().min(1, "اسم المشروع مطلوب"),
-  budget: z.number().min(0, "الميزانية يجب أن تكون أكبر من صفر"),
-  location: z.string().min(1, "الموقع مطلوب"),
-});
+  const schema = z.object({
+    name: z.string().min(1, 'اسم المشروع مطلوب'),
+    budget: z.number().min(0, 'الميزانية يجب أن تكون أكبر من صفر'),
+    location: z.string().min(1, 'الموقع مطلوب'),
+  });
 
-type Schema = z.output<typeof schema>;
-const state = reactive<Partial<Schema>>({});
+  type Schema = z.output<typeof schema>;
+  const state = reactive<Partial<Schema>>({});
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // handle submit
-}
+  async function onSubmit(event: FormSubmitEvent<Schema>) {
+    // handle submit
+  }
 </script>
 
 <template>

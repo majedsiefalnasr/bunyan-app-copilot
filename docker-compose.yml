@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   backend:
@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: bunyan_backend
     ports:
-      - "8000:8000"
+      - '8000:8000'
     environment:
       - APP_ENV=local
       - APP_DEBUG=true
@@ -39,7 +39,7 @@ services:
       dockerfile: Dockerfile
     container_name: bunyan_frontend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NUXT_PUBLIC_API_BASE_URL=http://backend:8000/api/v1
       - API_BASE_URL=http://backend:8000/api/v1
@@ -58,13 +58,13 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: bunyan_dev
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - bunyan-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,13 +73,13 @@ services:
     image: redis:7.0-alpine
     container_name: bunyan_redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
       - bunyan-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5

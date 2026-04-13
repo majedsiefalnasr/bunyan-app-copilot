@@ -85,12 +85,12 @@ Implement all project management frontend pages including project CRUD, task man
 
 ```typescript
 // tests/e2e/projects.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("project creation wizard completes all steps", async ({ page }) => {
-  await page.goto("/projects/create");
+test('project creation wizard completes all steps', async ({ page }) => {
+  await page.goto('/projects/create');
   // Step 1: Project Info
-  await page.fill('[data-testid="project-name"]', "مشروع اختباري");
+  await page.fill('[data-testid="project-name"]', 'مشروع اختباري');
   await page.click('[data-testid="wizard-next"]');
   // Step 2: Team
   await page.click('[data-testid="wizard-next"]');

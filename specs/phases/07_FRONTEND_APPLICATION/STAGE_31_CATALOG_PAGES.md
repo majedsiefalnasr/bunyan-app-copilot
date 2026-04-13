@@ -79,18 +79,14 @@ Implement all catalog-related frontend pages for browsing products, categories, 
 
 ```typescript
 // tests/e2e/catalog.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("product listing paginates correctly", async ({ page }) => {
-  await page.goto("/products");
-  const firstPageItems = await page
-    .locator('[data-testid="product-card"]')
-    .count();
+test('product listing paginates correctly', async ({ page }) => {
+  await page.goto('/products');
+  const firstPageItems = await page.locator('[data-testid="product-card"]').count();
   await page.click('[data-testid="pagination-next"]');
   await expect(page).toHaveURL(/page=2/);
-  const secondPageItems = await page
-    .locator('[data-testid="product-card"]')
-    .count();
+  const secondPageItems = await page.locator('[data-testid="product-card"]').count();
   expect(secondPageItems).toBeGreaterThan(0);
 });
 ```

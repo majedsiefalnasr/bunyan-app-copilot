@@ -1,5 +1,5 @@
 ---
-description: "Production-grade frontend architect for Bunyan. Enforces Nuxt.js conventions, Vue 3 Composition API, Nuxt UI, RTL/Arabic design, and DESIGN.md visual language."
+description: 'Production-grade frontend architect for Bunyan. Enforces Nuxt.js conventions, Vue 3 Composition API, Nuxt UI, RTL/Arabic design, and DESIGN.md visual language.'
 ---
 
 ## User Input

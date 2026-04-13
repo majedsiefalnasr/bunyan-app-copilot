@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: [develop, main]
     paths:
-      - "specs/**"
-      - ".workflow-state.json"
+      - 'specs/**'
+      - '.workflow-state.json'
 
 jobs:
   spec-branch-guard:

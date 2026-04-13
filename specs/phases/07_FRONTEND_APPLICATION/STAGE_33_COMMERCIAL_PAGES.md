@@ -83,21 +83,19 @@ Implement all commercial/transactional frontend pages including RFQ, orders, pay
 
 ```typescript
 // tests/e2e/commercial.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("checkout flow completes successfully", async ({ page }) => {
-  await page.goto("/checkout");
-  await page.fill('[data-testid="shipping-address"]', "الرياض، حي العليا");
+test('checkout flow completes successfully', async ({ page }) => {
+  await page.goto('/checkout');
+  await page.fill('[data-testid="shipping-address"]', 'الرياض، حي العليا');
   await page.click('[data-testid="payment-method-card"]');
   await page.click('[data-testid="place-order-button"]');
-  await expect(page).toHaveURL("/payment/success");
-  await expect(page.locator('[data-testid="order-number"]')).toHaveText(
-    /BNY-\d{8}-\d{4}/
-  );
+  await expect(page).toHaveURL('/payment/success');
+  await expect(page.locator('[data-testid="order-number"]')).toHaveText(/BNY-\d{8}-\d{4}/);
 });
 
-test("invoice shows ZATCA QR code", async ({ page }) => {
-  await page.goto("/invoices/1");
+test('invoice shows ZATCA QR code', async ({ page }) => {
+  await page.goto('/invoices/1');
   await expect(page.locator('[data-testid="zatca-qr"]')).toBeVisible();
 });
 ```

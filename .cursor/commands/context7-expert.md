@@ -1,5 +1,5 @@
 ---
-description: "Expert in latest library versions and correct syntax using up-to-date documentation via Context7 MCP."
+description: 'Expert in latest library versions and correct syntax using up-to-date documentation via Context7 MCP.'
 ---
 
 ## User Input

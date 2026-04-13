@@ -22,7 +22,6 @@ You **MUST** consider the user input before proceeding (if not empty).
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
-
   - **Optional hook** (`optional: true`):
 
     ```
@@ -213,7 +212,6 @@ After reporting, check if `.specify/extensions.yml` exists in the project root.
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
-
   - **Optional hook** (`optional: true`):
 
     ```

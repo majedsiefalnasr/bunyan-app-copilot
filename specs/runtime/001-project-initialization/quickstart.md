@@ -621,13 +621,11 @@ git commit -m "fix: resolve linting"
 After successful setup:
 
 1. **Read the Documentation:**
-
    - [DESIGN.md](../../DESIGN.md) — Visual design system
    - [AGENTS.md](../../AGENTS.md) — AI-backed development workflow
    - [specs/phases/](../../specs/phases/) — Stage-by-stage plan
 
 2. **Explore the Codebase:**
-
    - Backend: `backend/app/` — Controllers, Services, Models
    - Frontend: `frontend/pages/`, `frontend/components/` — Vue components
    - Tests: `backend/tests/`, `frontend/tests/` — Test examples
@@ -640,7 +638,6 @@ After successful setup:
    ```
 
 4. **Start Development:**
-
    - Create a feature branch
    - Follow the architecture guidelines in [AGENTS.md](../../AGENTS.md)
    - Leverage **GitHub Copilot** for code generation

@@ -1,5 +1,5 @@
 ---
-description: "Explores codebase, identifies patterns, maps dependencies, discovers architecture."
+description: 'Explores codebase, identifies patterns, maps dependencies, discovers architecture.'
 ---
 
 ## User Input

@@ -1,5 +1,5 @@
 ---
-description: "Expert agent for creating comprehensive Architectural Decision Records (ADRs) for the Bunyan platform."
+description: 'Expert agent for creating comprehensive Architectural Decision Records (ADRs) for the Bunyan platform.'
 ---
 
 ## User Input

@@ -1,5 +1,5 @@
 ---
-description: "Documentation authority for Bunyan. Writes API docs, project READMEs, migration guides, and architectural decision records."
+description: 'Documentation authority for Bunyan. Writes API docs, project READMEs, migration guides, and architectural decision records.'
 ---
 
 ## User Input

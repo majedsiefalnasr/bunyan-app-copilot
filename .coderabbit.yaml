@@ -1,17 +1,17 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
-language: "en-US" # Set language for reviews (ISO code: en-US, ar for Arabic optional)
-tone_instructions: "professional" # Options: professional, casual, direct
+language: 'en-US' # Set language for reviews (ISO code: en-US, ar for Arabic optional)
+tone_instructions: 'professional' # Options: professional, casual, direct
 early_access: true
 
 # Review settings
 reviews:
   # Assertive profile for comprehensive, detailed feedback on architecture and security
-  profile: "assertive"
+  profile: 'assertive'
   request_changes_workflow: true
   high_level_summary: true
-  high_level_summary_placeholder: "@coderabbitai summary"
-  auto_title_placeholder: "@coderabbitai"
+  high_level_summary_placeholder: '@coderabbitai summary'
+  auto_title_placeholder: '@coderabbitai'
   poem: false
   review_status: true
   collapse_walkthrough: false
@@ -21,22 +21,22 @@ reviews:
 
   # Path filters - exclude build artifacts, dependencies, and lock files
   path_filters:
-    - "!vendor/**"
-    - "!node_modules/**"
-    - "!.next/**"
-    - "!dist/**"
-    - "!build/**"
-    - "!coverage/**"
-    - "!**/*.lock"
-    - "!storage/logs/**"
-    - "!**/.env*"
+    - '!vendor/**'
+    - '!node_modules/**'
+    - '!.next/**'
+    - '!dist/**'
+    - '!build/**'
+    - '!coverage/**'
+    - '!**/*.lock'
+    - '!storage/logs/**'
+    - '!**/.env*'
 
   # Path-specific review instructions aligned with Bunyan architecture
   path_instructions:
     # ==================== BACKEND (LARAVEL) ====================
 
     # API Routes - Check RBAC middleware, route grouping, versioning
-    - path: "backend/routes/**/*"
+    - path: 'backend/routes/**/*'
       instructions: |
         "Review API routes for:
         - Correct middleware chain: auth:sanctum → RBAC policies
@@ -48,7 +48,7 @@ reviews:
         - Form Request validation applied via middleware"
 
     # Controllers - Keep thin, delegate to services
-    - path: "backend/app/Http/Controllers/**/*"
+    - path: 'backend/app/Http/Controllers/**/*'
       instructions: |
         "Review Controllers for:
         - Controllers are thin (5-10 lines max)
@@ -61,7 +61,7 @@ reviews:
         - RBAC authorization via Policies provided in routes"
 
     # Services - Business logic layer
-    - path: "backend/app/Services/**/*"
+    - path: 'backend/app/Services/**/*'
       instructions: |
         "Review Services for:
         - Pure business logic, no HTTP concerns
@@ -74,7 +74,7 @@ reviews:
         - Audit logging for mutations (created_by, updated_by)"
 
     # Repositories - Database access layer
-    - path: "backend/app/Repositories/**/*"
+    - path: 'backend/app/Repositories/**/*'
       instructions: |
         "Review Repositories for:
         - Eloquent queries ONLY (no raw SQL without //comment)
@@ -86,7 +86,7 @@ reviews:
         - No business logic, just data access"
 
     # Eloquent Models
-    - path: "backend/app/Models/**/*"
+    - path: 'backend/app/Models/**/*'
       instructions: |
         "Review Models for:
         - Relationships defined correctly
@@ -99,7 +99,7 @@ reviews:
         - utf8mb4 charset for Arabic text"
 
     # Form Requests - Validation layer
-    - path: "backend/app/Http/Requests/**/*"
+    - path: 'backend/app/Http/Requests/**/*'
       instructions: |
         "Review Form Requests for:
         - authorize() method checks role RBAC (via Policy)
@@ -109,7 +109,7 @@ reviews:
         - No business logic (validation only)"
 
     # API Resources - Response formatting
-    - path: "backend/app/Http/Resources/**/*"
+    - path: 'backend/app/Http/Resources/**/*'
       instructions: |
         "Review API Resources for:
         - Consistent response structure
@@ -119,7 +119,7 @@ reviews:
         - Error format: {success, error: {code, message}}"
 
     # Database Migrations
-    - path: "backend/database/migrations/**/*"
+    - path: 'backend/database/migrations/**/*'
       instructions: |
         "Review Migrations for:
         - Forward-only (never modify existing migrations)
@@ -133,7 +133,7 @@ reviews:
         - Lock risk analysis (ALTER COLUMN HIGH risk on large tables)"
 
     # Laravel Config
-    - path: "backend/config/**/*"
+    - path: 'backend/config/**/*'
       instructions: |
         "Review config for:
         - No hardcoded secrets (use .env)
@@ -143,7 +143,7 @@ reviews:
         - CORS settings"
 
     # Policies - Authorization
-    - path: "backend/app/Policies/**/*"
+    - path: 'backend/app/Policies/**/*'
       instructions: |
         "Review Policies for:
         - RBAC checks (is user allowed?)
@@ -158,7 +158,7 @@ reviews:
     # ==================== FRONTEND (NUXT.JS) ====================
 
     # Vue Components
-    - path: "frontend/components/**/*.vue"
+    - path: 'frontend/components/**/*.vue'
       instructions: |
         "Review Vue components for:
         - Use Composition API (<script setup lang=\"ts\">)
@@ -174,7 +174,7 @@ reviews:
         - Translation keys via $t() for all user-facing text"
 
     # Pages/Routes
-    - path: "frontend/pages/**/*.vue"
+    - path: 'frontend/pages/**/*.vue'
       instructions: |
         "Review Pages for:
         - Use definePageMeta() for layout, middleware
@@ -186,7 +186,7 @@ reviews:
         - Arabic translations for all UI text"
 
     # Composables
-    - path: "frontend/composables/**/*.ts"
+    - path: 'frontend/composables/**/*.ts'
       instructions: |
         "Review Composables for:
         - Pure logic, no component rendering
@@ -197,7 +197,7 @@ reviews:
         - Proper cleanup in onBeforeUnmount"
 
     # Pinia Stores
-    - path: "frontend/stores/**/*.ts"
+    - path: 'frontend/stores/**/*.ts'
       instructions: |
         "Review Pinia Stores for:
         - State: reactive data
@@ -209,7 +209,7 @@ reviews:
         - Use useApi for HTTP"
 
     # API Client Composable
-    - path: "frontend/composables/useApi.ts"
+    - path: 'frontend/composables/useApi.ts'
       instructions: |
         "Review useApi for:
         - All HTTP requests through this composable
@@ -221,7 +221,7 @@ reviews:
         - Retry logic for idempotent requests"
 
     # Tests - Frontend
-    - path: "frontend/tests/**/*"
+    - path: 'frontend/tests/**/*'
       instructions: |
         "Review frontend tests for:
         - Vitest unit tests for composables
@@ -236,7 +236,7 @@ reviews:
     # ==================== BACKEND TESTS ====================
 
     # PHPUnit Tests
-    - path: "backend/tests/**/*"
+    - path: 'backend/tests/**/*'
       instructions: |
         "Review backend tests for:
         - Unit tests for Services (no DB)
@@ -252,7 +252,7 @@ reviews:
     # ==================== GENERAL ====================
 
     # TypeScript files
-    - path: "**/*.ts"
+    - path: '**/*.ts'
       instructions: |
         "Review TypeScript for:
         - Strict mode enabled (tsconfig.json)
@@ -265,7 +265,7 @@ reviews:
         - No console.log in production code"
 
     # Vue files
-    - path: "**/*.vue"
+    - path: '**/*.vue'
       instructions: |
         "Review Vue for:
         - Composition API only
@@ -277,7 +277,7 @@ reviews:
         - i18n translation keys ($t)"
 
     # PHP files
-    - path: "**/*.php"
+    - path: '**/*.php'
       instructions: |
         "Review PHP for:
         - PSR-12 coding standard
@@ -290,7 +290,7 @@ reviews:
         - Audit logging for mutations"
 
     # Markdown documentation
-    - path: "**/*.md"
+    - path: '**/*.md'
       instructions: |
         "Review Markdown for:
         - Clear, concise explanations
@@ -304,11 +304,11 @@ reviews:
     enabled: true
     auto_incremental_review: true
     ignore_title_keywords:
-      - "WIP"
-      - "DO NOT MERGE"
-      - "wontfix"
+      - 'WIP'
+      - 'DO NOT MERGE'
+      - 'wontfix'
     drafts: true
-    base_branches: [main, develop, "^release/.*$", "^spec/.*$"]
+    base_branches: [main, develop, '^release/.*$', '^spec/.*$']
 
   # Tools configuration
   tools:
@@ -329,7 +329,7 @@ reviews:
     languagetool:
       enabled: true
       enabled_only: false
-      level: "default"
+      level: 'default'
 
     # ESLint for JS/TS/Vue (frontend)
     eslint:

@@ -465,14 +465,12 @@ _Rationale:_ These five components are sufficient to demonstrate Nuxt UI setup, 
 **Binding Decision:**
 
 - **Proof-of-Concept Components** (must render correctly):
-
   1. `UButton` — Demonstrates component props, styling
   2. `UCard` — Demonstrates shadow-as-border design from DESIGN.md
   3. `UForm` + `UInput` — Together demonstrate Nuxt UI form system
   4. `ULayout` / base `layouts/default.vue` — Demonstrates RTL-aware structure
 
 - **Verification Test** (E2E smoke test in Playwright):
-
   - Load `http://localhost:3000/` (root page)
   - Verify: Card renders, Button clickable, Form responsive
   - Verify: RTL direction attribute present in HTML
@@ -531,11 +529,11 @@ _Rationale:_ Foundation stage focuses on architecture and tooling. Content and c
 // nuxt.config.ts
 export default defineNuxtConfig({
   i18n: {
-    locales: ["ar", "en"],
-    defaultLocale: "ar",
-    strategy: "prefix",
+    locales: ['ar', 'en'],
+    defaultLocale: 'ar',
+    strategy: 'prefix',
   },
-  dir: "rtl", // Sets initial direction
+  dir: 'rtl', // Sets initial direction
 });
 ```
 

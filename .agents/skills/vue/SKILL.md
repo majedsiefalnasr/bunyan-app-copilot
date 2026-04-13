@@ -11,15 +11,15 @@ description: Vue 3 Composition API patterns
 
 ```vue
 <script setup lang="ts">
-interface Props {
-  title: string;
-  status: ProjectStatus;
-}
+  interface Props {
+    title: string;
+    status: ProjectStatus;
+  }
 
-const props = defineProps<Props>();
-const emit = defineEmits<{
-  statusChange: [newStatus: ProjectStatus];
-}>();
+  const props = defineProps<Props>();
+  const emit = defineEmits<{
+    statusChange: [newStatus: ProjectStatus];
+  }>();
 </script>
 
 <template>

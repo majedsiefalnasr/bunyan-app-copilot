@@ -178,19 +178,16 @@ CRITICAL PATH: 72 minutes (serial)
 ### Backend Tasks (T001–T014)
 
 - **T001: Create Laravel 11 Project**
-
   - [ ] `composer create-project laravel/laravel` succeeds
   - [ ] PHP 8.2+ enforced in composer.json
   - [ ] `.env` template created with DB/Redis/API_URL
 
 - **T002: Create Nuxt 3 Project**
-
   - [ ] `npx nuxi@latest init` succeeds
   - [ ] Node 18+ verified
   - [ ] TypeScript enabled
 
 - **T003–T008: Configuration Tasks**
-
   - [ ] .env populated (MySQL, Redis, API_URL)
   - [ ] Sanctum installed and tokens table created
   - [ ] Tailwind v4 compiles with CSS
@@ -209,13 +206,11 @@ CRITICAL PATH: 72 minutes (serial)
 ### Frontend Tasks (T015–T024)
 
 - **T015: RTL Support**
-
   - [ ] Tailwind logical properties active (ps, pe, ms, me instead of left, right)
   - [ ] `dir="rtl"` attribute toggles with locale
   - [ ] Layouts render correctly in both directions
 
 - **T016–T019: State & UI**
-
   - [ ] Pinia stores (user, theme) initialize
   - [ ] API composable wraps `$fetch`
   - [ ] Layouts (default, auth, admin) render
@@ -230,7 +225,6 @@ CRITICAL PATH: 72 minutes (serial)
 ### DevOps Tasks (T025–T032)
 
 - **T025–T027: Docker & Hooks**
-
   - [ ] `docker-compose up -d` starts MySQL + Redis
   - [ ] Backend container maps port 8000
   - [ ] Frontend container maps port 3000
@@ -244,7 +238,6 @@ CRITICAL PATH: 72 minutes (serial)
 ### Integration Tasks (T033–T034)
 
 - **T033: Smoke Test (Frontend → Backend)**
-
   - [ ] Frontend Login page calls `POST /api/v1/auth/login`
   - [ ] Backend returns 200 + token
   - [ ] Frontend stores token in Pinia
