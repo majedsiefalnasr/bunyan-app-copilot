@@ -1,6 +1,6 @@
+import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
-import { createPinia, setActivePinia } from 'pinia';
 
 import { useAuthStore } from '../../../stores/auth';
 import type { UserRoleType } from '../../../types/index';

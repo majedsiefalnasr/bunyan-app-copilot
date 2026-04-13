@@ -1,6 +1,6 @@
 // frontend/stores/auth.ts
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { AuthUser, UserRoleType } from '../types/index';
 
 export const useAuthStore = defineStore('auth', () => {

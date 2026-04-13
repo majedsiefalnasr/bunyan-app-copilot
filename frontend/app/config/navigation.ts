@@ -1,6 +1,6 @@
 // frontend/app/config/navigation.ts
-import { UserRole } from '../../types/index';
 import type { NavItem } from '../../types/index';
+import { UserRole } from '../../types/index';
 
 export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
   [UserRole.Customer]: [
