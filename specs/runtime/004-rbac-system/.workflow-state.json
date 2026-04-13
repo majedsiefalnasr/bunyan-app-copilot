@@ -6,8 +6,8 @@
   "branch": "spec/004-rbac-system",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "implement",
-  "stage_status": "BACKEND CLOSED",
+  "current_step": "stage_production_ready",
+  "stage_status": "PRODUCTION READY",
   "auto_advance": true,
   "clarifications_resolved": true,
   "drift_passed": true,
@@ -27,14 +27,15 @@
   "parallel_task_groups": [],
   "current_parallel_group": null,
   "session_started_at": "2026-04-13T00:00:00Z",
-  "last_updated": "2026-04-13T22:25:00Z",
+  "last_updated": "2026-04-13T22:30:00Z",
   "step_timings": {
     "specify": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" },
     "clarify": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" },
     "plan": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" },
     "tasks": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" },
     "analyze": { "started_at": "2026-04-13T00:00:00Z", "completed_at": "2026-04-13T00:00:00Z" },
-    "implement": { "started_at": "2026-04-13T22:00:00Z", "completed_at": "2026-04-13T22:25:00Z" }
+    "implement": { "started_at": "2026-04-13T22:00:00Z", "completed_at": "2026-04-13T22:25:00Z" },
+    "closure": { "started_at": "2026-04-13T22:25:00Z", "completed_at": "2026-04-13T22:30:00Z" }
   },
   "history": [
     {
@@ -66,6 +67,14 @@
     {
       "event": "stage_backend_closed",
       "timestamp": "2026-04-13T22:25:00Z"
+    },
+    {
+      "event": "pre_closure_review_approved",
+      "timestamp": "2026-04-13T22:28:00Z"
+    },
+    {
+      "event": "stage_production_ready",
+      "timestamp": "2026-04-13T22:30:00Z"
     }
   ]
 }
