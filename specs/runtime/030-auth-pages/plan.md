@@ -1545,9 +1545,360 @@ const useRegisterStore = defineStore('register', {
 
 ---
 
+## 11. Backend Architecture Patterns (Phase 12 Remediation)
+
+**Context:** Phase 12 tasks (T073-T079) implement backend architectural patterns required by AGENTS.md but missing from initial specification.
+
+### 11.1 Laravel Form Request Classes (T073)
+
+**Purpose:** Server-side validation logic lives in dedicated Form Request classes, NOT in controllers.
+
+**Implementation:**
+
+```php
+// backend/app/Http/Requests/Auth/StoreLoginRequest.php
+class StoreLoginRequest extends FormRequest {
+    public function rules(): array {
+        return [
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|min:1', // min length validated on registered password
+            'rememberMe' => 'nullable|boolean',
+        ];
+    }
+
+    public function messages(): array {
+        return [
+            'email.required' => __('validation.email_required'),
+            'email.email' => __('validation.email_invalid'),
+            'email.exists' => __('validation.email_not_found'),
+            'password.required' => __('validation.password_required'),
+        ];
+    }
+}
+
+// backend/app/Http/Controllers/Auth/LoginController.php
+public function store(StoreLoginRequest $request) {
+    $validated = $request->validated(); // Already validated!
+    // Pass to Service layer, NOT to Model directly
+    $user = $this->authService->login($validated['email'], $validated['password']);
+    return response()->json(['success' => true, 'data' => $user]);
+}
+```
+
+**Form Requests for Auth:**
+
+| Request Class               | Endpoint                           | Rules                                                                              |
+| --------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `StoreLoginRequest`         | `POST /api/v1/auth/login`          | email (exists), password (required)                                                |
+| `StoreRegisterRequest`      | `POST /api/v1/auth/register`       | email (unique), password (confirmed), firstName, lastName, phone (regex), idNumber |
+| `StorePasswordResetRequest` | `POST /api/v1/auth/reset-password` | email (exists), password (confirmed), token (exists in password_resets)            |
+| `StoreVerifyOtpRequest`     | `POST /api/v1/auth/verify-otp`     | otp (size:6), code_id (uuid exists)                                                |
+| `StoreAvatarRequest`        | `POST /api/v1/user/avatar`         | avatar (image, max 5MB, dimensions 400x400)                                        |
+
+### 11.2 Eloquent Repository Pattern (T074)
+
+**Purpose:** All Eloquent database queries live in Repositories, NOT in Services or Controllers. Services consume repositories.
+
+**Architecture:**
+
+```
+Controller → Service → Repository → Eloquent Model → Database
+```
+
+**Implementation:**
+
+```php
+// backend/app/Repositories/UserRepository.php
+class UserRepository {
+    public function findByEmail(string $email): ?User {
+        return User::whereEmail($email)->first();
+    }
+
+    public function findById(int $id): ?User {
+        return User::findOrFail($id);
+    }
+
+    public function findWithPasswordHistory(int $userId): User {
+        return User::with('passwordHistory')->findOrFail($userId);
+    }
+
+    public function create(array $data): User {
+        return User::create($data); // Uses mass assignment + fillable
+    }
+
+    public function update(int $id, array $data): bool {
+        return User::findOrFail($id)->update($data);
+    }
+}
+
+// backend/app/Services/AuthService.php
+class AuthService {
+    public function __construct(UserRepository $userRepository) {
+        $this->userRepository = $userRepository;
+    }
+
+    public function login(string $email, string $password): ?User {
+        $user = $this->userRepository->findByEmail($email); // Call Repository!
+        return $user && Hash::check($password, $user->password) ? $user : null;
+    }
+}
+```
+
+**Repositories Required:**
+
+| Repository                  | Methods                                                        | Usage                                   |
+| --------------------------- | -------------------------------------------------------------- | --------------------------------------- |
+| `UserRepository`            | findByEmail, findById, findWithPasswordHistory, create, update | Authentication, registration            |
+| `PasswordHistoryRepository` | create, latestThree (scope), findByUserIdAndPassword           | Password reset security (prevent reuse) |
+| `AuditLogRepository`        | create, findByUser, countFailedLogins                          | Security logging, compliance            |
+
+### 11.3 Laravel Service Layer (T075)
+
+**Purpose:** Business logic lives in Services with concrete method signatures, return types, exception types, and dependency injection.
+
+**Implementation:**
+
+```php
+// backend/app/Services/AuthService.php
+class AuthService {
+    public function __construct(
+        UserRepository $userRepository,
+        PasswordHistoryRepository $passwordHistory,
+        AuditLogService $auditLog
+    ) { ... }
+
+    // Concrete method signature: types + return type + exceptions
+    public function login(string $email, string $password): User {
+        // Throws: AuthInvalidCredentialsException (401), RateLimitExceededException (429)
+
+        // 1. Check rate limit
+        if ($this->rateLimiter->tooManyAttempts("login_{$email}", 10)) {
+            $this->auditLog->logFailedLogin($email, 'rate_limited');
+            throw new RateLimitExceededException('RATE_LIMIT_EXCEEDED');
+        }
+
+        // 2. Find user
+        $user = $this->userRepository->findByEmail($email);
+        if (!$user || !Hash::check($password, $user->password)) {
+            $this->auditLog->logFailedLogin($email, 'invalid_credentials');
+            throw new AuthInvalidCredentialsException('AUTH_INVALID_CREDENTIALS');
+        }
+
+        // 3. Generate tokens
+        return $user; // Client will get tokens via Sanctum
+    }
+
+    public function register(array $data): User {
+        // Throws: ValidationExceptionException (422), ConflictException (409)
+        $user = $this->userRepository->create($data);
+        return $user;
+    }
+
+    public function refreshToken(string $token): TokenPair {
+        // Throws: AuthTokenExpiredException (401)
+        $user = Auth::user();
+        // Regenerate access + refresh tokens
+        return new TokenPair(
+            accessToken: $user->createToken('auth')->plainTextToken,
+            refreshToken: $user->createToken('refresh')->plainTextToken,
+        );
+    }
+}
+
+// backend/app/Services/PasswordResetService.php
+class PasswordResetService {
+    public function initiate(string $email): PasswordReset {
+        // Rate limit: 3 per 60 minutes
+        $user = $this->userRepository->findByEmail($email);
+        if (!$user) {
+            // CRITICAL: Return generic message to prevent account enumeration
+            // Don't throw exception; just silently succeed
+            event(new PasswordResetRequested($email, null)); // Log for audit
+            return null; // Return null meant for security logging only
+        }
+
+        // Create token, send email
+        $reset = PasswordReset::create([...]);
+        return $reset;
+    }
+
+    public function reset(string $token, string $password): User {
+        // Throws: TokenExpiredException (401)
+        $reset = PasswordReset::whereToken($token)->first();
+        if (!$reset || $reset->created_at->addHour()->isPast()) {
+            throw new TokenExpiredException('AUTH_TOKEN_EXPIRED');
+        }
+
+        // Check password history (cannot reuse last 3 passwords)
+        $user = $reset->user;
+        $history = $this->passwordHistory->latestThree($user->id);
+        foreach ($history as $old) {
+            if (Hash::check($password, $old->password_hash)) {
+                throw new ValidationException('Password recently used');
+            }
+        }
+
+        // Update password
+        $user->update(['password' => Hash::make($password)]);
+        $reset->delete(); // Single-use token
+
+        return $user;
+    }
+}
+```
+
+### 11.4 RBAC Middleware & Policies (T076)
+
+**Purpose:** Backend enforces role-based authorization via middleware chains + Laravel Policies.
+
+**Implementation:**
+
+```php
+// backend/routes/api.php
+Route::middleware('auth:sanctum')->group(function () {
+    // Protected: only authenticated users
+    Route::get('/user/profile', [UserController::class, 'show']);
+    // Authorize via Policy: UpdateUserProfile policy
+    Route::patch('/user/{user}/profile', [UserController::class, 'update'])
+        ->middleware('can:update,user');
+
+    Route::post('/user/avatar', [AvatarController::class, 'store']) // Post new
+        ->middleware('can:updateAvatar,user');
+});
+
+Route::post('/auth/login', [AuthController::class, 'login']) // public
+    ->middleware('guest'); // Logged-in users redirected
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('guest');
+Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']) // public
+Route::post('/auth/reset-password/{token}', [PasswordResetController::class, 'reset']) // public + token auth
+
+// backend/app/Policies/UserPolicy.php
+class UserPolicy {
+    public function update(User $authUser, User $targetUser): bool {
+        return $authUser->id === $targetUser->id; // Only own profile
+    }
+
+    public function updateAvatar(User $user): bool {
+        return (bool) $user; // Any authenticated user
+    }
+}
+
+// backend/app/Http/Controllers/UserController.php
+class UserController extends Controller {
+    public function update(Request $request, User $user) {
+        // Policy already enforced by middleware 'can:update,user'
+        // This method ONLY runs if authorization passes
+        $validated = UpdateProfileRequest::validated();
+        $user->update($validated);
+        return response()->json(['success' => true, 'data' => $user]);
+    }
+}
+```
+
+### 11.5 Rate Limiting Middleware (T077)
+
+**Purpose:** Backend enforces rate limits at middleware layer + returns 429 response.
+
+**Implementation:**
+
+```php
+// backend/app/Http/Middleware/RateLimitAuth.php
+class RateLimitAuth {
+    public function handle(Request $request, Closure $next) {
+        $endpoint = $request->path();
+        $identifier = $request->ip(); // Per IP
+
+        if ($endpoint === 'api/v1/auth/login') {
+            $limit = 10; // 10 attempts
+            $window = 15 * 60; // 15 minutes
+            $key = "login_attempts_{$identifier}";
+        } elseif ($endpoint === 'api/v1/auth/forgot-password') {
+            $limit = 3;
+            $window = 60 * 60; // 60 minutes
+            $key = "forgot_password_{$identifier}";
+        } elseif ($endpoint === 'api/v1/auth/verify-otp') {
+            $limit = 5;
+            $window = 15 * 60;
+            $key = "otp_attempts_{$request->input('email')}"; // Per email
+        }
+
+        if (Cache::has($key)) {
+            $count = Cache::increment($key);
+            if ($count > $limit) {
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => 'RATE_LIMIT_EXCEEDED',
+                        'message' => 'Too many attempts, please try later',
+                    ]
+                ], 429)->header('Retry-After', Cache::get("{$key}:retry_after", 60));
+            }
+        } else {
+            Cache::put($key, 1, now()->addSeconds($window));
+        }
+
+        return $next($request);
+    }
+}
+
+// Register in Kernel
+protected $routeMiddleware = [
+    'rate_limit_auth' => \App\Http\Middleware\RateLimitAuth::class,
+];
+
+// Applied to routes in api.php
+Route::middleware('rate_limit_auth')->group(function () {
+    Route::post('/auth/login', ...);
+    Route::post('/auth/forgot-password', ...);
+    Route::post('/auth/verify-otp', ...);
+});
+```
+
+### 11.6 Error Handling & Exception Mapping (T078)
+
+**Purpose:** Domain exceptions map to error codes; ExceptionHandler returns unified contract response.
+
+**Implementation:**
+
+```php
+// backend/app/Exceptions/AuthInvalidCredentialsException.php
+class AuthInvalidCredentialsException extends Exception {
+    public function render($request) {
+        return response()->json([
+            'success' => false,
+            'data' => null,
+            'error' => [
+                'code' => 'AUTH_INVALID_CREDENTIALS',
+                'message' => __('auth.invalid_credentials'), // Localized
+                'details' => null,
+            ]
+        ], 401);
+    }
+}
+
+// backend/app/Exceptions/Handler.php
+class Handler extends ExceptionHandler {
+    public function render($request, Exception $exception) {
+        if ($exception instanceof AuthInvalidCredentialsException) {
+            return $exception->render($request);
+        }
+        if ($exception instanceof RateLimitExceededException) {
+            return response()->json([
+                'success' => false,
+                'error' => ['code' => 'RATE_LIMIT_EXCEEDED', 'message' => __('errors.rate_limited')]
+            ], 429);
+        }
+        // ... other exceptions
+    }
+}
+```
+
+---
+
 ## Checklist Verification
 
-- [x] All 14 sections included in plan.md (10.1-10.14)
+- [x] All 14 sections in frontend specification (10.1-10.14)
+- [x] 8 sections in backend architecture (11.1-11.6)
 - [x] 6 pages fully specified (login, register, forgot, reset, verify, profile)
 - [x] Nuxt UI components verified + RTL support confirmed
 - [x] VeeValidate 4 + Zod patterns correct
@@ -1561,7 +1912,11 @@ const useRegisterStore = defineStore('register', {
 - [x] All decisions align with DESIGN.md (Geist, shadow-as-border, RTL)
 - [x] Districts caching strategy specified (static JSON)
 - [x] Wizard rendering optimization documented (lazy loading + memoization)
+- [x] **NEW:** Form Requests, Repositories, Services with concrete method signatures
+- [x] **NEW:** RBAC middleware + policies with authorization patterns
+- [x] **NEW:** Rate limiting middleware implementation specified
+- [x] **NEW:** Exception mapping to error codes
 
 ---
 
-**Ready for Step 4: Tasks Generation** ✓
+**Ready for Step 6: Implementation with Phase 12 Backend Architecture** ✓

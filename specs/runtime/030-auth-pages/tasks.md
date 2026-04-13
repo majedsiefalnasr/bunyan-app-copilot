@@ -1,11 +1,11 @@
 # STAGE_30 — Auth Pages Implementation Tasks
 
 **Stage:** 07_FRONTEND_APPLICATION / Auth Pages  
-**Version:** 1.0  
+**Version:** 2.0  
 **Date:** 2026-04-13  
-**Status:** READY FOR IMPLEMENTATION  
-**Total Tasks:** 43  
-**Estimated Effort:** 172-256 hours (~4-6 hours per task)
+**Status:** PHASE 3 REMEDIATION IN PROGRESS  
+**Total Tasks:** 80 (72 base + 8 Phase 12 backend architecture)  
+**Estimated Effort:** 232-332 hours (~4-6 hours per task)
 
 ---
 
@@ -549,6 +549,57 @@ frontend/
 
 - T050A: Audit logging infrastructure (4 migrations + service)
 - T057A: Multi-step wizard rendering optimization (lazy loading + memoization)
+
+---
+
+## Phase 12: Backend Architecture Hardening (Code Review Remediation)
+
+**Dependency:** After Phase 11 (Phase 12 tasks run in parallel, backend/frontend parallelization)  
+**Parallelization:** All [P] — resolves Code Reviewer BLOCKED verdict  
+**Effort:** 18-24 hours total  
+**Critical Gap:** Form Requests, Repositories, Service patterns missing from spec — adding concrete task specs now
+
+### Why Phase 12 Exists
+
+Code Reviewer identified 4 critical architectural gaps preventing implementation:
+
+1. Zero Laravel Form Request classes specified (MANDATORY per AGENTS.md)
+2. Zero Eloquent Repository pattern (MANDATORY per AGENTS.md)
+3. Vague Service layer (method signatures, DI patterns missing)
+4. RBAC backend middleware enforcement incomplete
+
+Phase 12 adds concrete backend architecture tasks + specifications.
+
+---
+
+- [ ] T073 [P] Create Laravel Form Request classes (backend/app/Http/Requests/)
+      Concrete specs: - StoreLoginRequest: email (email + required), password (string + required) - StoreRegisterRequest: email (unique + required), password (confirmed + min:8 + regex), firstName, lastName, phone (regex for SA), idNumber - StorePasswordResetRequest: email (required + exists:users), password (confirmed + min:8), token (required) - StoreVerifyOtpRequest: otp (string + size:6 + regex:/[0-9]/), code_id (uuid) - StoreAvatarRequest: avatar (image + mimes:jpeg,jpg,png,webp + max:5120 + dimensions:min_width=400,ratio=1/1)
+      Effort: 4-5 hours
+
+- [ ] T074 [P] Create Eloquent Repository pattern (backend/app/Repositories/)
+      Concrete specs: - UserRepository: methods (findByEmail, findById, create, update, findWithPasswordHistory) - PasswordHistoryRepository: methods (create, latestThree, findByUserIdAndPassword) - AuditLogRepository: methods (create, findByUserId, countFailedLoginsByIpToday) - All queries in REPOS only, NO queries in Services/Controllers - Use Eloquent scopes for filtering (e.g., User::whereEmail(), PasswordHistory::limit(3))
+      Effort: 5-6 hours
+
+- [ ] T075 [P] Specify Laravel Service layer with concrete method signatures (backend/app/Services/)
+      Concrete specs: - AuthService::login(email, password): ?User | throws AuthException - AuthService::register(data): User | throws ValidationException - AuthService::refreshToken(refreshToken): TokenPair | throws AuthTokenExpiredException - PasswordResetService::initiate(email): PasswordReset | throws ValidationException - PasswordResetService::reset(token, password): User | throws TokenExpiredException - OtpService::verify(otp, codeId): User | throws OtpException - AvatarService::upload(file, user): AvatarUrl | throws FileValidationException
+      All methods specify: param types, return types, exception types, dependencies (DI)
+      Effort: 4-5 hours
+
+- [ ] T076 [P] Specify RBAC middleware & authorization patterns (backend/routes/api.php + backend/app/Policies/)
+      Concrete specs: - Public routes (no auth middleware): POST /api/v1/auth/login, POST /api/v1/auth/register, POST /api/v1/auth/forgot-password, POST /api/v1/auth/verify-token - Protected routes (middleware auth): GET /api/v1/user/profile, PATCH /api/v1/user/profile, POST /api/v1/user/avatar - Add UserPolicy::update() method for authorization (only owner can update profile) - Middleware order: auth:sanctum → authorize via Policy
+      Effort: 3-4 hours
+
+- [ ] T077 [P] Add backend-level rate limiting middleware (backend/app/Http/Middleware/RateLimitAuth.php)
+      Concrete specs: - Implement Redis-backed rate limiter for /api/v1/auth/login (10 per 15 min per IP) - Implement Redis-backed rate limiter for /api/v1/auth/forgot-password (3 per 60 min per IP) - Implement Redis-backed rate limiter for /api/v1/auth/verify-otp (5 per 15 min per email) - Return 429 RATE_LIMIT_EXCEEDED with Retry-After header - Use Laravel's built-in throttle middleware or custom Redis implementation
+      Effort: 3-4 hours
+
+- [ ] T078 [P] Specify error handling at Service layer (backend/app/Exceptions/)
+      Concrete specs: - Define domain exceptions: AuthException, ValidationException, OtpException, TokenExpiredException, FileValidationException - Each exception maps to error code: AUTH_INVALID_CREDENTIALS, VALIDATION_ERROR, etc. - ExceptionHandler catches domain exceptions → returns error contract response {success: false, error: {code, message, details}} - Localization: error messages keyed (e.g., 'auth.invalid_credentials') + resolved in ExceptionHandler
+      Effort: 2-3 hours
+
+- [ ] T079 [P] Add RBAC test task for auth middleware verification (backend/tests/Feature/AuthMiddlewareTest.php)
+      Concrete specs: - Test unauthenticated → GET /api/v1/user/profile returns 401 - Test authenticated → GET /api/v1/user/profile returns 200 with user data - Test different user accessing other's profile → PATCH /api/v1/user/456/profile returns 403 (policy deny) - Test guest middleware: POST /api/v1/auth/login with logged-in user returns 302 redirect to dashboard
+      Effort: 2-3 hours
 
 ---
 
