@@ -6,21 +6,21 @@
   "branch": "spec/030-auth-pages",
   "base_branch": "develop",
   "pkg_manager": "npm",
-  "current_step": "plan",
+  "current_step": "tasks",
   "stage_status": "DRAFT",
   "clarifications_resolved": true,
   "drift_passed": false,
   "implementation_allowed": false,
   "plan_completed": true,
-  "tasks_total": null,
-  "tasks_completed": null,
+  "tasks_total": 58,
+  "tasks_completed": 0,
   "deferred_tasks": [],
   "guardian_verdicts": {},
   "parallel_task_groups": [],
   "current_parallel_group": null,
   "auto_advance": false,
   "session_started_at": "2026-04-13T00:00:00Z",
-  "last_updated": "2026-04-13T21:46:48.202703Z",
+  "last_updated": "2026-04-13T21:53:29.463169Z",
   "step_timings": {
     "specify": {
       "started_at": "2026-04-13T00:00:00Z",
@@ -33,6 +33,10 @@
     "plan": {
       "started_at": "2026-04-13T00:00:00Z",
       "completed_at": "2026-04-13T21:46:48.202712Z"
+    },
+    "tasks": {
+      "started_at": "2026-04-13T00:00:00Z",
+      "completed_at": "2026-04-13T21:53:29.463176Z"
     }
   },
   "history": [
@@ -61,6 +65,11 @@
     {
       "event": "plan_complete",
       "timestamp": "2026-04-13T21:46:48.202713Z"
+    },
+    {
+      "event": "tasks_complete",
+      "tasks_total": 58,
+      "timestamp": "2026-04-13T21:53:29.463178Z"
     }
   ],
   "specify_metadata": {
