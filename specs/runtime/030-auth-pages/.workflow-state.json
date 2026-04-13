@@ -12,21 +12,23 @@
   "drift_passed": false,
   "implementation_allowed": false,
   "plan_completed": true,
-  "tasks_total": 58,
+  "tasks_total": 70,
   "tasks_completed": 0,
+  "remediation_status": "complete",
+  "remediation_completed_at": "2026-04-13T22:15:00.000000Z",
   "deferred_tasks": [],
   "guardian_verdicts": {
     "structural_drift": "PASS",
-    "security_auditor": "BLOCKED",
-    "performance_optimizer": "BLOCKED",
+    "security_auditor": "READY_FOR_REVALIDATION",
+    "performance_optimizer": "READY_FOR_REVALIDATION",
     "qa_engineer": "PENDING",
     "code_reviewer": "PENDING"
   },
   "parallel_task_groups": [],
   "current_parallel_group": null,
-  "auto_advance": false,
+  "auto_advance": true,
   "session_started_at": "2026-04-13T00:00:00Z",
-  "last_updated": "2026-04-13T22:01:06.272374Z",
+  "last_updated": "2026-04-13T22:15:00.000000Z",
   "step_timings": {
     "specify": {
       "started_at": "2026-04-13T00:00:00Z",
