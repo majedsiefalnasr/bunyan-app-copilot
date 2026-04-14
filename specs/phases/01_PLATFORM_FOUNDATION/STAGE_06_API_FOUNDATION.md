@@ -8,20 +8,20 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: MEDIUM
-Last Updated: 2026-04-14T00:01:00Z
+Last Updated: 2026-04-14T00:02:00Z
 
 Scope Defined:
 
 - Versioned API routing (`/api/v1/*`)
-- BaseApiController with response helpers
+- BaseApiController with response helpers (middleware via bootstrap/app.php)
 - BaseApiResource with pagination meta
-- Rate limiting (authenticated, public, admin tiers)
-- CORS configuration (env-driven)
-- Full middleware stack
-- Health check endpoint
-- OpenAPI 3.0 documentation scaffold
+- Rate limiting (authenticated 60/min, public 10/min, admin 300/min — named limiters per group)
+- CORS configuration (env-driven, no wildcard + credentials)
+- Full middleware stack (correctly ordered)
+- Health check endpoint (readiness probe, exempt from Service/Repository pattern)
+- OpenAPI 3.0 documentation via l5-swagger (annotations isolated)
 
 Deferred Scope:
 
@@ -31,10 +31,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 

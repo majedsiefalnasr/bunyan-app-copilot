@@ -412,3 +412,139 @@ This stage provides the structural contract that all downstream API stages depen
 - `APP_VERSION` environment variable or `config/app.php` version key will be available for the health check `version` field. If absent, defaults to `"1.0.0"`.
 - `darkaonline/l5-swagger` docs route is accessible in all environments (no `APP_ENV=local` restriction); this can be gated in a future security hardening stage.
 - Route sub-files (`routes/api/auth.php`, etc.) are included via `require` or `Route::group()` + `base_path()` from `routes/api.php` — not via `RouteServiceProvider` (which is deprecated in Laravel 11).
+
+---
+
+## Clarifications
+
+### Session 2026-04-14
+
+The following clarifications were resolved during a deep ambiguity scan of this spec. Each item represents a concrete decision that eliminates implementation-blocking uncertainty.
+
+---
+
+#### CLR-01 — Middleware Registration Target: `bootstrap/app.php`, Not `Kernel.php`
+
+**Question:**  
+FR-016, FR-017, and FR-018 reference "Kernel.php" and "Kernel::$middleware". In Laravel 11, `Kernel.php` does not exist. Where are middleware aliases and group configurations registered?
+
+**Decision:**  
+All middleware registration for this stage MUST target `bootstrap/app.php` using the `->withMiddleware()` callback:
+
+- **Middleware aliases** (`role`, `permission`, `check-account-lockout`, `throttle`) — registered via `$middleware->alias([...])`. Confirmed: `role`, `permission`, and `check-account-lockout` are already registered in `bootstrap/app.php` from prior stages.
+- **Global prepend** (e.g., `CorrelationIdMiddleware`) — registered via `$middleware->prepend(CorrelationIdMiddleware::class)` or verified present in the default Laravel 11 global stack.
+- **`api` group append** — registered via `$middleware->appendToGroup('api', [...])`.
+
+All spec references to "Kernel.php" are understood to mean `bootstrap/app.php`. No `Kernel.php` file is to be created.
+
+**Rationale:**  
+The actual codebase (`backend/bootstrap/app.php`) already follows this pattern. Misreading FR-016/FR-018 as targeting `Kernel.php` would cause implementers to create a deprecated file or fail to register middleware correctly.
+
+---
+
+#### CLR-02 — Throttle Strategy: Named Limiters Per Route Group, Not a Blanket `api` Group Default
+
+**Question:**  
+FR-017 states the `api` middleware group MUST include `ThrottleRequests::with(10, 1)`. FR-021 and FR-022 register separate named limiters `api-authenticated` (60/min) and `api-public` (10/min). If both apply simultaneously, authenticated users would be blocked at 10/min (the group default) before the 60/min named limiter has any effect. Which throttle configuration governs?
+
+**Decision:**  
+The blanket `ThrottleRequests::with(10, 1)` described in FR-017 MUST NOT be appended to the global `api` middleware group. Instead, named rate limiters are applied explicitly per route group:
+
+- **Public routes** (unauthenticated) → `throttle:api-public` (10 req/min, keyed by IP), applied via `->middleware('throttle:api-public')` on each public route group.
+- **Authenticated routes** (non-admin) → `throttle:api-authenticated` (60 req/min, keyed by user ID), applied via `->middleware('throttle:api-authenticated')` on each `auth:sanctum` route group.
+- **Admin routes** → `throttle:api-admin` (300 req/min, keyed by user ID), applied via `->middleware('throttle:api-admin')` on admin route groups.
+- **`GET /api/health`** → exempt from all throttle middleware (no `throttle:*` applied).
+
+FR-017 is superseded by this clarification. The `api` middleware group configuration in `bootstrap/app.php` MUST NOT include a default `ThrottleRequests` entry beyond what is already present. AC-08, AC-09, AC-10 remain valid verification tests.
+
+**Rationale:**  
+Stacking two `ThrottleRequests` instances on the same request produces additive limits. A 10/min default on the `api` group makes the 60/min `api-authenticated` limiter unreachable. The named-limiter-per-group model is the correct Laravel pattern and matches the intent of US3.
+
+---
+
+#### CLR-03 — Built-in `/up` Health Route Coexists With Custom `/api/health`
+
+**Question:**  
+`bootstrap/app.php` already registers `health: '/up'` via `->withRouting()`, which creates Laravel's built-in simple health endpoint. FR-034 requires a custom `GET /api/health` endpoint with rich JSON checks. Should the built-in `/up` be removed, or do both coexist?
+
+**Decision:**  
+Both endpoints MUST coexist:
+
+- **`GET /up`** — Laravel's built-in uptime probe (returns `200 OK` with plain text body). MUST remain in `bootstrap/app.php` as-is. Used by Laravel Octane, health package internals, and some Docker probes.
+- **`GET /api/health`** — Custom rich JSON endpoint defined in `routes/api.php` outside the `v1` prefix group, handled by `App\Http\Controllers\Api\HealthController`. Returns the full `status`, `version`, `environment`, `checks.database`, `checks.cache`, `timestamp` schema from FR-036.
+
+`/up` is for container liveness. `/api/health` is for application readiness. They are not duplicates.
+
+**Rationale:**  
+Removing `health: '/up'` would disable an internal Laravel mechanism. The custom `/api/health` serves a different operational purpose (rich health checks for load balancers and monitoring tools). Both must exist independently.
+
+---
+
+#### CLR-04 — HealthController Is Exempt From the Service Layer Pattern
+
+**Question:**  
+The platform architecture mandates the Service/Repository pattern for all business logic. `HealthController` would contain direct `DB::select()` and `Cache::put()/get()` calls inline. Does this constitute a violation of the layering rules?
+
+**Decision:**  
+`HealthController` is **explicitly exempt** from the service layer pattern for this stage. The health check logic (DB ping, cache probe) is infrastructure-diagnostic code, not domain business logic. It MUST be implemented directly in `HealthController::check()`:
+
+```php
+// Database check
+DB::select('SELECT 1');
+
+// Cache check
+Cache::put('health_probe', true, 5);
+Cache::get('health_probe');
+```
+
+No `HealthService` or `HealthRepository` is to be created in this stage. If additional health dimensions are added in a future Infrastructure stage, extraction to a `HealthCheckService` may be considered at that point.
+
+**Rationale:**  
+Forcing infrastructure diagnostics through the service pattern adds indirection without benefit. The architecture rules apply to domain logic (projects, users, payments). Health checks are a cross-cutting infrastructure concern that is universally implemented in controllers or dedicated health-check classes across Laravel applications.
+
+---
+
+#### CLR-05 — l5-swagger: Annotation Scan Paths, Server URL, and Generated File Location
+
+**Question:**  
+FR-041–FR-047 require l5-swagger integration but do not specify: (a) which directories l5-swagger should scan for `@OA\*` annotations, (b) the `@OA\Server` URL value, (c) where the generated OpenAPI JSON is stored, or (d) where the `@OA\Info`, `@OA\Server`, `@OA\SecurityScheme` block lives.
+
+**Decision:**  
+The `config/l5-swagger.php` published config MUST be configured as follows:
+
+- **Annotation scan paths**: `[ app_path('Http/Controllers') ]` — covers the entire controllers tree.
+- **Generated JSON output**: `storage_path('api-docs/api-docs.json')` (l5-swagger default; do not override).
+- **Documentation URL**: `GET /api/documentation` (default l5-swagger route prefix; do not override).
+
+The `@OA\Info`, `@OA\Server`, and `@OA\SecurityScheme` block MUST be placed in a dedicated class `App\Http\Controllers\Api\V1\OpenApiAnnotations` (a final class with no methods, annotations only), **not** in `BaseApiController`, to keep the base controller clean:
+
+```php
+// app/Http/Controllers/Api/V1/OpenApiAnnotations.php
+#[OA\Info(title: "Bunyan API", version: "1.0.0", description: "Bunyan construction marketplace API")]
+#[OA\Server(url: "/api", description: "Bunyan API Server")]
+#[OA\SecurityScheme(securityScheme: "BearerAuth", type: "http", scheme: "bearer", bearerFormat: "JWT")]
+final class OpenApiAnnotations {}
+```
+
+The `@OA\Server` URL MUST use a relative path (`/api`) rather than `APP_URL` to remain portable across environments. l5-swagger will resolve it relative to the host.
+
+The package version pin `^8.6` (as listed in the External Packages table) is acceptable; Composer lockfile enforces the exact resolved version.
+
+**Rationale:**  
+Without scan path configuration, `php artisan l5-swagger:generate` scans no files and produces an empty spec. A relative server URL avoids hardcoding environment-specific base URLs. Isolating annotations in a dedicated class is a Laravel/l5-swagger convention that prevents annotation noise in the base controller and satisfies FR-009 (PHPDoc-only in base controller).
+
+---
+
+**Clarification Summary:**
+
+| ID     | Topic                                        | FRs Affected           | `[NEEDS CLARIFICATION]` Markers Resolved |
+| ------ | -------------------------------------------- | ---------------------- | ---------------------------------------- |
+| CLR-01 | Middleware registration in bootstrap/app.php | FR-016, FR-017, FR-018 | 0 (implicit ambiguity resolved)          |
+| CLR-02 | Throttle strategy — named limiters per group | FR-017, FR-021, FR-022 | 0 (conflicting FRs resolved)             |
+| CLR-03 | `/up` vs `/api/health` coexistence           | FR-034                 | 0 (implicit ambiguity resolved)          |
+| CLR-04 | HealthController service layer exemption     | FR-035, FR-037, FR-038 | 0 (architectural question resolved)      |
+| CLR-05 | l5-swagger scan paths + server URL           | FR-041, FR-042, FR-046 | 0 (missing config details resolved)      |
+
+**Total clarifications added: 5**  
+**`[NEEDS CLARIFICATION]` markers remaining: 0**  
+**Spec status: Implementation-ready**

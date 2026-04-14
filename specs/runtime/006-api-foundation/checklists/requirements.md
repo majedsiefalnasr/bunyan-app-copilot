@@ -132,3 +132,58 @@ All endpoints introduced or formalized in this stage:
 - [ ] `GET /api/health` manually verified in local Docker environment
 - [ ] `GET /api/documentation` renders Swagger UI
 - [ ] CORS preflight verified from `http://localhost:3000`
+
+---
+
+## 12. Security Requirements (Derived from `checklists/security.md`)
+
+The following security requirements were identified through the security checklist review and represent gaps or implicit assumptions in the existing FRs/NFRs. These are additional constraints for the implementation.
+
+### Rate Limiting Security
+
+- [ ] **SR-001**: The `TrustProxies` middleware MUST be configured with an explicit trusted proxy list before deploying `api-public` (IP-keyed) rate limiting — open proxy trust (`'*'`) MUST NOT be used in staging/production to prevent IP spoofing via `X-Forwarded-For`.
+- [ ] **SR-002**: Named rate limiter cache keys MUST use a namespaced prefix format (e.g., `rl:api-authenticated:{user_id}`) to prevent key collision with application cache entries sharing the same Redis/cache store.
+- [ ] **SR-003**: The fail-open NFR-011 trade-off (allow requests when rate limit cache is unavailable) MUST be reviewed and formally accepted by the platform owner, with the decision recorded in this spec.
+
+### CORS Security
+
+- [ ] **SR-004**: `CORS_ALLOWED_ORIGINS=*` MUST trigger a critical log warning (or config exception) at application boot when `APP_ENV` is `staging` or `production` — the NFR-005 documentation note alone is insufficient enforcement.
+- [ ] **SR-005**: The combination of `supports_credentials: true` with any wildcard in `allowed_origins` or `allowed_headers` MUST be explicitly forbidden in code or documentation, as this produces an invalid and potentially dangerous CORS configuration.
+
+### Request Logging Security
+
+- [ ] **SR-006**: `RequestResponseLoggingMiddleware` MUST mask the `Authorization` header value (replace with `[REDACTED]`) in all logged request entries — this is not currently an explicit FR/NFR.
+- [ ] **SR-007**: The masking list for sensitive fields in request body logging MUST include at minimum: `password`, `password_confirmation`, `token`, `secret`, `api_key`. This list MUST be documented in the logging middleware or a config file.
+- [ ] **SR-008**: `Cookie` and `Set-Cookie` headers MUST be stripped from logged request and response entries to prevent Sanctum session cookies from appearing in application logs.
+
+### Health Endpoint Security
+
+- [ ] **SR-009**: `/api/health` MUST catch all exceptions from DB and cache probes and log them server-side (at `error` level), returning `false` for the failed check without exposing the exception message or stack trace in the response body.
+- [ ] **SR-010**: The `version` field in the health check response MUST be sourced from `config/app.php` or an explicit `APP_VERSION` env var — NEVER from runtime inspection of `composer.json` or any file that could expose internal dependency versions.
+
+### API Documentation Security
+
+- [ ] **SR-011**: The decision to make `/api/documentation` publicly accessible in production MUST be reviewed and formally accepted by the platform owner, with a documented rationale. A future security hardening stage MUST be tracked to add access control if required.
+
+### RBAC Structural Enforcement
+
+- [ ] **SR-012**: All routes in `routes/api/admin.php` MUST be enclosed within a single route group that applies `['auth:sanctum', 'role:admin']` at the group level — individual route-level middleware application for admin routes is NOT permitted, as it creates a structural gap risk.
+
+---
+
+## Checklist Sign-off
+
+> **Status:** Ready for implementation
+> **Sign-off Date:** 2026-04-14
+> **Checklists generated:** `security.md` (33 items), `performance.md` (17 items), `accessibility.md` (14 items)
+
+| Checklist File     | Items       | Status                                    |
+| ------------------ | ----------- | ----------------------------------------- |
+| `requirements.md`  | 11 sections | Complete — all sections reviewed          |
+| `security.md`      | 33          | Generated — pending implementation review |
+| `performance.md`   | 17          | Generated — pending implementation review |
+| `accessibility.md` | 14          | Generated — pending implementation review |
+
+**The spec is implementation-ready.** All `[NEEDS CLARIFICATION]` markers are resolved (CLR-01 through CLR-05). The checklists above define the quality gates that MUST be verified as part of implementation, testing, and pre-merge review for STAGE_06.
+
+**Pre-merge requirement:** All items in sections 1–11 of this file marked `[x]` before the PR is merged. Security requirements SR-001 through SR-012 must be addressed during implementation with explicit code evidence (tests, config, middleware). Checklist items CHK001–CHK064 in the domain checklists are requirements quality validators — each open `[ ]` item represents a gap in the spec that must either be resolved via a spec amendment or formally deferred.
