@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, h, inject, ref, type Ref } from 'vue';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { type Ref, defineComponent, h, inject, ref } from 'vue';
 
-import { UserRole } from '../../../types/index';
-import type { NavItem } from '../../../types/index';
 import { NAV_ITEMS_BY_ROLE } from '../../../app/config/navigation';
+import type { NavItem } from '../../../types/index';
+import { UserRole } from '../../../types/index';
 
 import AppNavigation from '../../../app/components/navigation/AppNavigation.vue';
 import { useAuthStore } from '../../../stores/auth';
@@ -68,14 +68,15 @@ describe('NAV_ITEMS_BY_ROLE navigation configuration', () => {
     expect(routes.every((r) => !r.startsWith('/admin'))).toBe(true);
   });
 
-  it('Admin has 7 nav items', () => {
-    expect(NAV_ITEMS_BY_ROLE[UserRole.Admin]).toHaveLength(7);
+  it('Admin has 8 nav items', () => {
+    expect(NAV_ITEMS_BY_ROLE[UserRole.Admin]).toHaveLength(8);
   });
 
   it('Admin includes users and configuration', () => {
     const keys = NAV_ITEMS_BY_ROLE[UserRole.Admin].map((i) => i.labelKey);
     expect(keys).toContain('nav.users');
     expect(keys).toContain('nav.configuration');
+    expect(keys).toContain('nav.roles');
   });
 
   it('FieldEngineer includes submit_report', () => {

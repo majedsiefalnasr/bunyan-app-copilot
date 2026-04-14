@@ -145,6 +145,8 @@ class AuthService
 
     public function getProfile(User $user): UserResource
     {
+        $user->load('roles.permissions');
+
         return new UserResource($user);
     }
 

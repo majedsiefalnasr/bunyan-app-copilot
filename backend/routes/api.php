@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminRbacController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestController;
 use App\Http\Controllers\Api\UserController;
@@ -75,11 +76,25 @@ Route::middleware('api')->prefix('v1')->group(function () {
     });
 
     /**
+    /**
      * User Endpoints
      * Avatar upload, profile management
      */
     Route::prefix('user')->middleware('auth:sanctum')->group(function () {
         Route::post('avatar', [UserController::class, 'uploadAvatar'])
             ->middleware('throttle:user-avatar-upload');
+    });
+
+    /**
+     * Admin RBAC Endpoints
+     * Role and permission management (admin-only)
+     */
+    Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+        Route::get('roles', [AdminRbacController::class, 'listRoles']);
+        Route::get('roles/{id}', [AdminRbacController::class, 'showRole']);
+        Route::put('roles/{id}/permissions', [AdminRbacController::class, 'syncPermissions']);
+        Route::post('users/{id}/role', [AdminRbacController::class, 'assignRole']);
+        Route::get('users', [AdminRbacController::class, 'listUsers']);
+        Route::get('permissions', [AdminRbacController::class, 'listPermissions']);
     });
 });

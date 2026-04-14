@@ -1,33 +1,20 @@
 // frontend/middleware/role.ts
-/**
- * Role-based access control middleware
- * Checks if current user has required role(s) to access a route
- * Usage: definePageMeta({ middleware: ['auth', 'role'] })
- * Route meta: requireRole: 'customer' | ['customer', 'contractor']
- */
+import type { UserRoleType } from '../types/index';
+
 export default defineNuxtRouteMiddleware((to) => {
-  const authStore = useAuthStore();
+  const auth = useAuthStore();
+  const requiredRole = to.meta.requiredRole as UserRoleType | UserRoleType[] | undefined;
 
-  // Get required roles from route meta (if any)
-  const requiredRoles = to.meta.requireRole as string | string[] | undefined;
+  if (!requiredRole) return;
 
-  if (!requiredRoles) {
-    // No specific role requirement, allow all authenticated users
-    return;
-  }
-
-  if (!authStore.user) {
-    // Not authenticated
+  if (!auth.isAuthenticated) {
     const { locale } = useI18n();
     return navigateTo(`/${locale.value}/auth/login`);
   }
 
-  // Check if user has required role
-  const rolesArray = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
-
-  if (!rolesArray.includes(authStore.user.role)) {
-    // User does not have required role
+  const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+  if (!auth.hasRole(roles as UserRoleType[])) {
     const { locale } = useI18n();
-    return navigateTo(`/${locale.value}/auth/unauthorized`);
+    return navigateTo(`/${locale.value}/dashboard`);
   }
 });

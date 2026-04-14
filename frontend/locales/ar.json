@@ -64,7 +64,8 @@
     "submit_report": "تقديم تقرير",
     "users": "المستخدمون",
     "products": "المنتجات",
-    "configuration": "الإعدادات"
+    "configuration": "الإعدادات",
+    "roles": "الأدوار والصلاحيات"
   },
   "layout": {
     "toggle_sidebar": "تبديل الشريط الجانبي",
@@ -258,6 +259,32 @@
     "dashboard": {
       "welcome": "مرحباً، {name}",
       "title": "لوحة التحكم"
+    }
+  },
+  "rbac": {
+    "roles_management": "إدارة الأدوار",
+    "role_name": "اسم الدور",
+    "display_name": "الاسم المعروض",
+    "display_name_ar": "الاسم بالعربية",
+    "permissions_count": "عدد الصلاحيات",
+    "actions": "إجراءات",
+    "view_details": "عرض التفاصيل",
+    "permissions_saved": "تم حفظ الصلاحيات بنجاح",
+    "permissions_save_error": "فشل حفظ الصلاحيات",
+    "no_permission": "ليس لديك صلاحية للقيام بهذا الإجراء",
+    "role_assigned": "تم تعيين الدور بنجاح",
+    "role_assign_error": "فشل تعيين الدور",
+    "groups": {
+      "projects": "المشاريع",
+      "phases": "المراحل",
+      "tasks": "المهام",
+      "reports": "التقارير",
+      "users": "المستخدمون",
+      "orders": "الطلبات",
+      "products": "المنتجات",
+      "payments": "المدفوعات",
+      "settings": "الإعدادات",
+      "roles": "الأدوار"
     }
   }
 }

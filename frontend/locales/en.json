@@ -64,7 +64,8 @@
     "submit_report": "Submit Report",
     "users": "Users",
     "products": "Products",
-    "configuration": "Configuration"
+    "configuration": "Configuration",
+    "roles": "Roles & Permissions"
   },
   "layout": {
     "toggle_sidebar": "Toggle Sidebar",
@@ -258,6 +259,32 @@
     "dashboard": {
       "welcome": "Welcome, {name}",
       "title": "Dashboard"
+    }
+  },
+  "rbac": {
+    "roles_management": "Roles Management",
+    "role_name": "Role Name",
+    "display_name": "Display Name",
+    "display_name_ar": "Arabic Name",
+    "permissions_count": "Permissions",
+    "actions": "Actions",
+    "view_details": "View Details",
+    "permissions_saved": "Permissions saved successfully",
+    "permissions_save_error": "Failed to save permissions",
+    "no_permission": "You do not have permission to perform this action",
+    "role_assigned": "Role assigned successfully",
+    "role_assign_error": "Failed to assign role",
+    "groups": {
+      "projects": "Projects",
+      "phases": "Phases",
+      "tasks": "Tasks",
+      "reports": "Reports",
+      "users": "Users",
+      "orders": "Orders",
+      "products": "Products",
+      "payments": "Payments",
+      "settings": "Settings",
+      "roles": "Roles"
     }
   }
 }

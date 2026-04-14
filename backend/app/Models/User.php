@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -104,5 +105,19 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return in_array($this->role, $roles, true);
+    }
+
+    /**
+     * Check if the user has a specific permission via their role.
+     * Relies on eager-loaded roles.permissions relationship.
+     */
+    public function hasPermission(string $permissionName): bool
+    {
+        /** @var Collection<int, Role> $roles */
+        $roles = $this->roles;
+
+        return $roles
+            ->flatMap(fn (Role $role) => $role->permissions)
+            ->contains('name', $permissionName);
     }
 }

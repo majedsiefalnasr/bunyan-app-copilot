@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
 use App\Models\FailedLoginAttempt;
 use App\Models\OtpAuditLog;
 use App\Models\PasswordHistory;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use App\Repositories\FailedLoginAttemptRepository;
 use App\Repositories\OtpAuditLogRepository;
 use App\Repositories\PasswordHistoryRepository;
+use App\Repositories\PermissionRepository;
+use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use App\Services\AvatarService;
 use App\Services\PasswordResetService;
 use App\Services\VerificationService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FailedLoginAttemptRepository::class, fn () => new FailedLoginAttemptRepository(new FailedLoginAttempt));
         $this->app->bind(OtpAuditLogRepository::class, fn () => new OtpAuditLogRepository(new OtpAuditLog));
         $this->app->bind(PasswordHistoryRepository::class, fn () => new PasswordHistoryRepository(new PasswordHistory));
+        $this->app->bind(RoleRepository::class, fn () => new RoleRepository(new Role));
+        $this->app->bind(PermissionRepository::class, fn () => new PermissionRepository(new Permission));
 
         // Service bindings
         $this->app->bind(PasswordResetService::class, fn ($app) => new PasswordResetService(
@@ -50,6 +58,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Admin superuser bypass — Admin bypasses all Gate/Policy checks
+        Gate::before(function (User $user, string $ability) {
+            if ($user->hasEnumRole(UserRole::ADMIN)) {
+                return true;
+            }
+        });
+
         // Define a named rate limiter for API routes. Keeps tests stable
         // and enforces a reasonable default threshold for brute-force guards.
         RateLimiter::for('api', function (Request $request) {

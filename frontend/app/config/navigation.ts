@@ -1,6 +1,6 @@
 // frontend/app/config/navigation.ts
-import { UserRole } from '../../types/index';
 import type { NavItem } from '../../types/index';
+import { UserRole } from '../../types/index';
 
 export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
   [UserRole.Customer]: [
@@ -36,6 +36,7 @@ export const NAV_ITEMS_BY_ROLE: Record<UserRole, NavItem[]> = {
     { labelKey: 'nav.projects', icon: 'i-heroicons-folder', to: '/admin/projects' },
     { labelKey: 'nav.products', icon: 'i-heroicons-cube', to: '/admin/products' },
     { labelKey: 'nav.orders', icon: 'i-heroicons-shopping-bag', to: '/admin/orders' },
+    { labelKey: 'nav.roles', icon: 'i-heroicons-shield-check', to: '/admin/roles' },
     {
       labelKey: 'nav.configuration',
       icon: 'i-heroicons-cog-6-tooth',

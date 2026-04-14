@@ -58,6 +58,7 @@ export interface AuthUser {
   district?: string;
   address?: string;
   languagePreference?: string;
+  permissions: string[];
 }
 
 // Direction / i18n
@@ -75,11 +76,13 @@ export interface UiPreferences {
 declare module '#app' {
   interface PageMeta {
     breadcrumb?: BreadcrumbItem[];
+    requiredRole?: UserRoleType | UserRoleType[];
   }
 }
 
 declare module 'vue-router' {
   interface RouteMeta {
     breadcrumb?: BreadcrumbItem[];
+    requiredRole?: UserRoleType | UserRoleType[];
   }
 }
