@@ -23,7 +23,7 @@ All work extends the existing infrastructure (Kernel.php global middleware, AppS
 **Testing:** PHPUnit 12 + Laravel feature tests  
 **Target Platform:** Linux server (Docker), local macOS dev  
 **Project Type:** RESTful API backend (Laravel)  
-**Performance Goals:** Health check ≤ 50ms p95; API response headers add ≤ 1ms overhead  
+**Performance Goals:** Health check ≤ 200ms p95 (NFR-001); API response headers add ≤ 2ms overhead (NFR-003)  
 **Constraints:** No breaking changes to existing `ApiResponseTrait`, `BaseController`, or Kernel.php middleware order  
 **Scale/Scope:** Phase 1 foundation; all downstream stages inherit from these base classes
 
@@ -209,6 +209,7 @@ The `meta` is extracted from the paginator's `->currentPage()`, `->perPage()`, `
 **File:** `app/Http/Resources/BaseApiResource.php`
 **Namespace:** `App\Http\Resources`
 **Extends:** `Illuminate\Http\Resources\Json\JsonResource`
+**Declaration:** `abstract class BaseApiResource` (MUST use `abstract` keyword — class contains `abstract toArray()` and PHP will not compile a non-abstract class with abstract methods)
 
 **Responsibilities:**
 
@@ -375,7 +376,7 @@ This ensures `US3 AC4` is satisfied: `Retry-After`, `X-RateLimit-Limit`, and `X-
 
 **File:** `app/Http/Controllers/Api/HealthController.php`
 **Namespace:** `App\Http\Controllers\Api`
-**Note on 503 health check error contract:** When DB is unreachable, HTTP 503 is returned with `success: false, data: {...health data with status=unhealthy}, error: null`. The `data` payload is self-describing (all probe statuses visible). `SERVER_ERROR` is NOT used here — that code is reserved for unhandled exceptions. The health check is a deliberate, handled probe result.
+**Note on 503 health check error contract:** When DB is unreachable, HTTP 503 is returned with `success: false, data: null, error: { code: "HEALTH_CHECK_FAILED", message: ..., details: { status: "unhealthy", checks: {...probe statuses}, version, environment, timestamp } }`. Probe data lives in `error.details`, not in `data` — this conforms to the AGENTS.md unified error contract requiring `data: null` on all error responses. `SERVER_ERROR` is NOT used here — `HEALTH_CHECK_FAILED` is the machine-readable signal for a deliberate, handled probe failure.
 
 ```php
 namespace App\Http\Controllers\Api;
@@ -601,13 +602,15 @@ public function boot(): void
     // Guard: wildcard CORS with credentials is rejected by browsers and insecure
     if (config('cors.supports_credentials') && in_array('*', (array) config('cors.allowed_origins'), true)) {
         if (!app()->isLocal()) {
-            \Log::critical('CORS misconfiguration: CORS_ALLOWED_ORIGINS=* with supports_credentials=true is insecure and browsers will reject preflight requests. Set specific origins in .env.');
+            throw new \InvalidArgumentException(
+                'CORS misconfiguration: CORS_ALLOWED_ORIGINS=* with supports_credentials=true is insecure. Set specific origins in CORS_ALLOWED_ORIGINS.'
+            );
         }
     }
 }
 ```
 
-This logs a CRITICAL-level warning (non-fatal) in non-local environments if the wildcard+credentials combination is detected. Local environments allow this for developer convenience.
+This throws an `InvalidArgumentException` (fail-fast — non-local environments only) if the wildcard+credentials combination is detected. Local environments allow this for developer convenience. The application will refuse to start under misconfiguration.
 
 ---
 
@@ -642,7 +645,7 @@ Test coverage:
 - `GET /api/health` → 200 with DB+cache up
 - `GET /api/health` → no auth required (no 401)
 - Response body contains `status`, `version`, `environment`, `checks.database`, `checks.cache`, `timestamp`
-- Mocked DB failure → 503, `data.status = "unhealthy"`, `data.checks.database = false`
+- Mocked DB failure → 503, `success: false`, `data: null`, `error.code = "HEALTH_CHECK_FAILED"`, `error.details.status = "unhealthy"`, `error.details.checks.database = false`
 - Mocked cache failure → 200, `data.status = "degraded"`, `data.checks.cache = false`
 - Response always includes `X-Correlation-ID` header
 
@@ -676,7 +679,7 @@ Test coverage:
 | **Resource `$wrap` change breaks existing tests**     | MEDIUM   | Audit all resource tests before Phase 1.3. Fix test assertions before merging.                                                                                             |
 | **Route extraction breaks existing test HTTP calls**  | LOW      | Route URIs are identical after extraction. Verify with full test run after Phase 2.                                                                                        |
 | **`paginated()` double-wrapping with `$wrap='data'`** | MEDIUM   | `BaseApiController::paginated()` constructs the response manually; `$wrap` only affects `toArray()` serialization, not `response()->json()` output. Document this clearly. |
-| **CORS wildcard `*` with credentials**                | HIGH     | Config comment + boot-time log warning if `*` detected in non-local env.                                                                                                   |
+| **CORS wildcard `*` with credentials**                | HIGH     | Config comment + boot-time `InvalidArgumentException` thrown (fail fast) if `*` detected in non-local env.                                                                 |
 | **l5-swagger storage permissions**                    | LOW      | Add `storage/api-docs/` to `.gitignore`, ensure directory exists in CI.                                                                                                    |
 | **Health check `uniqid()` collision**                 | VERY LOW | Probe key uses `uniqid()` with entropy; acceptable for health probes.                                                                                                      |
 | **`ThrottleRequests` 429 not using error contract**   | MEDIUM   | Verify `app/Exceptions/Handler.php` handles `ThrottleRequestsException`; add if missing.                                                                                   |

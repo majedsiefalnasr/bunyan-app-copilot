@@ -3,7 +3,7 @@
 > **Phase:** 01_PLATFORM_FOUNDATION
 > **Based on:** `specs/runtime/006-api-foundation/plan.md`
 > **Created:** 2026-04-14T00:00:00Z
-> **Total Tasks:** 33
+> **Total Tasks:** 34
 
 ## Legend
 
@@ -32,7 +32,7 @@
 > **User Story:** US2
 
 - [ ] T004 [US2] Create `BaseApiController` extending `App\Http\Controllers\Api\BaseController`; add `protected paginated(mixed $collection, int $statusCode = 200): JsonResponse` method that extracts `currentPage()`, `perPage()`, `total()`, `lastPage()` from paginator and returns standardised `{ success, data, meta, error }` shape; add full PHPDoc — `backend/app/Http/Controllers/Api/V1/BaseApiController.php`
-- [ ] T005 [US2] Create `BaseApiResource` extending `Illuminate\Http\Resources\Json\JsonResource`; set `public static $wrap = 'data'`; declare abstract `toArray()`; add `paginatedCollection(LengthAwarePaginator $paginator): array` static helper for pagination meta extraction; override `withResponse()` to propagate `X-Correlation-ID` header; add full PHPDoc — `backend/app/Http/Resources/BaseApiResource.php`
+- [ ] T005 [US2] Declare `abstract class BaseApiResource` extending `Illuminate\Http\Resources\Json\JsonResource` (MUST be `abstract class` — not plain `class` — because it declares `abstract toArray()`; PHP will not compile otherwise); set `public static $wrap = 'data'`; declare `abstract public function toArray($request): array`; add `paginatedCollection(LengthAwarePaginator $paginator): array` static helper for pagination meta extraction; override `withResponse()` to propagate `X-Correlation-ID` header; add full PHPDoc — `backend/app/Http/Resources/BaseApiResource.php`
 - [ ] T006 [US2] Audit all existing resource-related feature tests for assertions that access response fields without a `data` key (e.g., `$response['email']`) — identify every test that will break when `$wrap = 'data'` takes effect — `backend/tests/Feature/`
 - [ ] T007 [P] [US2] Update `UserResource` to extend `BaseApiResource`; fix any test assertions identified in T006 that access unwrapped fields — `backend/app/Http/Resources/UserResource.php`
 - [ ] T008 [P] [US2] Update `RoleResource` to extend `BaseApiResource`; fix any test assertions identified in T006 that access unwrapped fields — `backend/app/Http/Resources/RoleResource.php`
@@ -72,7 +72,7 @@
 > **User Story:** US5
 
 - [ ] T017 [US5] Add `HEALTH_CHECK_FAILED = 'HEALTH_CHECK_FAILED'` case to `ApiErrorCode` enum — `backend/app/Enums/ApiErrorCode.php`
-- [ ] T018 [US5] Create `HealthController` in namespace `App\Http\Controllers\Api`; implement `check(): JsonResponse` with private `checkDatabase()` (runs `DB::select('SELECT 1')`) and `checkCache()` (write/read/forget probe key) helpers; return HTTP 200 with `status=healthy` when all pass, HTTP 200 with `status=degraded` when only cache fails, HTTP 503 with `success=false, data=null, error.code=HEALTH_CHECK_FAILED, error.details={...probe data}` when DB fails; include `version`, `environment`, `timestamp` in data payload — `backend/app/Http/Controllers/Api/HealthController.php`
+- [ ] T018 [US5] Create `HealthController` in namespace `App\Http\Controllers\Api`; implement `check(): JsonResponse` with private `checkDatabase()` (runs `DB::select('SELECT 1')` wrapped in try/catch \Throwable to prevent stalls; use a short-lived PDO connection using `DB::connection()->getPdo()` to allow OS-level timeout propagation) and `checkCache()` (write/read/forget probe key, wrapped in try/catch \Throwable) helpers; return HTTP 200 with `status=healthy` when all pass, HTTP 200 with `status=degraded` when only cache fails, HTTP 503 with `success=false, data=null, error.code=HEALTH_CHECK_FAILED, error.details={...probe data}` when DB fails; include `version`, `environment`, `timestamp` in data payload; both probe helpers MUST catch all exceptions so a hung probe does not kill the request; satisfies NFR-001 (≤200ms p95) — `backend/app/Http/Controllers/Api/HealthController.php`
 - [ ] T019 [US5] Verify `health` is present in the skip-path list in `RequestResponseLoggingMiddleware`; add it if missing so health check requests are excluded from structured logging — `backend/app/Http/Middleware/RequestResponseLoggingMiddleware.php`
 - [ ] T020 [P] [US5] Add `health_check_failed` key with English message to errors translation file — `backend/lang/en/errors.php`
 - [ ] T021 [P] [US5] Add `health_check_failed` key with Arabic message to errors translation file — `backend/lang/ar/errors.php`
@@ -86,8 +86,8 @@
 > **User Story:** US4
 
 - [ ] T022 [US4] Create `config/cors.php` with `paths: ['api/*', 'sanctum/csrf-cookie']`, `allowed_origins` parsed from `CORS_ALLOWED_ORIGINS` env (comma-split + trim + filter), `allowed_methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]`, `allowed_headers: [Content-Type, Authorization, X-Requested-With, X-Correlation-ID, Accept, Accept-Language]`, `exposed_headers: ['X-Correlation-ID']`, `max_age: 86400`, `supports_credentials: true` — `backend/config/cors.php`
-- [ ] T023 [US4] Add `CORS_ALLOWED_ORIGINS=http://localhost:3000` to `.env.example` with comment explaining comma-separated format — `backend/.env.example`
-- [ ] T024 [US4] Add boot-time CORS guard in `AppServiceProvider::boot()`: detect when `CORS_ALLOWED_ORIGINS` contains `*` while `supports_credentials = true` in non-local environments and throw an `InvalidArgumentException` (or log emergency) to fail fast — `backend/app/Providers/AppServiceProvider.php`
+- [ ] T023 [US4] Add `CORS_ALLOWED_ORIGINS=http://localhost:3000` to `.env.example` with comment explaining comma-separated format; also append `CACHE_DRIVER=redis` with comment: `# Required for O(1) rate limiter operations (NFR-004); use array in testing (phpunit.xml already sets this)` — `backend/.env.example`
+- [ ] T024 [US4] Add boot-time CORS guard in `AppServiceProvider::boot()`: detect when `CORS_ALLOWED_ORIGINS` contains `*` while `supports_credentials = true` in non-local environments and throw an `InvalidArgumentException` to fail fast — `backend/app/Providers/AppServiceProvider.php`
 
 ---
 
@@ -105,15 +105,16 @@
 
 ## Phase 7 — Tests
 
-> **Goal:** Full test coverage for all new classes; HTTP-level feature tests for health, rate limiting, and CORS contracts; regression validation for resource migration.
-> **Dependency:** All implementation tasks in Phases 1–6 must complete before corresponding tests. T028–T032 can execute in parallel; T033 must run after all of them.
+> **Goal:** Full test coverage for all new classes; HTTP-level feature tests for health, rate limiting, CORS contracts, and OpenAPI documentation endpoint; regression validation for resource migration.
+> **Dependency:** All implementation tasks in Phases 1–6 must complete before corresponding tests. T028–T033 can execute in parallel; T034 must run after all of them.
 
 - [ ] T028 [P] [US2] Write unit tests for `BaseApiController`: assert `success()` returns `{success:true, data:..., error:null}` with HTTP 200; assert `error(ApiErrorCode::RESOURCE_NOT_FOUND)` returns HTTP 404 with `error.code=RESOURCE_NOT_FOUND`; assert `paginated()` returns `data` array + `meta` with `current_page`, `per_page`, `total`, `last_page` — `backend/tests/Unit/Http/Controllers/Api/V1/BaseApiControllerTest.php`
 - [ ] T029 [P] [US2] Write unit tests for `BaseApiResource`: assert single resource response is wrapped under `data` key; assert `paginatedCollection()` with a `LengthAwarePaginator` produces a `meta` key containing `current_page`, `per_page`, `total`, `last_page` — `backend/tests/Unit/Http/Resources/BaseApiResourceTest.php`
-- [ ] T030 [P] [US5] Write feature tests for `GET /api/health`: HTTP 200 + `data.status=healthy` when all probes pass; HTTP 200 + `data.status=degraded` when cache probe fails; HTTP 503 + `success=false, error.code=HEALTH_CHECK_FAILED` when DB probe fails; request without `Authorization` header returns non-401; response includes `data.checks.database` and `data.checks.cache` — `backend/tests/Feature/Api/HealthCheckTest.php`
+- [ ] T030 [P] [US5] Write feature tests for `GET /api/health`: HTTP 200 + `data.status=healthy` when all probes pass; HTTP 200 + `data.status=degraded` when cache probe fails; HTTP 503 + `success=false, error.code=HEALTH_CHECK_FAILED` when DB probe fails; request without `Authorization` header returns non-401; response includes `data.checks.database` and `data.checks.cache`; assert every health response (200 and 503) includes `X-Correlation-ID` response header (AC-07) — `backend/tests/Feature/Api/HealthCheckTest.php`
 - [ ] T031 [P] [US3] Write feature tests for rate limiting: authenticated user's 61st request in a minute returns HTTP 429 with `error.code=RATE_LIMIT_EXCEEDED`; unauthenticated IP's 11th request returns HTTP 429; admin user is not blocked at 60 requests on admin routes; every 429 response includes `Retry-After`, `X-RateLimit-Limit`, and `X-RateLimit-Remaining` headers; `GET /api/health` is never rate-limited — `backend/tests/Feature/Api/RateLimitTest.php`
 - [ ] T032 [P] [US4] Write feature tests for CORS: preflight `OPTIONS` from allowed origin returns `Access-Control-Allow-Origin` matching origin and `Access-Control-Allow-Credentials: true`; `Access-Control-Expose-Headers` includes `X-Correlation-ID`; preflight allows `X-Correlation-ID` in `Access-Control-Request-Headers`; request from a non-configured origin receives no `Access-Control-Allow-Origin` header — `backend/tests/Feature/Api/CorsTest.php`
-- [ ] T033 Run full test suite to validate no regression across STAGE_01–05 and all new STAGE_06 tests pass — `backend/` (`php artisan test --parallel`)
+- [ ] T033 [P] [US6] Write feature test for `GET /api/documentation` (AC-13): assert HTTP 200 and response body contains Swagger UI HTML; assert `GET /api/documentation.json` returns JSON with an `openapi` key; assert both routes are accessible without authentication — `backend/tests/Feature/Api/SwaggerTest.php`
+- [ ] T034 Run full test suite to validate no regression across STAGE_01–STAGE_05 and all new STAGE_06 tests pass (`php artisan test --parallel`); then run static analysis gate `composer run lint` (PHPStan level 6) and confirm exit code 0 — both the test run and the PHPStan gate must pass before STAGE_06 is merged (AC-17) — `backend/`
 
 ---
 
@@ -152,8 +153,8 @@ T028, T029, T030, T031, T032 → T033   (all new tests pass before regression ru
 | 8    | T017                                           | after T015 (AppServiceProvider ready) |
 | 9    | T018                                           | after T017                            |
 | 10   | T019 ∥ T020 ∥ T021 ∥ T027                      | after T018                            |
-| 11   | T028 ∥ T029 ∥ T030 ∥ T031 ∥ T032               | after all Phase 1–6 tasks             |
-| 12   | T033                                           | after T028–T032                       |
+| 11   | T028 \| T029 \| T030 \| T031 \| T032 \| T033   | after all Phase 1–6 tasks             |
+| 12   | T034                                           | after T028–T033                       |
 
 ---
 
@@ -166,4 +167,4 @@ T028, T029, T030, T031, T032 → T033   (all new tests pass before regression ru
 5. **Phase 3 and Phase 5 are independent** — Once Phase 1 completes, rate limiter and CORS work can proceed in parallel across two developers.
 6. **OpenAPI annotation on HealthController is additive** — T027 is a docblock-only change; it does not alter runtime behavior and can be applied last in Phase 6 without unblocking any other task.
 7. **PHPStan must stay green** — After each phase, verify `composer run lint` passes at level 6. Especially important after resource migration (T007–T010) and after adding the new `paginated()` signature (T004).
-8. **All tests in Acceptance Criteria must map 1:1 to a test task** — AC-01 through AC-15 are covered by T028–T032. AC-16 (regression) is covered by T033. AC-17 (PHPStan) and AC-18 (full suite) are covered by T033.
+8. **All tests in Acceptance Criteria must map 1:1 to a test task** — AC-01 through AC-15 are covered by T028–T033. AC-13 (`GET /api/documentation`) is covered by T033. AC-16 (regression) and AC-17–18 (PHPStan + full suite) are covered by T034.

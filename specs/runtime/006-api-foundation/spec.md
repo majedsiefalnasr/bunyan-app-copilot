@@ -175,6 +175,7 @@ This stage provides the structural contract that all downstream API stages depen
   - `paginated(mixed $collection, array $paginationMeta, int $statusCode): JsonResponse`
 - **FR-009**: All methods MUST include PHPDoc with `@param` and `@return` annotations.
 - **FR-010**: `paginated()` response MUST produce: `{ "success": true, "data": [...], "meta": { "current_page": N, "per_page": N, "total": N, "last_page": N }, "error": null }`.
+  > **Contract Note (formally accepted):** The `paginated()` shape is a 4-key envelope `{ success, data, meta, error }` which extends the standard 3-key contract `{ success, data, error }` defined in `AGENTS.md`. This extension is **formally accepted for paginated responses only**. `meta` MUST NOT appear in non-paginated (scalar/object) responses. All other success/error responses use the unmodified 3-key contract.
 
 ### API Resource Base Class
 
@@ -196,7 +197,7 @@ This stage provides the structural contract that all downstream API stages depen
 ### Rate Limiting
 
 - **FR-021**: A named rate limiter `api-authenticated` MUST be registered: 60 requests per minute, keyed by authenticated user ID (`user_id|ip` fallback).
-- **FR-022**: A named rate limiter `api-public` MUST be registered: 10 requests per minute, keyed by IP address.
+- **FR-022**: A named rate limiter `api-public` MUST be registered: 10 requests per minute, keyed by IP address. Implementation MUST use `$request->ip()` (Laravel TrustProxies-resolved value) for the IP key. Direct `X-Forwarded-For` header inspection is forbidden — it bypasses `TrustProxies` and enables IP spoofing.
 - **FR-023**: A named rate limiter `api-admin` MUST be registered: 300 requests per minute, keyed by authenticated user ID.
 - **FR-024**: All existing named rate limiters (`api`, `auth-login`, `auth-register`, `auth-forgot-password`, `auth-email-resend`, `user-avatar-upload`) MUST be preserved.
 - **FR-025**: Rate-limited responses MUST return HTTP 429 with `error.code = "RATE_LIMIT_EXCEEDED"` following the unified error contract. `Retry-After` header MUST be present.
@@ -389,7 +390,7 @@ This stage provides the structural contract that all downstream API stages depen
 
 | Package                  | Version | Purpose                            |
 | ------------------------ | ------- | ---------------------------------- |
-| `darkaonline/l5-swagger` | ^8.6    | OpenAPI 3.0 documentation          |
+| `darkaonline/l5-swagger` | ~9.0    | OpenAPI 3.0 documentation          |
 | `laravel/framework`      | ≥11.x   | HandleCors, RateLimiter (built-in) |
 
 ---
@@ -528,7 +529,7 @@ final class OpenApiAnnotations {}
 
 The `@OA\Server` URL MUST use a relative path (`/api`) rather than `APP_URL` to remain portable across environments. l5-swagger will resolve it relative to the host.
 
-The package version pin `^8.6` (as listed in the External Packages table) is acceptable; Composer lockfile enforces the exact resolved version.
+The package version pin `~9.0` (as listed in the External Packages table) is the resolved version per research R-01; Composer lockfile enforces the exact resolved version.
 
 **Rationale:**  
 Without scan path configuration, `php artisan l5-swagger:generate` scans no files and produces an empty spec. A relative server URL avoids hardcoding environment-specific base URLs. Isolating annotations in a dedicated class is a Laravel/l5-swagger convention that prevents annotation noise in the base controller and satisfies FR-009 (PHPDoc-only in base controller).

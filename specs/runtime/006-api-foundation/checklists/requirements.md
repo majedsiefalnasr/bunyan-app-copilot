@@ -69,7 +69,7 @@
 - [x] HTTP status codes are explicit for all scenarios
 - [x] Health check response body structure is fully specified with example JSON (FR-036)
 - [x] CORS env variable name is explicit: `CORS_ALLOWED_ORIGINS`
-- [x] Package name and version range is explicit: `darkaonline/l5-swagger ^8.6`
+- [x] Package name and version range is explicit: `darkaonline/l5-swagger ~9.0`
 - [x] Swagger documentation URL is explicit: `GET /api/documentation`
 - [x] Route naming convention is explicit: `api.v1.[resource].[action]`
 - [x] No `[NEEDS CLARIFICATION]` markers remaining in spec
@@ -108,7 +108,7 @@ All endpoints introduced or formalized in this stage:
 - [x] STAGE_04 (RBAC): `RoleMiddleware`, `PermissionMiddleware` listed as upstream (used in FR-005, FR-018)
 - [x] STAGE_05 (Error Handling): `ApiResponseTrait`, `ApiErrorCode`, `CorrelationIdMiddleware`, `RequestResponseLoggingMiddleware` listed as upstream
 - [x] Downstream stages listed: all API stages, DevOps (health probe), Frontend (CORS)
-- [x] External package dependency documented: `darkaonline/l5-swagger ^8.6`
+- [x] External package dependency documented: `darkaonline/l5-swagger ~9.0`
 - [x] Laravel built-in dependencies: `HandleCors`, `RateLimiter` documented
 
 ---
