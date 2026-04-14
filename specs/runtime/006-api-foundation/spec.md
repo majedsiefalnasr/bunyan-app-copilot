@@ -160,7 +160,7 @@ This stage provides the structural contract that all downstream API stages depen
 ### API Versioning & Route Organization
 
 - **FR-001**: All application API routes MUST be prefixed with `/api/v1/` via `Route::prefix('v1')` in `routes/api.php`.
-- **FR-002**: Route file `routes/api.php` MUST delegate to sub-files: `routes/api/auth.php`, `routes/api/admin.php`, `routes/api/user.php` for maintainability.
+- **FR-002**: Route file `routes/api.php` MUST delegate to sub-files: `routes/api/v1/auth.php`, `routes/api/v1/admin.php`, `routes/api/v1/users.php` (plural, version-explicit subdirectory) for maintainability.
 - **FR-003**: Named routes MUST follow the convention `api.v1.[resource].[action]` (e.g., `api.v1.auth.login`, `api.v1.admin.roles.index`).
 - **FR-004**: Public routes (no auth) MUST be explicitly separated from authenticated route groups.
 - **FR-005**: Admin routes MUST use the middleware stack `['auth:sanctum', 'role:admin']`.
