@@ -8,19 +8,21 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: MEDIUM
-Last Updated: 2026-04-14T00:05:00Z
+Last Updated: 2026-04-14T00:06:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- Versioned API routing (`/api/v1/*`) — route sub-files extracted
-- BaseApiController (`Api\V1\`) with `paginated()` response helper
-- BaseApiResource with `$wrap='data'` and pagination meta
-- Rate limiting: `api-authenticated` (60/min/user), `api-public` (10/min/IP), `api-admin` (300/min/user)
-- CORS: `config/cors.php` with env-driven `allowed_origins`, `X-Correlation-ID` exposed, boot-time wildcard guard
-- Health check `GET /api/health` using `HEALTH_CHECK_FAILED` on 503 (data:null, probe data in error.details)
-- OpenAPI 3.0 via `darkaonline/l5-swagger ~9.0`, annotations isolated in `OpenApiAnnotations.php`
+- Total: 33 atomic tasks
+- Phase 0 (Composer): T001–T003
+- Phase 1 (Base Classes): T004–T010
+- Phase 2 (Routes): T011–T014
+- Phase 3 (Rate Limiters): T015–T016
+- Phase 4 (Health Check): T017–T021
+- Phase 5 (CORS): T022–T024
+- Phase 6 (OpenAPI): T025–T027
+- Phase 7 (Tests): T028–T033
 
 Deferred Scope:
 
@@ -32,10 +34,10 @@ Architecture Governance Compliance:
 
 - Architecture Guardian: PASS
 - API Designer: PASS
-- Technical plan compliant — task generation authorized
+- Task set compliant — drift analysis required before implementation
 
 Notes:
-Technical plan complete. Task breakdown in progress.
+Atomic task set generated. Drift analysis gate pending.
 
 ## Objective
 
