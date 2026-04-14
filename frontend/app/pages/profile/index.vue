@@ -21,8 +21,8 @@
             v-if="error"
             color="error"
             icon="i-heroicons-exclamation-circle"
-            :description="error"
-            @close="error = ''"
+            :description="error.value"
+            @close="error.value = ''"
           />
 
           <!-- Avatar Upload -->
@@ -30,7 +30,7 @@
             <label class="text-sm font-medium text-[#171717] dark:text-white">
               {{ $t('auth.profile.avatar') }}
             </label>
-            <UAvatar :src="avatarUrl" :alt="username" size="lg" class="w-20 h-20" />
+            <UAvatar :src="String(avatarUrl)" :alt="String(username)" size="lg" class="w-20 h-20" />
             <UButton
               :label="$t('auth.profile.upload_avatar')"
               size="sm"
@@ -93,7 +93,7 @@
               v-if="isDirty"
               type="submit"
               :label="$t('auth.profile.save')"
-              :loading="isLoading"
+              :loading="isLoading.value"
               color="neutral"
             />
             <UButton
@@ -177,13 +177,13 @@
           <UButton
             type="submit"
             :label="$t('auth.change_password.submit')"
-            :loading="changePasswordLoading"
+            :loading="changePasswordLoading.value"
             color="neutral"
           />
           <UButton
             :label="$t('auth.change_password.cancel')"
             variant="outline"
-            @click="showChangePasswordModal = false"
+            @click="showChangePasswordModal.value = false"
           />
         </div>
       </form>
