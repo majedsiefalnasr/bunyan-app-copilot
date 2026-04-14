@@ -23,13 +23,13 @@ return new class extends Migration
             $table->boolean('success')->default(false); // true if OTP matched, false if incorrect
             $table->ipAddress('ip_address')->nullable();
             $table->text('user_agent')->nullable();
-            $table->timestamp('expires_at')->index(); // OTP expiry time (10 minutes from generation)
+            $table->timestamp('expires_at'); // OTP expiry time (10 minutes from generation)
             $table->timestamps();
 
             // Indexes for audit queries and rate limiting
+            $table->index('expires_at'); // For cleanup jobs
             $table->index(['email', 'created_at']);
             $table->index(['email', 'attempt_number']);
-            $table->index(['expires_at']); // For cleanup jobs
         });
     }
 

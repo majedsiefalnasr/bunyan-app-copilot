@@ -244,7 +244,7 @@
   });
 
   const router = useRouter();
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const auth = useAuth();
   const passwordToggle = usePasswordToggle();
   const { registerStep1Schema, registerStep2Schema, registerStep3Schema, registerStep4Schema } =
@@ -320,20 +320,20 @@
 
   const currentStepTitle = computed(() => {
     const titles: Record<number, string> = {
-      1: $t('auth.register.step_1_title'),
-      2: $t('auth.register.step_2_title'),
-      3: $t('auth.register.step_3_title'),
-      4: $t('auth.register.step_4_title'),
+      1: t('auth.register.step_1_title'),
+      2: t('auth.register.step_2_title'),
+      3: t('auth.register.step_3_title'),
+      4: t('auth.register.step_4_title'),
     };
     return titles[currentStep.value] || '';
   });
 
   const currentStepSubtitle = computed(() => {
     const subtitles: Record<number, string> = {
-      1: $t('auth.register.step_1_subtitle'),
-      2: $t('auth.register.step_2_subtitle'),
-      3: $t('auth.register.step_3_subtitle'),
-      4: $t('auth.register.step_4_subtitle'),
+      1: t('auth.register.step_1_subtitle'),
+      2: t('auth.register.step_2_subtitle'),
+      3: t('auth.register.step_3_subtitle'),
+      4: t('auth.register.step_4_subtitle'),
     };
     return subtitles[currentStep.value] || '';
   });

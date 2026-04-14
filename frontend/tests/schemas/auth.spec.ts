@@ -87,7 +87,7 @@ describe('Auth Validation Schemas', () => {
       const valid = registerStep2Schema.parse({
         firstName: 'Ahmed',
         lastName: 'Mohammed',
-        phone: '+966501234567',
+        phone: '966501234567',
         idNumber: '1234567890',
       });
       expect(valid.firstName).toBe('Ahmed');
@@ -235,7 +235,7 @@ describe('Auth Validation Schemas', () => {
       const valid = profileSchema.parse({
         firstName: 'Ahmed',
         lastName: 'Mohammed',
-        phone: '+966501234567',
+        phone: '966501234567',
         city: 'riyadh',
         district: 'olaya',
         address: 'Test Address',
