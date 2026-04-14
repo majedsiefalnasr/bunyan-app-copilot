@@ -41,18 +41,34 @@ export function useAuth() {
   }
 
   async function register(data: {
-    name: string;
-    email: string;
+    role: string;
+    firstName: string;
+    lastName: string;
     phone: string;
+    idNumber?: string;
+    city?: string;
+    district?: string;
+    address?: string;
+    email: string;
     password: string;
     password_confirmation: string;
-    role: string;
   }): Promise<AuthUser> {
     store.isLoading = true;
     try {
       const response = await apiFetch<AuthResponse>('/api/v1/auth/register', {
         method: 'POST',
-        body: data,
+        body: {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          phone: data.phone,
+          id_number: data.idNumber,
+          city: data.city,
+          district: data.district,
+          address: data.address,
+          password: data.password,
+          password_confirmation: data.password_confirmation,
+          role: data.role,
+        },
       });
       store.setToken(response.data.token);
       store.setUser(response.data.user);
@@ -119,6 +135,56 @@ export function useAuth() {
     }
   }
 
+  async function verifyEmail(code: string): Promise<void> {
+    store.isLoading = true;
+    try {
+      await apiFetch<ApiSuccessResponse>('/api/v1/auth/email/verify', {
+        method: 'POST',
+        body: { code },
+      });
+    } finally {
+      store.isLoading = false;
+    }
+  }
+
+  async function updateProfile(data: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    city?: string;
+    district?: string;
+    address?: string;
+    languagePreference?: string;
+  }): Promise<AuthUser> {
+    store.isLoading = true;
+    try {
+      const response = await apiFetch<{ success: boolean; data: AuthUser }>('/api/v1/auth/user', {
+        method: 'PUT',
+        body: data,
+      });
+      store.setUser(response.data);
+      return response.data;
+    } finally {
+      store.isLoading = false;
+    }
+  }
+
+  async function changePassword(data: {
+    currentPassword: string;
+    password: string;
+    password_confirmation: string;
+  }): Promise<void> {
+    store.isLoading = true;
+    try {
+      await apiFetch<ApiSuccessResponse>('/api/v1/auth/password', {
+        method: 'PUT',
+        body: data,
+      });
+    } finally {
+      store.isLoading = false;
+    }
+  }
+
   /**
    * Fetch current user profile from API. Called on app bootstrap.
    * If token exists but API call fails, store remains empty → guest state.
@@ -151,6 +217,9 @@ export function useAuth() {
     forgotPassword,
     resetPassword,
     resendVerification,
+    verifyEmail,
+    updateProfile,
+    changePassword,
     fetchCurrentUser,
   };
 }

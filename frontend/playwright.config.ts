@@ -5,8 +5,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 2,
+  workers: process.env.CI ? 4 : 4,
   reporter: 'html',
+  timeout: 15000,
   expect: {
     timeout: 10000,
   },
@@ -23,9 +24,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev -- --port 3001',
-    url: 'http://localhost:3001/ar',
+    command: process.env.CI ? 'npm run preview -- --port 3001' : 'npm run dev -- --port 3001',
+    url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: process.env.CI ? 120000 : 120000,
   },
 });

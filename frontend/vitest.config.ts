@@ -16,11 +16,25 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     globals: true,
-    exclude: ['node_modules/', '.nuxt/', 'tests/e2e/**'],
+    exclude: [
+      'node_modules/',
+      '.nuxt/',
+      'tests/e2e/**',
+      'tests/a11y/**',
+      'tests/visual/**',
+      'tests/performance/**',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', '.nuxt/', 'tests/e2e/**'],
+      exclude: [
+        'node_modules/',
+        '.nuxt/',
+        'tests/e2e/**',
+        'tests/a11y/**',
+        'tests/visual/**',
+        'tests/performance/**',
+      ],
     },
   },
 });

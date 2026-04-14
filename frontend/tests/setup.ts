@@ -1,6 +1,7 @@
 import { config } from '@vue/test-utils';
 import { createI18n } from 'vue-i18n';
 import { vi } from 'vitest';
+import { createRouter, createMemoryHistory } from 'vue-router';
 import {
   reactive,
   ref,
@@ -97,7 +98,17 @@ export const createTestRouter = () => ({
   },
 });
 
-// Configure Vue Test Utils global mocks
+// Configure Vue Test Utils global mocks and plugins
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: '/', component: { template: '<div />' } },
+    { path: '/login', component: { template: '<div />' } },
+    { path: '/register', component: { template: '<div />' } },
+  ],
+});
+
+config.global.plugins = [i18n, router];
 config.global.mocks = {
   $t: (key: string, fallback: string = key): string => {
     const parts = key.split('.');

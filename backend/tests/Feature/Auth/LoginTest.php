@@ -135,19 +135,27 @@ class LoginTest extends TestCase
 
     public function test_rate_limiting_after_5_attempts(): void
     {
+        // Use unique email to avoid lockout triggering
+        // (lockout is per-email, throttle is per-IP)
+        // Both are set to 5 per 15 minutes
         User::factory()->customer()->create([
-            'email' => 'rate@example.com',
+            'email' => 'rate-'.now()->timestamp.'@example.com',
         ]);
 
+        $email = 'rate-'.now()->timestamp.'@example.com';
+
         for ($i = 0; $i < 5; $i++) {
-            $this->postJson($this->url, [
-                'email' => 'rate@example.com',
+            $response = $this->postJson($this->url, [
+                'email' => $email,
                 'password' => 'wrongpassword',
             ]);
+            // First 5 attempts should return 401 (invalid credentials)
+            $this->assertEquals(401, $response->status());
         }
 
+        // 6th attempt should trigger rate limiting (429)
         $response = $this->postJson($this->url, [
-            'email' => 'rate@example.com',
+            'email' => $email,
             'password' => 'wrongpassword',
         ]);
 

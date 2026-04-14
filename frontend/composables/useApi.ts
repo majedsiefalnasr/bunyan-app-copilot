@@ -9,6 +9,71 @@ export function useApi() {
       ? config.public.apiBaseUrl
       : 'http://localhost:8000';
 
+  // Request queue for token refresh race condition prevention
+  let isRefreshing = false;
+  let pendingRequests: Array<{
+    resolve: (value: string) => void;
+    reject: (reason?: Error) => void;
+  }> = [];
+
+  /**
+   * Refresh token and drain pending request queue
+   */
+  async function refreshToken() {
+    if (isRefreshing) {
+      // Wait for refresh to complete
+      return new Promise((resolve, reject) => {
+        pendingRequests.push({ resolve, reject });
+      });
+    }
+
+    isRefreshing = true;
+
+    try {
+      // Call token refresh endpoint
+      const response = await $fetch<{ success: boolean; data: { token: string } }>(
+        '/api/v1/auth/refresh',
+        {
+          baseURL,
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.success && response.data.token) {
+        const tokenCookie = useCookie('auth_token');
+        tokenCookie.value = response.data.token;
+
+        // Drain all pending requests
+        const queued = pendingRequests;
+        pendingRequests = [];
+        queued.forEach(({ resolve }) => resolve(response.data.token));
+
+        return response.data.token;
+      } else {
+        throw new Error('Token refresh failed');
+      }
+    } catch (err) {
+      // Reject all pending requests
+      const queued = pendingRequests;
+      pendingRequests = [];
+      const error = err as Error;
+      for (const { reject } of queued) {
+        reject(error);
+      }
+
+      // Clear auth and redirect
+      const tokenCookie = useCookie('auth_token');
+      tokenCookie.value = null;
+      throw error;
+    } finally {
+      isRefreshing = false;
+    }
+  }
+
   const apiFetch = $fetch.create({
     baseURL,
     headers: {
@@ -115,5 +180,5 @@ export function useApi() {
     },
   });
 
-  return { apiFetch };
+  return { apiFetch, refreshToken };
 }

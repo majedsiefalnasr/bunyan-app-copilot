@@ -21,10 +21,12 @@
 
 <template>
   <NuxtRouteAnnouncer />
-  <GlobalErrorBoundary>
+  <ErrorsGlobalErrorBoundary>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-  </GlobalErrorBoundary>
-  <ErrorToast />
+  </ErrorsGlobalErrorBoundary>
+  <ClientOnly>
+    <ErrorsErrorToast />
+  </ClientOnly>
 </template>

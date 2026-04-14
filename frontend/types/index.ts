@@ -44,6 +44,8 @@ export interface BreadcrumbItem {
 export interface AuthUser {
   id: number;
   name: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   role: UserRoleType;
   phone: string;
@@ -51,6 +53,11 @@ export interface AuthUser {
   email_verified_at: string | null;
   created_at: string;
   avatar?: string;
+  avatarUrl?: string;
+  city?: string;
+  district?: string;
+  address?: string;
+  languagePreference?: string;
   permissions: string[];
 }
 
