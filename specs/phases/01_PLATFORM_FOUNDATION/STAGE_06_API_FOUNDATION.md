@@ -8,20 +8,33 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: MEDIUM
-Initiated: 2026-04-14T00:00:00Z
+Last Updated: 2026-04-14T00:01:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- Versioned API routing (`/api/v1/*`)
+- BaseApiController with response helpers
+- BaseApiResource with pagination meta
+- Rate limiting (authenticated, public, admin tiers)
+- CORS configuration (env-driven)
+- Full middleware stack
+- Health check endpoint
+- OpenAPI 3.0 documentation scaffold
+
+Deferred Scope:
+
+- Individual feature endpoint implementation
+- Webhook infrastructure
+- Third-party API key management
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 
