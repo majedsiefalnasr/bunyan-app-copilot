@@ -105,7 +105,7 @@ class AppServiceProvider extends ServiceProvider
             // T044: 3 forgot-password attempts per 60 minutes per IP+email combo
             $email = $request->input('email', '');
 
-            return Limit::perMinute(60, 3)->by($request->ip().'|'.$email);
+            return Limit::perMinutes(60, 3)->by($request->ip().'|'.$email);
         });
 
         RateLimiter::for('auth-email-resend', function (Request $request) {
