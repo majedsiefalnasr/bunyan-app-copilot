@@ -11,10 +11,12 @@ test.describe('Profile RBAC Protection', () => {
 
     // Should redirect to login
     const currentUrl = page.url();
-    expect(currentUrl).toContain('/auth/login').or.toContain('/auth');
+    expect(currentUrl).toMatch(/\/login|\/auth/);
   });
 
   test('should show 401 error when accessing without token', async ({ page }) => {
+    // Navigate to a page first so localStorage is accessible
+    await page.goto('/ar/auth/login');
     // Clear auth token
     await page.context().clearCookies();
     await page.evaluate(() => {
@@ -27,7 +29,7 @@ test.describe('Profile RBAC Protection', () => {
 
     // Should be redirected (not 401, but redirect to login)
     const url = page.url();
-    expect(url).toContain('/auth/login').or.toContain('/login');
+    expect(url).toMatch(/\/login|\/auth/);
   });
 
   test('should allow authenticated user to access profile', async ({ page }) => {
@@ -36,7 +38,7 @@ test.describe('Profile RBAC Protection', () => {
       {
         name: 'auth_token',
         value: 'test_token_123',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3001',
       },
     ]);
 
@@ -69,13 +71,8 @@ test.describe('Profile RBAC Protection', () => {
       }
     });
 
-    // Should return 401 Unauthorized
-    expect(response)
-      .toBe(401)
-      .catch(() => {
-        // Or might be blocked before reaching API
-        expect(response).toBeDefined();
-      });
+    // Should return 401 Unauthorized or be blocked before reaching API
+    expect(response === 401 || response === null || response === undefined).toBe(true);
   });
 
   test('middleware should run before component loads', async ({ page }) => {
@@ -89,13 +86,7 @@ test.describe('Profile RBAC Protection', () => {
     const finalUrl = page.url();
     const isRedirected = finalUrl.includes('/login') || finalUrl.includes('/auth');
 
-    expect(isRedirected)
-      .toBe(true)
-      .catch(() => {
-        // If not redirected, middleware might not be running
-        // But page might still prevent access
-        expect(finalUrl).toBeDefined();
-      });
+    expect(isRedirected).toBe(true);
   });
 
   test('should maintain RBAC during session', async ({ page }) => {
@@ -104,16 +95,14 @@ test.describe('Profile RBAC Protection', () => {
       {
         name: 'auth_token',
         value: 'test_token_123',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3001',
       },
     ]);
 
     await page.goto('/profile').catch(() => {});
 
-    // Simulate token expiry
-    await page.evaluate(() => {
-      localStorage.removeItem('auth_token');
-    });
+    // Simulate token expiry by clearing the auth cookie (not localStorage)
+    await page.context().clearCookies();
 
     // Navigate to another protected page
     await page.goto('/profile');
@@ -122,11 +111,6 @@ test.describe('Profile RBAC Protection', () => {
     const url = page.url();
     const isProtected = url.includes('/login') || url.includes('/auth');
 
-    expect(isProtected)
-      .toBe(true)
-      .catch(() => {
-        // Might stay on page but show error
-        expect(url).toBeDefined();
-      });
+    expect(isProtected).toBe(true);
   });
 });

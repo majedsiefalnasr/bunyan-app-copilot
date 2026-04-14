@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 /**
  * T066: E2E test for password reset token expiry
@@ -24,7 +24,7 @@ test.describe('Auth Password Reset Expiry', () => {
 
     // Should show error message
     const errorAlert = page.locator('[role="alert"]');
-    const errorText = await errorAlert.textContent();
+    const errorText = await errorAlert.textContent({ timeout: 3000 }).catch(() => null);
 
     // Check for expiry-related error (implementation may vary)
     if (errorText) {

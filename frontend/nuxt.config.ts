@@ -3,6 +3,14 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/i18n'],
   devtools: { enabled: true },
   compatibilityDate: '2024-04-03',
+  dir: {
+    middleware: '../middleware',
+    layouts: '../layouts',
+    plugins: '../plugins',
+  },
+  imports: {
+    dirs: ['../composables', '../stores'],
+  },
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
@@ -18,7 +26,7 @@ export default defineNuxtConfig({
   },
   i18n: {
     defaultLocale: 'ar',
-    strategy: 'prefix',
+    strategy: 'prefix_and_default',
     langDir: 'locales',
     locales: [
       { code: 'ar', language: 'ar-SA', dir: 'rtl', file: 'ar.json' },
