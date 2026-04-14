@@ -9,15 +9,30 @@ use App\Enums\UserRole;
 use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Repositories\FailedLoginAttemptRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
+/**
+ * AuthService — Authentication with Security Hardening
+ *
+ * Manages user registration, login, logout, and related auth flows.
+ * Includes security features:
+ * - Account lockout: 5 failed attempts = 15-minute lock
+ * - Failed attempt tracking: Per email + IP address
+ * - Rate limiting: Via middleware (10/15min login attempts)
+ * - Token management: Single-use, expiry, rotation
+ * - Password history: Reuse prevention
+ *
+ * @see T044, T045, T048
+ */
 class AuthService
 {
     public function __construct(
         private readonly UserRepository $userRepository,
+        private readonly FailedLoginAttemptRepository $failedLoginAttemptRepository,
     ) {}
 
     /**
@@ -58,17 +73,31 @@ class AuthService
      * @param  array{email: string, password: string}  $credentials
      * @return array{user: UserResource, token: string, token_type: string}
      */
-    public function login(array $credentials): array
+    public function login(array $credentials, ?string $ipAddress = null): array
     {
+        $ipAddress ??= request()->ip();
         $user = $this->userRepository->findByEmail($credentials['email']);
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        // Check password validity
+        $passwordValid = $user && Hash::check($credentials['password'], $user->password);
+
+        if (! $passwordValid) {
+            // Increment failed attempts (even if user doesn't exist, for security)
+            $this->failedLoginAttemptRepository->incrementAttempts($credentials['email'], $ipAddress);
+
             throw ApiException::make(ApiErrorCode::AUTH_INVALID_CREDENTIALS);
         }
 
+        // Password is valid - check if account is active
         if (! $user->is_active) {
-            throw ApiException::make(ApiErrorCode::AUTH_UNAUTHORIZED, 'Your account has been deactivated.');
+            throw ApiException::make(
+                ApiErrorCode::AUTH_UNAUTHORIZED,
+                'Your account has been deactivated.'
+            );
         }
+
+        // Reset failed attempts on successful login
+        $this->failedLoginAttemptRepository->resetAttempts($credentials['email'], $ipAddress);
 
         $token = $user->createToken('api')->plainTextToken;
 
@@ -81,7 +110,10 @@ class AuthService
 
     public function logout(User $user): void
     {
-        $user->currentAccessToken()->delete();
+        $token = $user->currentAccessToken();
+        if ($token) {
+            $token->delete();
+        }
     }
 
     public function forgotPassword(string $email): void
@@ -140,5 +172,31 @@ class AuthService
         }
 
         $user->sendEmailVerificationNotification();
+    }
+
+    /**
+     * Rotate access token for security (T050)
+     *
+     * Creates a new token and revokes the old one as part of automatic
+     * token refresh flow. This prevents token compromise by ensuring tokens
+     * are not reused indefinitely.
+     *
+     * @return array{token: string, token_type: string}
+     */
+    public function rotateToken(User $user): array
+    {
+        // Delete current token for user
+        $token = $user->currentAccessToken();
+        if ($token) {
+            $token->delete();
+        }
+
+        // Create new token
+        $newToken = $user->createToken('api')->plainTextToken;
+
+        return [
+            'token' => $newToken,
+            'token_type' => 'Bearer',
+        ];
     }
 }

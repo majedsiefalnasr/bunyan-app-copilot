@@ -97,7 +97,8 @@ export const createTestRouter = () => ({
   },
 });
 
-// Configure Vue Test Utils global mocks
+// Configure Vue Test Utils global mocks and plugins
+config.global.plugins = [i18n];
 config.global.mocks = {
   $t: (key: string, fallback: string = key): string => {
     const parts = key.split('.');

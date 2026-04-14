@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TestController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -52,7 +53,7 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::post('register', [AuthController::class, 'register'])
             ->middleware('throttle:auth-register');
         Route::post('login', [AuthController::class, 'login'])
-            ->middleware('throttle:auth-login');
+            ->middleware(['throttle:auth-login', 'check-account-lockout']);
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
             ->middleware('throttle:auth-forgot-password');
         Route::post('reset-password', [AuthController::class, 'resetPassword']);
@@ -65,10 +66,20 @@ Route::middleware('api')->prefix('v1')->group(function () {
         // Authenticated routes
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
+            Route::post('refresh', [AuthController::class, 'refreshToken']);
             Route::get('user', [AuthController::class, 'user']);
             Route::put('user', [AuthController::class, 'updateProfile']);
             Route::post('email/resend', [AuthController::class, 'resendVerification'])
                 ->middleware('throttle:auth-email-resend');
         });
+    });
+
+    /**
+     * User Endpoints
+     * Avatar upload, profile management
+     */
+    Route::prefix('user')->middleware('auth:sanctum')->group(function () {
+        Route::post('avatar', [UserController::class, 'uploadAvatar'])
+            ->middleware('throttle:user-avatar-upload');
     });
 });

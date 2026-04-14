@@ -69,7 +69,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sanctum Middleware
+    | Middleware
     |--------------------------------------------------------------------------
     |
     | When authenticating your first-party SPA with Sanctum you may need to
@@ -84,4 +84,23 @@ return [
         'validate_csrf_token' => ValidateCsrfToken::class,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cookie Configuration (T050)
+    |--------------------------------------------------------------------------
+    |
+    | Configure HTTP-only cookie enforcement for token storage.
+    | This prevents token exposure to JavaScript and mitigates XSS attacks.
+    |
+    | - 'http_only': Prevent JavaScript access to token cookies (true = secure)
+    | - 'secure': Only send cookies over HTTPS (true = production ready)
+    | - 'same_site': CSRF protection level ('strict', 'lax', 'none')
+    |
+    */
+
+    'http_only' => env('SANCTUM_HTTP_ONLY', true),
+
+    'secure' => env('SANCTUM_SECURE_COOKIES', env('APP_ENV') === 'production'),
+
+    'same_site' => env('SANCTUM_SAME_SITE', 'lax'),
 ];

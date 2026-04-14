@@ -89,4 +89,11 @@ class AuthController extends BaseController
 
         return $this->success(null);
     }
+
+    public function refreshToken(Request $request): JsonResponse
+    {
+        $result = $this->authService->rotateToken($request->user());
+
+        return $this->success($result);
+    }
 }
