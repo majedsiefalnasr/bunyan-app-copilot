@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\Handler;
+use App\Http\Middleware\CheckAccountLockout;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
+            'check-account-lockout' => CheckAccountLockout::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

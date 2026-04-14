@@ -6,12 +6,15 @@ namespace Tests\Unit\SecurityFeatures;
 
 use App\Models\User;
 use App\Services\AvatarService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AvatarUploadSecurityTest extends TestCase
 {
+    use RefreshDatabase;
+
     private AvatarService $avatarService;
 
     protected function setUp(): void

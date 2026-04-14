@@ -3,7 +3,9 @@
 namespace Tests\Unit\SecurityFeatures;
 
 use App\Models\PasswordHistory;
+use App\Models\User;
 use App\Repositories\PasswordHistoryRepository;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -20,12 +22,15 @@ use Tests\TestCase;
  */
 class PasswordResetTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test password reuse prevention.
      */
     public function test_password_reuse_prevention_rejects_recent_passwords(): void
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $repo = new PasswordHistoryRepository(new PasswordHistory);
 
         // Create password history
@@ -47,7 +52,8 @@ class PasswordResetTest extends TestCase
      */
     public function test_recent_passwords_can_be_retrieved(): void
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $repo = new PasswordHistoryRepository(new PasswordHistory);
 
         // Create 4 password changes
@@ -66,7 +72,8 @@ class PasswordResetTest extends TestCase
      */
     public function test_password_change_timestamp_is_recorded(): void
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $repo = new PasswordHistoryRepository(new PasswordHistory);
 
         $repo->recordPasswordChange($userId, Hash::make('password'));
@@ -81,7 +88,8 @@ class PasswordResetTest extends TestCase
      */
     public function test_password_change_frequency_can_be_counted(): void
     {
-        $userId = 1;
+        $user = User::factory()->create();
+        $userId = $user->id;
         $repo = new PasswordHistoryRepository(new PasswordHistory);
 
         // Record multiple changes

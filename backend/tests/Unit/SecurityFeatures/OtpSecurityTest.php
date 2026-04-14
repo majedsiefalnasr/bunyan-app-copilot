@@ -7,6 +7,7 @@ use App\Models\OtpAuditLog;
 use App\Repositories\OtpAuditLogRepository;
 use App\Services\VerificationService;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -23,6 +24,8 @@ use Tests\TestCase;
  */
 class OtpSecurityTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test OTP rate limiting (5 failed attempts).
      */

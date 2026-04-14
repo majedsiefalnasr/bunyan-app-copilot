@@ -5,6 +5,7 @@ namespace Tests\Unit\SecurityFeatures;
 use App\Models\FailedLoginAttempt;
 use App\Repositories\FailedLoginAttemptRepository;
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
@@ -21,6 +22,8 @@ use Tests\TestCase;
  */
 class RateLimitingAndAccountLockoutTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test account lockout after 5 failed attempts.
      */

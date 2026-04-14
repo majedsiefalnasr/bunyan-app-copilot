@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\SecurityFeatures;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TokenRotationTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_token_rotation_creates_new_token(): void
     {
         // Create user with initial token

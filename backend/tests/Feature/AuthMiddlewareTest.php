@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ApiErrorCode;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
@@ -19,6 +20,8 @@ use Tests\TestCase;
  */
 class AuthMiddlewareTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test unauthenticated user gets 401 on protected route.
      */
