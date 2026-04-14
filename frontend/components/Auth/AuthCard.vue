@@ -1,9 +1,9 @@
 <template>
   <UCard
     :ui="{
-      root: 'shadow-[0px_0px_0px_1px_rgba(0,0,0,0.08),0px_2px_2px_rgba(0,0,0,0.04)]',
-      body: 'p-6',
-      header: { base: 'px-6 py-4 border-b border-[rgba(0,0,0,0.08)]' },
+      root: `shadow-[0px_0px_0px_1px_rgba(0,0,0,0.08),0px_2px_2px_rgba(0,0,0,0.04)]`,
+      body: `p-6`,
+      header: `px-6 py-4 border-b border-[rgba(0,0,0,0.08)]`,
     }"
     class="rounded-lg w-full"
   >

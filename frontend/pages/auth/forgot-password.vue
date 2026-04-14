@@ -8,16 +8,16 @@
         <!-- Error Alert -->
         <UAlert
           v-if="error"
-          color="red"
+          color="error"
           icon="i-heroicons-exclamation-circle"
           :description="error"
-          @close="error = null"
+          @close="error = ''"
         />
 
         <!-- Success Alert -->
         <UAlert
           v-if="success"
-          color="green"
+          color="success"
           icon="i-heroicons-check-circle"
           :description="$t('auth.forgot_password.success')"
         />
@@ -59,8 +59,8 @@
 <script setup lang="ts">
   import { ref, reactive } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { useAuth } from '~/composables/useAuth';
-  import { useAuthSchemas } from '~/composables/useAuthSchemas';
+  import { useAuth } from '../../composables/useAuth';
+  import { useAuthSchemas } from '../../composables/useAuthSchemas';
 
   definePageMeta({
     middleware: 'guest',
@@ -105,9 +105,9 @@
       await auth.forgotPassword(form.email);
       success.value = true;
     } catch (err) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
+      const errorData = err as { response?: { data?: { error?: { message?: string } } } };
       const message =
-        error.response?.data?.error?.message || 'فشل إرسال البريد / Failed to send email';
+        errorData.response?.data?.error?.message || 'فشل إرسال البريد / Failed to send email';
       error.value = message;
     } finally {
       isLoading.value = false;

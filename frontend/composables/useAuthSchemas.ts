@@ -22,7 +22,7 @@ export function useAuthSchemas() {
    */
   const registerStep1Schema = z.object({
     userType: z.enum(['customer', 'contractor'], {
-      errorMap: () => ({ message: 'يرجى اختيار نوع الحساب' }),
+      message: 'يرجى اختيار نوع الحساب',
     }),
   });
 

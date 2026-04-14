@@ -15,16 +15,16 @@
         <!-- Error Alert -->
         <UAlert
           v-if="error"
-          color="red"
+          color="error"
           icon="i-heroicons-exclamation-circle"
           :description="error"
-          @close="error = null"
+          @close="error = ''"
         />
 
         <!-- Rate Limit Alert -->
         <UAlert
           v-if="isOtpLocked"
-          color="red"
+          color="error"
           icon="i-heroicons-lock-closed"
           :description="`تم الوصول لحد محاولات التحقق. حاول بعد ${otpLockCountdown} دقيقة / Too many OTP attempts. Try again in ${otpLockCountdown} minute${otpLockCountdown > 1 ? 's' : ''}.`"
         />
@@ -95,7 +95,7 @@
   import { computed, onMounted, onUnmounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRoute, useRouter } from 'vue-router';
-  import { useAuth } from '~/composables/useAuth';
+  import { useAuth } from '../../composables/useAuth';
 
   definePageMeta({
     middleware: 'guest',
@@ -128,7 +128,10 @@
 
   const maskedEmail = computed(() => {
     if (!email) return '';
-    const [local, domain] = email.split('@');
+    const atIndex = email.indexOf('@');
+    if (atIndex === -1) return email;
+    const local = email.substring(0, atIndex);
+    const domain = email.substring(atIndex + 1);
     return `${local.substring(0, 3)}****@${domain}`;
   });
 
@@ -230,11 +233,11 @@
       // Redirect to dashboard
       await router.push(`/${locale.value}/dashboard`);
     } catch (err) {
-      const error = err as {
+      const errorData = err as {
         response?: { data?: { error?: { code?: string; message?: string } } };
       };
-      const errorCode = error.response?.data?.error?.code;
-      const errorMessage = error.response?.data?.error?.message;
+      const errorCode = errorData.response?.data?.error?.code;
+      const errorMessage = errorData.response?.data?.error?.message;
 
       // Increment attempt counter
       otpAttempts.value++;

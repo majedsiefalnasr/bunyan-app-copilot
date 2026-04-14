@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
   import { useDebounce } from '@vueuse/core';
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
 
   interface Props {
     score: number;
@@ -21,7 +21,7 @@
   const props = defineProps<Props>();
 
   // Debounced score to prevent CPU storm during fast typing
-  const debouncedScore = useDebounce(() => props.score, 300);
+  const debouncedScore = useDebounce(ref(props.score), 300);
 
   const strengthLabel = computed(() => {
     const score = debouncedScore.value;

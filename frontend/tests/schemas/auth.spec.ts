@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { useAuthSchemas } from '~/composables/useAuthSchemas';
+import { useAuthSchemas } from '../../composables/useAuthSchemas';
 
 describe('Auth Validation Schemas', () => {
   const {
@@ -50,13 +50,13 @@ describe('Auth Validation Schemas', () => {
     });
 
     it('accepts customer role', () => {
-      const valid = registerStep1Schema.parse({ role: 'customer' });
-      expect(valid.role).toBe('customer');
+      const valid = registerStep1Schema.parse({ userType: 'customer' });
+      expect(valid.userType).toBe('customer');
     });
 
     it('accepts contractor role', () => {
-      const valid = registerStep1Schema.parse({ role: 'contractor' });
-      expect(valid.role).toBe('contractor');
+      const valid = registerStep1Schema.parse({ userType: 'contractor' });
+      expect(valid.userType).toBe('contractor');
     });
   });
 

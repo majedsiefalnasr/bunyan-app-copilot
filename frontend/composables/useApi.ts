@@ -56,11 +56,14 @@ export function useApi() {
       } else {
         throw new Error('Token refresh failed');
       }
-    } catch (error) {
+    } catch (err) {
       // Reject all pending requests
       const queued = pendingRequests;
       pendingRequests = [];
-      queued.forEach(({ reject }) => reject(error));
+      const error = err as Error;
+      for (const { reject } of queued) {
+        reject(error);
+      }
 
       // Clear auth and redirect
       const tokenCookie = useCookie('auth_token');

@@ -19,10 +19,10 @@
           <!-- Error Alert -->
           <UAlert
             v-if="error"
-            color="red"
+            color="error"
             icon="i-heroicons-exclamation-circle"
             :description="error"
-            @close="error = null"
+            @close="error = ''"
           />
 
           <!-- Avatar Upload -->
@@ -194,9 +194,9 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import { useAuth } from '~/composables/useAuth';
-  import { useAuthSchemas } from '~/composables/useAuthSchemas';
-  import { useAuthStore } from '~/stores/auth';
+  import { useAuth } from '../../composables/useAuth';
+  import { useAuthSchemas } from '../../composables/useAuthSchemas';
+  import { useAuthStore } from '../../stores/auth';
 
   definePageMeta({
     middleware: 'auth',
@@ -400,8 +400,8 @@
       await auth.updateProfile(form);
       Object.assign(initialForm, form);
     } catch (err) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
-      error.value = error.response?.data?.error?.message || 'فشل تحديث الملف / Update failed';
+      const errorData = err as { response?: { data?: { error?: { message?: string } } } };
+      error.value = errorData.response?.data?.error?.message || 'فشل تحديث الملف / Update failed';
     } finally {
       isLoading.value = false;
     }
@@ -458,7 +458,11 @@
     changePasswordLoading.value = true;
 
     try {
-      await auth.changePassword(passwordForm.currentPassword, passwordForm.password);
+      await auth.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        password: passwordForm.password,
+        password_confirmation: passwordForm.confirmPassword,
+      });
       showChangePasswordModal.value = false;
     } catch (err) {
       const error = err as { response?: { data?: { error?: { message?: string } } } };

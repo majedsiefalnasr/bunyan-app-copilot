@@ -7,7 +7,7 @@
       <!-- Token Expired Alert -->
       <UAlert
         v-if="tokenExpired"
-        color="red"
+        color="error"
         icon="i-heroicons-exclamation-circle"
         :description="$t('auth.reset_password.token_expired')"
         class="mb-4"
@@ -17,10 +17,10 @@
         <!-- Error Alert -->
         <UAlert
           v-if="error"
-          color="red"
+          color="error"
           icon="i-heroicons-exclamation-circle"
           :description="error"
-          @close="error = null"
+          @close="error = ''"
         />
 
         <!-- Password Field -->
@@ -32,7 +32,7 @@
           <div class="flex gap-2">
             <UInput
               v-model="form.password"
-              :type="passwordToggle.type"
+              :type="passwordToggle.type.value"
               :placeholder="$t('auth.reset_password.password_placeholder')"
               icon="i-heroicons-lock-closed"
               class="flex-1"
@@ -40,7 +40,7 @@
             />
             <UButton
               :icon="passwordToggle.icon"
-              color="gray"
+              color="neutral"
               variant="ghost"
               :aria-label="passwordToggle.ariaLabel"
               @click="passwordToggle.toggle"
@@ -60,14 +60,14 @@
           <div class="flex gap-2">
             <UInput
               v-model="form.confirmPassword"
-              :type="passwordToggle.type"
+              :type="passwordToggle.type.value"
               :placeholder="$t('auth.reset_password.password_confirmation_placeholder')"
               icon="i-heroicons-lock-closed"
               class="flex-1"
             />
             <UButton
               :icon="passwordToggle.icon"
-              color="gray"
+              color="neutral"
               variant="ghost"
               :aria-label="passwordToggle.ariaLabel"
               @click="passwordToggle.toggle"
@@ -103,9 +103,9 @@
   import { ref, reactive } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRouter, useRoute } from 'vue-router';
-  import { useAuth } from '~/composables/useAuth';
-  import { usePasswordToggle } from '~/composables/usePasswordToggle';
-  import { useAuthSchemas } from '~/composables/useAuthSchemas';
+  import { useAuth } from '../../composables/useAuth';
+  import { usePasswordToggle } from '../../composables/usePasswordToggle';
+  import { useAuthSchemas } from '../../composables/useAuthSchemas';
 
   definePageMeta({
     middleware: 'guest',
@@ -193,11 +193,11 @@
       // Show success and redirect to login
       await router.push(`/${locale.value}/auth/login`);
     } catch (err) {
-      const error = err as {
+      const errorData = err as {
         response?: { data?: { error?: { code?: string; message?: string } } };
       };
-      const errorCode = error.response?.data?.error?.code;
-      const errorMessage = error.response?.data?.error?.message;
+      const errorCode = errorData.response?.data?.error?.code;
+      const errorMessage = errorData.response?.data?.error?.message;
       if (errorCode === 'WORKFLOW_PREREQUISITES_UNMET') {
         tokenExpired.value = true;
       } else {

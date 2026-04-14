@@ -6,10 +6,10 @@
         <UAlert
           v-if="error"
           :title="$t('errors.error')"
-          color="red"
+          color="error"
           icon="i-heroicons-exclamation-circle"
           :description="error"
-          @close="error = null"
+          @close="error = ''"
         />
 
         <!-- Step 1: Account Type Selection -->
@@ -129,7 +129,7 @@
             <div class="flex gap-2">
               <UInput
                 v-model="form.password"
-                :type="passwordToggle.type"
+                :type="passwordToggle.type.value"
                 :placeholder="$t('auth.register.password_placeholder')"
                 icon="i-heroicons-lock-closed"
                 class="flex-1"
@@ -137,7 +137,7 @@
               />
               <UButton
                 :icon="passwordToggle.icon"
-                color="gray"
+                color="neutral"
                 variant="ghost"
                 :aria-label="passwordToggle.ariaLabel"
                 @click="passwordToggle.toggle"
@@ -156,14 +156,14 @@
             <div class="flex gap-2">
               <UInput
                 v-model="form.confirmPassword"
-                :type="passwordToggle.type"
+                :type="passwordToggle.type.value"
                 :placeholder="$t('auth.register.password_confirmation_placeholder')"
                 icon="i-heroicons-lock-closed"
                 class="flex-1"
               />
               <UButton
                 :icon="passwordToggle.icon"
-                color="gray"
+                color="neutral"
                 variant="ghost"
                 :aria-label="passwordToggle.ariaLabel"
                 @click="passwordToggle.toggle"
@@ -235,9 +235,9 @@
   import { computed, ref, shallowRef } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
-  import { useAuth } from '~/composables/useAuth';
-  import { useAuthSchemas } from '~/composables/useAuthSchemas';
-  import { usePasswordToggle } from '~/composables/usePasswordToggle';
+  import { useAuth } from '../../composables/useAuth';
+  import { useAuthSchemas } from '../../composables/useAuthSchemas';
+  import { usePasswordToggle } from '../../composables/usePasswordToggle';
 
   definePageMeta({
     middleware: 'guest',
@@ -319,23 +319,23 @@
   });
 
   const currentStepTitle = computed(() => {
-    const titles = [
-      $t('auth.register.step_1_title'),
-      $t('auth.register.step_2_title'),
-      $t('auth.register.step_3_title'),
-      $t('auth.register.step_4_title'),
-    ];
-    return titles[currentStep.value - 1];
+    const titles: Record<number, string> = {
+      1: $t('auth.register.step_1_title'),
+      2: $t('auth.register.step_2_title'),
+      3: $t('auth.register.step_3_title'),
+      4: $t('auth.register.step_4_title'),
+    };
+    return titles[currentStep.value] || '';
   });
 
   const currentStepSubtitle = computed(() => {
-    const subtitles = [
-      $t('auth.register.step_1_subtitle'),
-      $t('auth.register.step_2_subtitle'),
-      $t('auth.register.step_3_subtitle'),
-      $t('auth.register.step_4_subtitle'),
-    ];
-    return subtitles[currentStep.value - 1];
+    const subtitles: Record<number, string> = {
+      1: $t('auth.register.step_1_subtitle'),
+      2: $t('auth.register.step_2_subtitle'),
+      3: $t('auth.register.step_3_subtitle'),
+      4: $t('auth.register.step_4_subtitle'),
+    };
+    return subtitles[currentStep.value] || '';
   });
 
   const filteredDistricts = computed(() => {
@@ -461,9 +461,9 @@
         `/${locale.value}/auth/verify-email?email=${encodeURIComponent(form.value.email)}`
       );
     } catch (err) {
-      const error = err as { response?: { data?: { error?: { message?: string } } } };
+      const errorData = err as { response?: { data?: { error?: { message?: string } } } };
       const errorMessage =
-        error.response?.data?.error?.message || 'فشل إنشاء الحساب / Registration failed';
+        errorData.response?.data?.error?.message || 'فشل إنشاء الحساب / Registration failed';
       error.value = errorMessage;
     } finally {
       isLoading.value = false;

@@ -134,7 +134,8 @@ describe('useAuth composable', () => {
     });
 
     const registerData = {
-      name: 'New User',
+      firstName: 'New',
+      lastName: 'User',
       email: 'new@example.com',
       phone: '0512345678',
       password: 'password123',
@@ -147,7 +148,14 @@ describe('useAuth composable', () => {
 
     expect(mockApiFetch).toHaveBeenCalledWith('/api/v1/auth/register', {
       method: 'POST',
-      body: registerData,
+      body: {
+        name: 'New User',
+        email: 'new@example.com',
+        phone: '0512345678',
+        password: 'password123',
+        password_confirmation: 'password123',
+        role: 'contractor',
+      },
     });
     expect(result).toEqual(mockUser);
     expect(cookieRef.value).toBe('reg-token');
@@ -158,7 +166,8 @@ describe('useAuth composable', () => {
     const { register } = useAuth();
     await expect(
       register({
-        name: 'X',
+        firstName: 'X',
+        lastName: 'Y',
         email: 'x@x.com',
         phone: '0500000000',
         password: 'p',

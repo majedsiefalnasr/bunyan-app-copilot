@@ -11,7 +11,7 @@
         <div class="hidden md:flex space-x-6" dir="auto">
           <template v-if="isAuthenticated && authStore.user">
             <!-- Customer Navigation -->
-            <template v-if="authStore.user.role === 'customer'">
+            <template v-if="authStore.user.role === `customer`">
               <NuxtLink
                 to="/dashboard"
                 class="text-sm text-[#666666] hover:text-[#171717] dark:hover:text-white"
@@ -27,7 +27,7 @@
             </template>
 
             <!-- Contractor Navigation -->
-            <template v-if="authStore.user.role === 'contractor'">
+            <template v-if="authStore.user.role === `contractor`">
               <NuxtLink
                 to="/dashboard"
                 class="text-sm text-[#666666] hover:text-[#171717] dark:hover:text-white"
@@ -49,7 +49,7 @@
             </template>
 
             <!-- Admin Navigation -->
-            <template v-if="authStore.user.role === 'admin'">
+            <template v-if="authStore.user.role === `admin`">
               <NuxtLink
                 to="/admin"
                 class="text-sm text-[#666666] hover:text-[#171717] dark:hover:text-white"
@@ -71,10 +71,10 @@
           <!-- Language Switcher -->
           <UButton
             icon="i-heroicons-language-20-solid"
-            color="gray"
+            color="neutral"
             variant="ghost"
             size="sm"
-            :label="locale.value === 'ar' ? 'En' : 'ع'"
+            :label="locale === `ar` ? `En` : `ع`"
             @click="toggleLanguage"
           />
 
@@ -82,26 +82,26 @@
           <div v-if="isAuthenticated" class="flex items-center space-x-4">
             <!-- Profile Link -->
             <NuxtLink
-              :to="`/${locale.value}/profile`"
+              :to="`/${locale}/profile`"
               class="text-sm text-[#666666] hover:text-[#171717] dark:hover:text-white"
             >
               {{ authStore.user?.firstName }}
             </NuxtLink>
 
             <!-- Logout Button -->
-            <UButton :label="$t('nav.logout')" color="red" size="sm" @click="onLogout" />
+            <UButton :label="$t(`nav.logout`)" color="error" size="sm" @click="onLogout" />
           </div>
 
           <!-- Login/Register Links (Not Authenticated) -->
           <div v-else class="flex items-center space-x-3">
             <NuxtLink
-              :to="`/${locale.value}/auth/login`"
+              :to="`/${locale}/auth/login`"
               class="text-sm font-medium text-[#171717] hover:text-[#666666] dark:text-white"
             >
               {{ $t('nav.login') }}
             </NuxtLink>
             <NuxtLink
-              :to="`/${locale.value}/auth/register`"
+              :to="`/${locale}/auth/register`"
               class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
             >
               {{ $t('nav.register') }}
@@ -117,8 +117,8 @@
   import { computed } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
-  import { useAuthStore } from '~/stores/auth';
-  import { useAuth } from '~/composables/useAuth';
+  import { useAuthStore } from '../stores/auth';
+  import { useAuth } from '../composables/useAuth';
 
   const router = useRouter();
   const { locale } = useI18n();
@@ -128,7 +128,8 @@
   const isAuthenticated = computed(() => !!authStore.token && !!authStore.user);
 
   const toggleLanguage = () => {
-    const newLocale = locale.value === 'ar' ? 'en' : 'ar';
+    const currentLocale = locale.value;
+    const newLocale = currentLocale === 'ar' ? 'en' : 'ar';
     locale.value = newLocale;
     // Update HTML dir attribute
     document.documentElement.dir = newLocale === 'ar' ? 'rtl' : 'ltr';

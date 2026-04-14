@@ -6,17 +6,17 @@
         <UAlert
           v-if="error"
           :title="$t('errors.error')"
-          color="red"
+          color="error"
           icon="i-heroicons-exclamation-circle"
           :description="error"
-          @close="error = null"
+          @close="error = ''"
         />
 
         <!-- Account Locked Alert -->
         <UAlert
           v-if="isAccountLocked"
           :title="$t('errors.account_locked')"
-          color="red"
+          color="error"
           icon="i-heroicons-lock-closed"
           :description="`حسابك مقفول. حاول مجدداً بعد ${accountLockCountdown} دقيقة / Account locked. Try again in ${accountLockCountdown} minute${accountLockCountdown > 1 ? 's' : ''}.`"
         />
@@ -25,7 +25,7 @@
         <UAlert
           v-if="isRateLimited"
           title="محاولات كثيرة / Too many attempts"
-          color="orange"
+          color="warning"
           icon="i-heroicons-clock"
           :description="`حاول مجدداً بعد ${rateLimitCountdown} ثانية / Try again in ${rateLimitCountdown} second${rateLimitCountdown > 1 ? 's' : ''}.`"
         />
@@ -47,7 +47,7 @@
           <div class="flex gap-2">
             <UInput
               v-model="form.password"
-              :type="passwordToggle.type"
+              :type="passwordToggle.type.value"
               :placeholder="$t('auth.login.password_placeholder')"
               icon="i-heroicons-lock-closed"
               :disabled="isAccountLocked || isRateLimited"
@@ -55,7 +55,7 @@
             />
             <UButton
               :icon="passwordToggle.icon"
-              color="gray"
+              color="neutral"
               variant="ghost"
               :disabled="isAccountLocked || isRateLimited"
               :aria-label="passwordToggle.ariaLabel"
@@ -119,9 +119,9 @@
   import { onMounted, onUnmounted, reactive, ref } from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useRouter } from 'vue-router';
-  import { useAuth } from '~/composables/useAuth';
-  import { useAuthSchemas } from '~/composables/useAuthSchemas';
-  import { usePasswordToggle } from '~/composables/usePasswordToggle';
+  import { useAuth } from '../../composables/useAuth';
+  import { useAuthSchemas } from '../../composables/useAuthSchemas';
+  import { usePasswordToggle } from '../../composables/usePasswordToggle';
 
   definePageMeta({
     layout: 'default', // Will be overridden by AuthLayout
@@ -276,11 +276,11 @@
       sessionStorage.removeItem('login_account_lock');
       await router.push(`/${locale.value}/dashboard`);
     } catch (err) {
-      const error = err as {
+      const errorData = err as {
         response?: { data?: { error?: { code?: string; message?: string } } };
       };
-      const errorCode = error.response?.data?.error?.code;
-      const errorMessage = error.response?.data?.error?.message;
+      const errorCode = errorData.response?.data?.error?.code;
+      const errorMessage = errorData.response?.data?.error?.message;
       if (errorCode === 'RATE_LIMIT_EXCEEDED') {
         // Initiate 15-minute rate limit (900 seconds)
         initiateRateLimitCountdown(900);
