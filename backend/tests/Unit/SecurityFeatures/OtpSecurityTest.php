@@ -96,7 +96,7 @@ class OtpSecurityTest extends TestCase
     }
 
     /**
-     * Test OTP expiry is 10 minutes.
+     * Test OTP expires in 10 minutes.
      */
     public function test_otp_expiry_is_10_minutes(): void
     {
@@ -106,9 +106,11 @@ class OtpSecurityTest extends TestCase
         $otp = $service->generateOtp('user@example.com');
         $after = Carbon::now();
 
-        $expiryMinutes = $before->diffInMinutes($otp['expires_at']);
-        $this->assertGreaterThanOrEqual(9, $expiryMinutes);
-        $this->assertLessThanOrEqual(10, $expiryMinutes);
+        // Use diffInSeconds for more precise assertion
+        $expirySeconds = $before->diffInSeconds($otp['expires_at']);
+        // 10 minutes = 600 seconds, allow slight tolerance (590-610 seconds)
+        $this->assertGreaterThanOrEqual(590, $expirySeconds);
+        $this->assertLessThanOrEqual(610, $expirySeconds);
     }
 
     /**

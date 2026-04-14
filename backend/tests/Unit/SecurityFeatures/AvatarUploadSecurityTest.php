@@ -65,7 +65,8 @@ class AvatarUploadSecurityTest extends TestCase
         $url = $this->avatarService->uploadAvatar($file, 1);
 
         $this->assertNotEmpty($url);
-        $this->assertStringContainsString('s3', $url);
+        // With fake storage, URL won't contain 's3' - just verify it returns a valid URL
+        $this->assertStringContainsString('avatars/', $url);
     }
 
     public function test_avatar_upload_accepts_valid_png(): void
@@ -76,7 +77,7 @@ class AvatarUploadSecurityTest extends TestCase
         $url = $this->avatarService->uploadAvatar($file, 1);
 
         $this->assertNotEmpty($url);
-        $this->assertStringContainsString('s3', $url);
+        $this->assertStringContainsString('avatars/', $url);
     }
 
     public function test_avatar_upload_accepts_valid_webp(): void
@@ -87,7 +88,7 @@ class AvatarUploadSecurityTest extends TestCase
         $url = $this->avatarService->uploadAvatar($file, 1);
 
         $this->assertNotEmpty($url);
-        $this->assertStringContainsString('s3', $url);
+        $this->assertStringContainsString('avatars/', $url);
     }
 
     public function test_avatar_upload_deletes_old_avatar(): void
@@ -98,11 +99,14 @@ class AvatarUploadSecurityTest extends TestCase
         $file1 = UploadedFile::fake()->image('avatar1.jpg', 400, 400);
         $url1 = $this->avatarService->uploadAvatar($file1, $userId);
 
+        // Wait 1 second to ensure different timestamp
+        sleep(1);
+
         // Upload second avatar
         $file2 = UploadedFile::fake()->image('avatar2.jpg', 400, 400);
         $url2 = $this->avatarService->uploadAvatar($file2, $userId);
 
-        // URLs should be different
+        // URLs should be different (different timestamps)
         $this->assertNotEquals($url1, $url2);
     }
 
@@ -120,8 +124,6 @@ class AvatarUploadSecurityTest extends TestCase
 
     public function test_avatar_upload_rate_limiting(): void
     {
-        $this->withoutExceptionHandling();
-
         // Create authenticated user
         $user = $this->createUser();
 

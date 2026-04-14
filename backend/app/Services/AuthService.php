@@ -187,11 +187,10 @@ class AuthService
      */
     public function rotateToken(User $user): array
     {
-        // Delete current token for user
-        $token = $user->currentAccessToken();
-        if ($token) {
-            $token->delete();
-        }
+        // Revoke all existing tokens for this user before creating new one
+        // This ensures complete token rotation regardless of which token
+        // was used in the current request
+        $user->tokens()->delete();
 
         // Create new token
         $newToken = $user->createToken('api')->plainTextToken;

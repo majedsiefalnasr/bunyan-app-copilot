@@ -90,8 +90,10 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('auth-login', function (Request $request) {
-            // T044: 10 login attempts per 15 minutes (900 seconds)
-            return Limit::perMinutes(15, 10)->by($request->ip());
+            // T044: 5 login attempts per 15 minutes (900 seconds)
+            // Note: Account lockout also triggers at 5 failed attempts,
+            // so both fire on the same threshold for consistent behavior.
+            return Limit::perMinutes(15, 5)->by($request->ip());
         });
 
         RateLimiter::for('auth-register', function (Request $request) {

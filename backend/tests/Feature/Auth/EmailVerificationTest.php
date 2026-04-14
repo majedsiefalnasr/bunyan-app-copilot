@@ -81,10 +81,14 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->customer()->unverified()->create();
         Sanctum::actingAs($user);
 
-        for ($i = 0; $i < 3; $i++) {
-            $this->postJson('/api/v1/auth/email/resend');
+        // Rate limiter is configured for 5 per 15 minutes (auth-email-resend)
+        for ($i = 0; $i < 5; $i++) {
+            $response = $this->postJson('/api/v1/auth/email/resend');
+            // First 5 should succeed (200)
+            $this->assertEquals(200, $response->status());
         }
 
+        // 6th attempt should be rate limited (429)
         $response = $this->postJson('/api/v1/auth/email/resend');
 
         $response->assertStatus(429);

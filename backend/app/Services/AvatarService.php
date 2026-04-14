@@ -17,12 +17,25 @@ class AvatarService
 
     private const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/webp'];
 
+    private const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+    private const MIN_DIMENSION = 100;
+
     private const RESIZE_WIDTH = 400;
 
     private const RESIZE_HEIGHT = 400;
 
     public function uploadAvatar(UploadedFile $file, int $userId): string
     {
+        // Validate file size (max 5MB)
+        if ($file->getSize() > self::MAX_FILE_SIZE) {
+            throw new ApiException(
+                ApiErrorCode::VALIDATION_ERROR,
+                'Avatar file size must be less than 5MB.',
+                ['file_size' => $file->getSize()]
+            );
+        }
+
         // Validate MIME type
         if (! in_array($file->getMimeType(), self::ALLOWED_MIMES)) {
             throw new ApiException(
@@ -35,12 +48,22 @@ class AvatarService
         // Validate magic bytes (file signature)
         $this->validateMagicBytes($file);
 
-        // Delete old avatar if it exists
-        $this->deleteOldAvatar($userId);
-
-        // Process and resize image
+        // Validate image dimensions (minimum 100x100)
         $manager = new ImageManager(new Driver);
         $image = $manager->read($file->getRealPath());
+        $width = $image->width();
+        $height = $image->height();
+
+        if ($width < self::MIN_DIMENSION || $height < self::MIN_DIMENSION) {
+            throw new ApiException(
+                ApiErrorCode::VALIDATION_ERROR,
+                'Avatar image must be at least 100x100 pixels.',
+                ['width' => $width, 'height' => $height]
+            );
+        }
+
+        // Delete old avatar if it exists
+        $this->deleteOldAvatar($userId);
 
         // Resize to 400x400 (contain)
         $image->scaleDown(

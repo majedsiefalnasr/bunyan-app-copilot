@@ -27,7 +27,7 @@ class AuthMiddlewareTest extends TestCase
      */
     public function test_unauthenticated_user_cannot_access_protected_routes(): void
     {
-        $response = $this->getJson('/api/v1/user');
+        $response = $this->getJson('/api/v1/auth/user');
 
         $response->assertStatus(401);
         $response->assertJson([
@@ -46,7 +46,7 @@ class AuthMiddlewareTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->getJson('/api/v1/user');
+        $response = $this->actingAs($user)->getJson('/api/v1/auth/user');
 
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
@@ -71,21 +71,26 @@ class AuthMiddlewareTest extends TestCase
 
     /**
      * Test rate limiting middleware on login.
+     * With auth-login throttle set to 5 per 15 minutes,
+     * rate limiting should trigger at 6th attempt.
      */
     public function test_rate_limiting_applies_to_login_attempts(): void
     {
-        // Simulate 11 login attempts (limit is 10 per 15 minutes)
-        for ($i = 0; $i < 11; $i++) {
+        // Use unique email to avoid lockout triggering
+        $email = 'auth-mw-rate-'.now()->timestamp.'@example.com';
+
+        // Simulate 6 login attempts
+        for ($i = 0; $i < 6; $i++) {
             $response = $this->postJson('/api/v1/auth/login', [
-                'email' => 'test@example.com',
+                'email' => $email,
                 'password' => 'password123',
             ]);
 
-            if ($i < 10) {
-                // First 10 should return 401 (invalid credentials, not rate limited)
+            if ($i < 5) {
+                // First 5 should return 401 (invalid credentials, not rate limited)
                 $this->assertEquals(401, $response->status());
             } else {
-                // 11th should return 429 (rate limited)
+                // 6th should return 429 (rate limited)
                 $this->assertEquals(429, $response->status());
                 $response->assertJson([
                     'error' => [
