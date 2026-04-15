@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { injectAxe, checkA11y } from 'axe-playwright';
+import { checkA11y, injectAxe } from 'axe-playwright';
 
 test.describe('Category Accessibility Testing', () => {
   test.beforeEach(async ({ page }) => {
@@ -17,9 +17,7 @@ test.describe('Category Accessibility Testing', () => {
     await injectAxe(page);
   });
 
-  test('should pass axe accessibility scan on categories page', async ({
-    page,
-  }) => {
+  test('should pass axe accessibility scan on categories page', async ({ page }) => {
     try {
       await checkA11y(page, null, {
         detailedReport: true,
@@ -91,9 +89,7 @@ test.describe('Category Accessibility Testing', () => {
     }
   });
 
-  test('should have proper color contrast ratios (WCAG AA 4.5:1 for text)', async ({
-    page,
-  }) => {
+  test('should have proper color contrast ratios (WCAG AA 4.5:1 for text)', async ({ page }) => {
     // Get all text elements
     const textElements = await page.locator('button, a, p, span, label').all();
 
@@ -113,9 +109,7 @@ test.describe('Category Accessibility Testing', () => {
     }
   });
 
-  test('should support keyboard navigation (Tab through tree)', async ({
-    page,
-  }) => {
+  test('should support keyboard navigation (Tab through tree)', async ({ page }) => {
     const tree = page.locator('.category-tree-node').first();
 
     if (await tree.isVisible()) {
@@ -142,12 +136,8 @@ test.describe('Category Accessibility Testing', () => {
     }
   });
 
-  test('should support keyboard Enter to expand/collapse nodes', async ({
-    page,
-  }) => {
-    const expandButton = page
-      .locator('button[class*="expand"], [class*="toggle"]')
-      .first();
+  test('should support keyboard Enter to expand/collapse nodes', async ({ page }) => {
+    const expandButton = page.locator('button[class*="expand"], [class*="toggle"]').first();
 
     if (await expandButton.isVisible()) {
       // Focus button
@@ -200,16 +190,14 @@ test.describe('Category Accessibility Testing', () => {
 
     // List should have proper role
     const tree = page.locator('.category-tree');
-    const hasRole = await tree.getAttribute('role');
+    const _hasRole = await tree.getAttribute('role');
 
     // Should be either implicit list or have explicit role
     const tag = await tree.evaluate((el) => el.tagName);
     expect(['UL', 'OL', 'DIV']).toContain(tag);
   });
 
-  test('should have descriptive link/button text (no "click here")', async ({
-    page,
-  }) => {
+  test('should have descriptive link/button text (no "click here")', async ({ page }) => {
     const buttons = await page.locator('button').all();
     const links = await page.locator('a').all();
 
@@ -219,18 +207,9 @@ test.describe('Category Accessibility Testing', () => {
       const text = await element.textContent();
 
       // Should have meaningful text, not generic "Click here" or "Link"
-      const meaninglessTexts = [
-        'click here',
-        'click',
-        'link',
-        'more',
-      ];
+      const meaninglessTexts = ['click here', 'click', 'link', 'more'];
 
       if (text) {
-        const isGeneric = meaninglessTexts.some((generic) =>
-          text.toLowerCase().includes(generic)
-        );
-
         // At least some buttons/links should have descriptive text
         expect(text.trim().length).toBeGreaterThan(0);
       }
@@ -259,9 +238,7 @@ test.describe('Category Accessibility Testing', () => {
 
   test('should support screen reader announcements', async ({ page }) => {
     // Check for aria-live regions for dynamic updates
-    const liveRegions = await page
-      .locator('[aria-live], [role="status"], [role="alert"]')
-      .all();
+    const liveRegions = await page.locator('[aria-live], [role="status"], [role="alert"]').all();
 
     if (liveRegions.length > 0) {
       for (const region of liveRegions) {
@@ -270,15 +247,13 @@ test.describe('Category Accessibility Testing', () => {
 
         expect(
           ['polite', 'assertive', 'off'].includes(ariaLive || '') ||
-          ['status', 'alert'].includes(role || '')
+            ['status', 'alert'].includes(role || '')
         ).toBe(true);
       }
     }
   });
 
-  test('should have proper image alt text (if any images)', async ({
-    page,
-  }) => {
+  test('should have proper image alt text (if any images)', async ({ page }) => {
     const images = await page.locator('img').all();
 
     for (const image of images) {
@@ -293,9 +268,7 @@ test.describe('Category Accessibility Testing', () => {
     }
   });
 
-  test('should render correctly in RTL mode (logical properties)', async ({
-    page,
-  }) => {
+  test('should render correctly in RTL mode (logical properties)', async ({ page }) => {
     // Set RTL layout
     await page.evaluate(() => {
       document.documentElement.dir = 'rtl';

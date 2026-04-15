@@ -10,21 +10,15 @@ test.describe('Category Creation E2E', () => {
     await page.waitForURL('**/admin/dashboard');
   });
 
-  test('should navigate to categories admin page and display tree', async ({
-    page,
-  }) => {
+  test('should navigate to categories admin page and display tree', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Check for page title
-    expect(await page.locator('h1, h2').first().textContent()).toContain(
-      'الفئات'
-    ); // "Categories" in Arabic
+    expect(await page.locator('h1, h2').first().textContent()).toContain('الفئات'); // "Categories" in Arabic
   });
 
-  test('should create a new category with Arabic and English names', async ({
-    page,
-  }) => {
+  test('should create a new category with Arabic and English names', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -49,15 +43,11 @@ test.describe('Category Creation E2E', () => {
     await expect(categoryText).toBeVisible();
   });
 
-  test('should verify category appears immediately after creation', async ({
-    page,
-  }) => {
+  test('should verify category appears immediately after creation', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    const initialCount = await page
-      .locator('.category-tree-node')
-      .count();
+    const initialCount = await page.locator('.category-tree-node').count();
 
     // Create new category
     await page.click('button:has-text("إضافة فئة")');
@@ -70,15 +60,11 @@ test.describe('Category Creation E2E', () => {
     await page.waitForTimeout(500);
 
     // Verify new count
-    const newCount = await page
-      .locator('.category-tree-node')
-      .count();
+    const newCount = await page.locator('.category-tree-node').count();
     expect(newCount).toBeGreaterThan(initialCount);
   });
 
-  test('should show success notification after category creation', async ({
-    page,
-  }) => {
+  test('should show success notification after category creation', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -91,19 +77,15 @@ test.describe('Category Creation E2E', () => {
     await page.click('button:has-text("حفظ")');
 
     // Wait for toast notification
-    const toast = await page
-      .locator('[role="status"]')
-      .first();
+    const toast = await page.locator('[role="status"]').first();
     await expect(toast).toBeVisible({ timeout: 3000 });
 
     // Verify success message
     const toastText = await toast.textContent();
-    expect(toastText).toContain('تم');  // "Done" in Arabic
+    expect(toastText).toContain('تم'); // "Done" in Arabic
   });
 
-  test('should close modal after successful submission', async ({
-    page,
-  }) => {
+  test('should close modal after successful submission', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -123,9 +105,7 @@ test.describe('Category Creation E2E', () => {
     await expect(modal).not.toBeVisible();
   });
 
-  test('should prevent submission with empty required fields', async ({
-    page,
-  }) => {
+  test('should prevent submission with empty required fields', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -134,7 +114,7 @@ test.describe('Category Creation E2E', () => {
 
     // Try submitting without filling fields
     const saveButton = page.locator('button:has-text("حفظ")');
-    
+
     // Save button should be disabled or show error
     if (await saveButton.isEnabled()) {
       await saveButton.click();

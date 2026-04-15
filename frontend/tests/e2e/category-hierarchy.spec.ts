@@ -10,9 +10,7 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForURL('**/admin/dashboard');
   });
 
-  test('should create parent category followed by child categories', async ({
-    page,
-  }) => {
+  test('should create parent category followed by child categories', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -28,9 +26,7 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForSelector('[role="dialog"]', { state: 'hidden' });
 
     // Verify parent appears
-    const parentCategory = await page
-      .locator('text=المواد الكهربائية')
-      .first();
+    const parentCategory = await page.locator('text=المواد الكهربائية').first();
     await expect(parentCategory).toBeVisible();
 
     // Get parent category ID from API call or DOM
@@ -74,9 +70,7 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForTimeout(500);
   });
 
-  test('should display parent with indented children in tree', async ({
-    page,
-  }) => {
+  test('should display parent with indented children in tree', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -86,9 +80,7 @@ test.describe('Category Hierarchy E2E', () => {
     expect(treeNodes.length).toBeGreaterThan(0);
 
     // Check for nested structure
-    const nestedNodes = await page
-      .locator('.category-tree-node .category-tree-node')
-      .all();
+    const nestedNodes = await page.locator('.category-tree-node .category-tree-node').all();
     expect(nestedNodes.length).toBeGreaterThan(0);
   });
 
@@ -117,45 +109,33 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Find expanded parent
-    const expandButtons = await page
-      .locator('button[class*="expanded"]')
-      .all();
+    const expandButtons = await page.locator('button[class*="expanded"]').all();
 
     if (expandButtons.length > 0) {
-      const initialChildCount = await page
-        .locator('.category-tree-node')
-        .count();
+      const initialChildCount = await page.locator('.category-tree-node').count();
 
       // Click to collapse
       await expandButtons[0].click();
       await page.waitForTimeout(300);
 
       // Should have fewer visible nodes
-      const collapsedChildCount = await page
-        .locator('.category-tree-node')
-        .count();
+      const collapsedChildCount = await page.locator('.category-tree-node').count();
 
       // May or may not change depending on visibility
       expect(typeof collapsedChildCount).toBe('number');
     }
   });
 
-  test('should update child category reflecting in tree', async ({
-    page,
-  }) => {
+  test('should update child category reflecting in tree', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Find a child category
-    const childNodes = await page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const childNodes = await page.locator('.category-tree-node .category-tree-node').first();
 
     if (await childNodes.isVisible()) {
       // Click edit/action menu on child
-      const editButton = childNodes.locator(
-        'button[class*="edit"], button[aria-label*="edit"]'
-      );
+      const editButton = childNodes.locator('button[class*="edit"], button[aria-label*="edit"]');
 
       if (await editButton.isVisible()) {
         await editButton.click();
@@ -170,30 +150,22 @@ test.describe('Category Hierarchy E2E', () => {
         await page.waitForTimeout(500);
 
         // Verify update appears in tree
-        const updatedText = await page
-          .locator('text=Updated Child Category')
-          .first();
+        const updatedText = await page.locator('text=Updated Child Category').first();
         await expect(updatedText).toBeVisible();
       }
     }
   });
 
-  test('should preserve parent-child relationship after update', async ({
-    page,
-  }) => {
+  test('should preserve parent-child relationship after update', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Get initial tree structure count
-    const initialStructure = await page
-      .locator('.category-tree-node')
-      .count();
+    const initialStructure = await page.locator('.category-tree-node').count();
 
     // Update a category
     const anyCategory = page.locator('.category-tree-node').first();
-    const editButton = anyCategory.locator(
-      'button[class*="edit"], button[aria-label*="edit"]'
-    );
+    const editButton = anyCategory.locator('button[class*="edit"], button[aria-label*="edit"]');
 
     if (await editButton.isVisible()) {
       await editButton.click();
@@ -209,17 +181,13 @@ test.describe('Category Hierarchy E2E', () => {
       await page.waitForTimeout(500);
 
       // Verify tree structure unchanged
-      const finalStructure = await page
-        .locator('.category-tree-node')
-        .count();
+      const finalStructure = await page.locator('.category-tree-node').count();
 
       expect(finalStructure).toBe(initialStructure);
     }
   });
 
-  test('should display breadcrumb for nested category', async ({
-    page,
-  }) => {
+  test('should display breadcrumb for nested category', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -244,23 +212,18 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Create multiple levels of nesting
-    let parentId = null;
+    const parentId = null;
 
     for (let i = 0; i < 3; i++) {
       await page.click('button:has-text("إضافة فئة")');
       await page.waitForSelector('[role="dialog"]');
 
-      await page.fill(
-        'input[placeholder*="العrabية"]',
-        `المستوى ${i + 1}`
-      );
+      await page.fill('input[placeholder*="العrabية"]', `المستوى ${i + 1}`);
       await page.fill('input[placeholder*="English"]', `Level ${i + 1}`);
 
       if (parentId && i > 0) {
         // Select parent from dropdown
-        const parentSelect = page
-          .locator('select, [role="combobox"]')
-          .first();
+        const parentSelect = page.locator('select, [role="combobox"]').first();
         if (await parentSelect.isVisible()) {
           await parentSelect.click();
           await page.click(`text=المستوى ${i}`);
@@ -281,9 +244,7 @@ test.describe('Category Hierarchy E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Look for parent with visible child count
-    const parentBadges = await page
-      .locator('[class*="badge"], [class*="count"]')
-      .all();
+    const parentBadges = await page.locator('[class*="badge"], [class*="count"]').all();
 
     if (parentBadges.length > 0) {
       for (const badge of parentBadges) {

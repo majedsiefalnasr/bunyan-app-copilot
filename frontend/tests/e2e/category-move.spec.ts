@@ -10,16 +10,12 @@ test.describe('Category Move E2E', () => {
     await page.waitForURL('**/admin/dashboard');
   });
 
-  test('should move child category to different parent via drag-drop', async ({
-    page,
-  }) => {
+  test('should move child category to different parent via drag-drop', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Expand first parent to see children
-    let expandButtons = await page
-      .locator('button[class*="expand"], [class*="toggle"]')
-      .all();
+    const expandButtons = await page.locator('button[class*="expand"], [class*="toggle"]').all();
 
     if (expandButtons.length > 0) {
       await expandButtons[0].click();
@@ -27,14 +23,10 @@ test.describe('Category Move E2E', () => {
     }
 
     // Get child and target parent
-    const childNode = await page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const childNode = await page.locator('.category-tree-node .category-tree-node').first();
 
     if (await childNode.isVisible()) {
-      let targetParent = await page
-        .locator('.category-tree-node')
-        .nth(1);
+      const targetParent = await page.locator('.category-tree-node').nth(1);
 
       try {
         // Drag child to new parent
@@ -49,9 +41,7 @@ test.describe('Category Move E2E', () => {
     }
   });
 
-  test('should verify parent_id changes when category is moved', async ({
-    page,
-  }) => {
+  test('should verify parent_id changes when category is moved', async ({ page }) => {
     let moveRequest: any = null;
 
     page.on('request', (request) => {
@@ -63,14 +53,10 @@ test.describe('Category Move E2E', () => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    const childNode = await page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const childNode = await page.locator('.category-tree-node .category-tree-node').first();
 
     if (await childNode.isVisible()) {
-      const targetParent = await page
-        .locator('.category-tree-node')
-        .nth(1);
+      const targetParent = await page.locator('.category-tree-node').nth(1);
 
       try {
         await childNode.dragTo(targetParent);
@@ -86,37 +72,27 @@ test.describe('Category Move E2E', () => {
     }
   });
 
-  test('should remove moved child from original parent', async ({
-    page,
-  }) => {
+  test('should remove moved child from original parent', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Get initial structure
-    const childrenBefore = await page
-      .locator('.category-tree-node .category-tree-node')
-      .count();
+    const childrenBefore = await page.locator('.category-tree-node .category-tree-node').count();
 
     expect(childrenBefore).toBeGreaterThan(0);
 
     // Perform move via UI
-    const firstChild = await page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const firstChild = await page.locator('.category-tree-node .category-tree-node').first();
 
-    const targetParent = await page
-      .locator('.category-tree-node')
-      .nth(1);
+    const targetParent = await page.locator('.category-tree-node').nth(1);
 
-    if (await firstChild.isVisible() && await targetParent.isVisible()) {
+    if ((await firstChild.isVisible()) && (await targetParent.isVisible())) {
       try {
         await firstChild.dragTo(targetParent);
         await page.waitForTimeout(500);
 
         // Structure should still be valid
-        const childrenAfter = await page
-          .locator('.category-tree-node')
-          .count();
+        const childrenAfter = await page.locator('.category-tree-node').count();
 
         expect(childrenAfter).toBeGreaterThanOrEqual(0);
       } catch (e) {
@@ -125,16 +101,12 @@ test.describe('Category Move E2E', () => {
     }
   });
 
-  test('should display moved category under new parent', async ({
-    page,
-  }) => {
+  test('should display moved category under new parent', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Expand second parent
-    let expandButtons = await page
-      .locator('button[class*="expand"]')
-      .all();
+    const expandButtons = await page.locator('button[class*="expand"]').all();
 
     if (expandButtons.length > 1) {
       await expandButtons[1].click();
@@ -142,24 +114,18 @@ test.describe('Category Move E2E', () => {
     }
 
     // Get structure after expansion
-    const nestedNodes = await page
-      .locator('.category-tree-node .category-tree-node')
-      .all();
+    const nestedNodes = await page.locator('.category-tree-node .category-tree-node').all();
 
     expect(nestedNodes.length).toBeGreaterThanOrEqual(0);
   });
 
-  test('should prevent moving to descendant parent', async ({
-    page,
-  }) => {
+  test('should prevent moving to descendant parent', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
     // Attempt to move parent to its own child (should fail)
     const parentNode = page.locator('.category-tree-node').first();
-    const childNode = page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const childNode = page.locator('.category-tree-node .category-tree-node').first();
 
     if (await childNode.isVisible()) {
       try {
@@ -168,9 +134,7 @@ test.describe('Category Move E2E', () => {
         await page.waitForTimeout(500);
 
         // Error should appear
-        const error = page
-          .locator('[class*="error"], [role="alert"]')
-          .first();
+        const error = page.locator('[class*="error"], [role="alert"]').first();
 
         if (await error.isVisible({ timeout: 2000 }).catch(() => false)) {
           const text = await error.textContent();
@@ -191,9 +155,7 @@ test.describe('Category Move E2E', () => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    const childNode = await page
-      .locator('.category-tree-node .category-tree-node')
-      .first();
+    const childNode = await page.locator('.category-tree-node .category-tree-node').first();
 
     if (await childNode.isVisible()) {
       const targetParent = await page.locator('.category-tree-node').nth(1);
@@ -203,9 +165,7 @@ test.describe('Category Move E2E', () => {
         await page.waitForTimeout(500);
 
         // Error message should appear
-        const error = page
-          .locator('[class*="error"], [role="status"]')
-          .first();
+        const error = page.locator('[class*="error"], [role="status"]').first();
 
         if (await error.isVisible({ timeout: 2000 }).catch(() => false)) {
           expect(await error.textContent()).toBeTruthy();

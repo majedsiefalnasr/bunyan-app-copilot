@@ -1,164 +1,166 @@
 <script setup lang="ts">
-import type { Category, CategoryFormData } from '~/types/categories';
-import CategoryTree from '~/components/categories/CategoryTree.vue';
-import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
-import CategoryBreadcrumb from '~/components/categories/CategoryBreadcrumb.vue';
+  import type { Category, CategoryFormData } from '~/types/categories';
+  import CategoryTree from '~/components/categories/CategoryTree.vue';
+  import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
+  import CategoryBreadcrumb from '~/components/categories/CategoryBreadcrumb.vue';
 
-definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth', 'role'],
-  requiredRole: 'admin',
-});
+  definePageMeta({
+    layout: 'dashboard',
+    middleware: ['auth', 'role'],
+    requiredRole: 'admin',
+  });
 
-const { t } = useI18n();
-const categoryStore = useCategoryStore();
+  const { t } = useI18n();
+  const categoryStore = useCategoryStore();
 
-// State
-const isFormModalOpen = ref(false);
-const editingCategory = ref<Category | null>(null);
-const deleteConfirmId = ref<number | null>(null);
-const selectedCategoryId = ref<number | null>(null);
+  // State
+  const isFormModalOpen = ref(false);
+  const editingCategory = ref<Category | null>(null);
+  const deleteConfirmId = ref<number | null>(null);
+  const selectedCategoryId = ref<number | null>(null);
 
-// Composables
-const { notifySuccess, notifyError } = useNotification();
+  // Composables
+  const { notifySuccess, notifyError } = useNotification();
 
-/**
- * Load categories on mount
- */
-onMounted(async () => {
-  try {
-    await categoryStore.loadCategories({ includeInactive: true });
-  } catch (error) {
-    notifyError(t('errors.loadCategoriesFailed'));
-  }
-});
-
-/**
- * Open form modal for create mode
- */
-const openCreateForm = () => {
-  editingCategory.value = null;
-  isFormModalOpen.value = true;
-};
-
-/**
- * Open form modal for edit mode
- */
-const openEditForm = (category: Category) => {
-  editingCategory.value = category;
-  isFormModalOpen.value = true;
-};
-
-/**
- * Close form modal
- */
-const closeFormModal = () => {
-  isFormModalOpen.value = false;
-  editingCategory.value = null;
-};
-
-/**
- * Handle form submit (create or update)
- */
-const handleFormSubmit = async (data: CategoryFormData & { id?: number; version?: number }) => {
-  try {
-    if (data.id) {
-      // Update existing
-      await categoryStore.updateCategory(data.id, {
-        ...data,
-        version: data.version || 0,
-      });
-      notifySuccess(t('success.categoryUpdated'));
-    } else {
-      // Create new
-      await categoryStore.createCategory(data);
-      notifySuccess(t('success.categoryCreated'));
+  /**
+   * Load categories on mount
+   */
+  onMounted(async () => {
+    try {
+      await categoryStore.loadCategories({ includeInactive: true });
+    } catch {
+      notifyError(t('errors.loadCategoriesFailed'));
     }
-    closeFormModal();
-  } catch (error) {
-    notifyError(t('errors.submitFailed'));
-  }
-};
+  });
 
-/**
- * Confirm and delete category
- */
-const handleDeleteConfirm = async (id: number) => {
-  try {
-    await categoryStore.deleteCategory(id);
-    notifySuccess(t('success.categoryDeleted'));
-    deleteConfirmId.value = null;
-  } catch (error) {
-    notifyError(t('errors.deleteFailed'));
-  }
-};
+  /**
+   * Open form modal for create mode
+   */
+  const openCreateForm = () => {
+    editingCategory.value = null;
+    isFormModalOpen.value = true;
+  };
 
-/**
- * Handle tree node selection
- */
-const handleSelectCategory = (category: Category) => {
-  selectedCategoryId.value = category.id;
-  categoryStore.selectCategory(category);
-};
+  /**
+   * Open form modal for edit mode
+   */
+  const openEditForm = (category: Category) => {
+    editingCategory.value = category;
+    isFormModalOpen.value = true;
+  };
 
-/**
- * Handle edit from tree
- */
-const handleEditFromTree = (category: Category) => {
-  openEditForm(category);
-};
+  /**
+   * Close form modal
+   */
+  const closeFormModal = () => {
+    isFormModalOpen.value = false;
+    editingCategory.value = null;
+  };
 
-/**
- * Handle delete from tree
- */
-const handleDeleteFromTree = (category: Category) => {
-  deleteConfirmId.value = category.id;
-};
-
-/**
- * Handle reorder
- */
-const handleReorder = async (categoryId: number, newSortOrder: number) => {
-  try {
-    const category = categoryStore.getCategoryById(categoryId);
-    if (category) {
-      await categoryStore.reorderCategory(categoryId, newSortOrder, category.version);
-      notifySuccess(t('success.categoryReordered'));
+  /**
+   * Handle form submit (create or update)
+   */
+  const handleFormSubmit = async (data: CategoryFormData & { id?: number; version?: number }) => {
+    try {
+      if (data.id) {
+        // Update existing
+        await categoryStore.updateCategory(data.id, {
+          ...data,
+          version: data.version || 0,
+        });
+        notifySuccess(t('success.categoryUpdated'));
+      } else {
+        // Create new
+        await categoryStore.createCategory(data);
+        notifySuccess(t('success.categoryCreated'));
+      }
+      closeFormModal();
+    } catch {
+      notifyError(t('errors.submitFailed'));
     }
-  } catch (error) {
-    notifyError(t('errors.reorderFailed'));
-  }
-};
+  };
 
-/**
- * Handle move
- */
-const handleMove = async (categoryId: number, newParentId: number | null) => {
-  try {
-    const category = categoryStore.getCategoryById(categoryId);
-    if (category) {
-      await categoryStore.moveCategory(categoryId, newParentId, category.version);
-      notifySuccess(t('success.categoryMoved'));
+  /**
+   * Confirm and delete category
+   */
+  const handleDeleteConfirm = async (id: number) => {
+    try {
+      await categoryStore.deleteCategory(id);
+      notifySuccess(t('success.categoryDeleted'));
+      deleteConfirmId.value = null;
+    } catch {
+      notifyError(t('errors.deleteFailed'));
     }
-  } catch (error) {
-    notifyError(t('errors.moveFailed'));
-  }
-};
+  };
 
-/**
- * Refresh categories
- */
-const handleRefresh = async () => {
-  try {
-    await categoryStore.loadCategories({ includeInactive: true });
-    notifySuccess(t('success.refreshed'));
-  } catch (error) {
-    notifyError(t('errors.refreshFailed'));
-  }
-};
+  /**
+   * Handle tree node selection
+   */
+  const handleSelectCategory = (category: Category) => {
+    selectedCategoryId.value = category.id;
+    categoryStore.selectCategory(category);
+  };
 
-// Get selected category for breadcrumb
-const selectedCategory = computed(() => categoryStore.getCategoryById(selectedCategoryId.value || 0) || null);
+  /**
+   * Handle edit from tree
+   */
+  const handleEditFromTree = (category: Category) => {
+    openEditForm(category);
+  };
+
+  /**
+   * Handle delete from tree
+   */
+  const handleDeleteFromTree = (category: Category) => {
+    deleteConfirmId.value = category.id;
+  };
+
+  /**
+   * Handle reorder
+   */
+  const handleReorder = async (categoryId: number, newSortOrder: number) => {
+    try {
+      const category = categoryStore.getCategoryById(categoryId);
+      if (category) {
+        await categoryStore.reorderCategory(categoryId, newSortOrder, category.version);
+        notifySuccess(t('success.categoryReordered'));
+      }
+    } catch {
+      notifyError(t('errors.reorderFailed'));
+    }
+  };
+
+  /**
+   * Handle move
+   */
+  const handleMove = async (categoryId: number, newParentId: number | null) => {
+    try {
+      const category = categoryStore.getCategoryById(categoryId);
+      if (category) {
+        await categoryStore.moveCategory(categoryId, newParentId, category.version);
+        notifySuccess(t('success.categoryMoved'));
+      }
+    } catch {
+      notifyError(t('errors.moveFailed'));
+    }
+  };
+
+  /**
+   * Refresh categories
+   */
+  const handleRefresh = async () => {
+    try {
+      await categoryStore.loadCategories({ includeInactive: true });
+      notifySuccess(t('success.refreshed'));
+    } catch {
+      notifyError(t('errors.refreshFailed'));
+    }
+  };
+
+  // Get selected category for breadcrumb
+  const selectedCategory = computed(
+    () => categoryStore.getCategoryById(selectedCategoryId.value || 0) || null
+  );
 </script>
 
 <template>
@@ -184,11 +186,7 @@ const selectedCategory = computed(() => categoryStore.getCategoryById(selectedCa
     <!-- Toolbar -->
     <div class="flex items-center justify-between mb-6 gap-3">
       <div class="flex items-center gap-3">
-        <UButton
-          icon="i-heroicons-plus-20-solid"
-          size="md"
-          @click="openCreateForm"
-        >
+        <UButton icon="i-heroicons-plus-20-solid" size="md" @click="openCreateForm">
           {{ $t('categories.addCategory') }}
         </UButton>
         <UButton
@@ -247,7 +245,10 @@ const selectedCategory = computed(() => categoryStore.getCategoryById(selectedCa
     </UCard>
 
     <!-- Delete Confirmation Modal -->
-    <UModal :model-value="!!deleteConfirmId" @update:model-value="(val: boolean) => !val && (deleteConfirmId.value = null)">
+    <UModal
+      :model-value="!!deleteConfirmId"
+      @update:model-value="(val: boolean) => !val && (deleteConfirmId.value = null)"
+    >
       <UCard>
         <template #header>
           <h3 class="font-semibold">{{ $t('categories.deleteConfirm') }}</h3>
@@ -283,7 +284,7 @@ const selectedCategory = computed(() => categoryStore.getCategoryById(selectedCa
 </template>
 
 <style scoped>
-.category-management-page {
-  padding: 1rem;
-}
+  .category-management-page {
+    padding: 1rem;
+  }
 </style>

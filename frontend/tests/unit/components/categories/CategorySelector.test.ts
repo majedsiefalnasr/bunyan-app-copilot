@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Category } from '~/types/categories';
+import { describe, expect, it, vi } from 'vitest';
 import CategorySelector from '~/components/categories/CategorySelector.vue';
+import type { Category } from '~/types/categories';
 
 // Stub Nuxt auto-imports
 vi.stubGlobal('useI18n', () => ({
@@ -248,7 +248,8 @@ describe('CategorySelector.vue', () => {
       global: {
         stubs: {
           USelect: {
-            template: '<div class="u-select"><div v-for="opt in options" :key="opt.value" class="option">{{ opt.label }}</div></div>',
+            template:
+              '<div class="u-select"><div v-for="opt in options" :key="opt.value" class="option">{{ opt.label }}</div></div>',
             props: ['options'],
           },
         },

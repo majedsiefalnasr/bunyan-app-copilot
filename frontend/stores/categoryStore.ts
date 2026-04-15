@@ -9,12 +9,22 @@ export const useCategoryStore = defineStore('category', () => {
   const error = ref<string | null>(null);
 
   // Composables
-  const { fetchCategories, fetchCategory, createCategory, updateCategory, reorderCategory, moveCategory, deleteCategory } = useCategories();
+  const {
+    fetchCategories,
+    createCategory,
+    updateCategory,
+    reorderCategory,
+    moveCategory,
+    deleteCategory,
+  } = useCategories();
 
   /**
    * Load all categories from API
    */
-  const loadCategories = async (options?: { includeInactive?: boolean; includeDeleted?: boolean }) => {
+  const loadCategories = async (options?: {
+    includeInactive?: boolean;
+    includeDeleted?: boolean;
+  }) => {
     try {
       isLoading.value = true;
       error.value = null;
@@ -145,7 +155,7 @@ export const useCategoryStore = defineStore('category', () => {
       }
       return null;
     };
-    return findInTree(categories.value);
+    return findInTree(categories.value ?? []);
   };
 
   /**
@@ -166,7 +176,7 @@ export const useCategoryStore = defineStore('category', () => {
       }
       return false;
     };
-    findAndBuildPath(categories.value, id, []);
+    findAndBuildPath(categories.value ?? [], id, []);
     return path;
   };
 

@@ -25,9 +25,7 @@ test.describe('Category Error Handling E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Try to update a category
-    const editButtons = await page
-      .locator('button[class*="edit"]')
-      .all();
+    const editButtons = await page.locator('button[class*="edit"]').all();
 
     if (editButtons.length > 0) {
       await editButtons[0].click();
@@ -49,9 +47,7 @@ test.describe('Category Error Handling E2E', () => {
     }
   });
 
-  test('should handle 403 RBAC_ROLE_DENIED when non-admin tries to create', async ({
-    page,
-  }) => {
+  test('should handle 403 RBAC_ROLE_DENIED when non-admin tries to create', async ({ page }) => {
     // Mock API to return 403 for non-admin
     await page.route('**/api/**/categories', (route) => {
       const request = route.request();
@@ -85,9 +81,7 @@ test.describe('Category Error Handling E2E', () => {
     }
   });
 
-  test('should handle 422 VALIDATION_ERROR when name_ar is empty', async ({
-    page,
-  }) => {
+  test('should handle 422 VALIDATION_ERROR when name_ar is empty', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -109,9 +103,7 @@ test.describe('Category Error Handling E2E', () => {
     expect(errorText).toContain('مطلوب') || expect(errorText).toContain('required');
   });
 
-  test('should display error contract with code and message', async ({
-    page,
-  }) => {
+  test('should display error contract with code and message', async ({ page }) => {
     let errorResponse: any = null;
 
     page.on('response', (response) => {
@@ -187,9 +179,7 @@ test.describe('Category Error Handling E2E', () => {
     await page.waitForTimeout(300);
 
     // Should show field error
-    const fieldError = page
-      .locator('[class*="error"]')
-      .first();
+    const fieldError = page.locator('[class*="error"]').first();
 
     if (await fieldError.isVisible({ timeout: 1000 }).catch(() => false)) {
       expect(await fieldError.textContent()).toBeTruthy();
@@ -223,7 +213,7 @@ test.describe('Category Error Handling E2E', () => {
     await page.waitForTimeout(500);
 
     // Should show error
-    let error = page.locator('[class*="error"]').first();
+    const error = page.locator('[class*="error"]').first();
 
     if (await error.isVisible({ timeout: 2000 }).catch(() => false)) {
       // Retry without closing modal

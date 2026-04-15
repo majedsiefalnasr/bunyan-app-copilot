@@ -66,7 +66,7 @@ class CategoryWorkflowTest extends TestCase
         $treeResponse->assertStatus(200);
 
         // Find parent in tree
-        $treeData = $treeResponse->json ('data');
+        $treeData = $treeResponse->json('data');
         $parentInTree = null;
 
         foreach ($treeData as $category) {
@@ -130,7 +130,7 @@ class CategoryWorkflowTest extends TestCase
         $this->assertCount(4, $updatedParent['children'] ?? []);
 
         // Moved child should not be in first parent's children
-        $childIds = array_map(fn($c) => $c['id'], $updatedParent['children'] ?? []);
+        $childIds = array_map(fn ($c) => $c['id'], $updatedParent['children'] ?? []);
         $this->assertNotContains($childToMove['id'], $childIds);
 
         // Verify moved child is under second parent
@@ -140,7 +140,7 @@ class CategoryWorkflowTest extends TestCase
         $secondParentTreeResponse->assertStatus(200);
         $updatedSecondParent = $secondParentTreeResponse->json('data');
 
-        $secondParentChildIds = array_map(fn($c) => $c['id'], $updatedSecondParent['children'] ?? []);
+        $secondParentChildIds = array_map(fn ($c) => $c['id'], $updatedSecondParent['children'] ?? []);
         $this->assertContains($childToMove['id'], $secondParentChildIds);
 
         // 7. Admin soft-deletes one category
@@ -167,7 +167,7 @@ class CategoryWorkflowTest extends TestCase
         }
 
         if ($parentAfterDelete) {
-            $childIdsAfterDelete = array_map(fn($c) => $c['id'], $parentAfterDelete['children'] ?? []);
+            $childIdsAfterDelete = array_map(fn ($c) => $c['id'], $parentAfterDelete['children'] ?? []);
             $this->assertNotContains($categoryToDelete['id'], $childIdsAfterDelete);
         }
 
@@ -187,7 +187,7 @@ class CategoryWorkflowTest extends TestCase
         }
 
         if ($parentWithDeleted) {
-            $allChildIds = array_map(fn($c) => $c['id'], $parentWithDeleted['children'] ?? []);
+            $allChildIds = array_map(fn ($c) => $c['id'], $parentWithDeleted['children'] ?? []);
             // Deleted child might be in children or marked as deleted
         }
 

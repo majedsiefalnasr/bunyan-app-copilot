@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class CategoryApiContractTest extends TestCase
@@ -19,10 +18,8 @@ class CategoryApiContractTest extends TestCase
     }
 
     /**
-     * T072: API Contract Validation
-     * Verify all responses match the standard contract
+     * T072: API Contract Validation.
      */
-
     public function test_list_categories_success_response_structure(): void
     {
         $response = $this->actingAs($this->admin)
@@ -228,7 +225,7 @@ class CategoryApiContractTest extends TestCase
                 'name_ar' => 'فئة',
                 'name_en' => 'Category',
             ]);
-        $this->assertEquals(201, $createResponse.status());
+        $this->assertEquals(201, $createResponse->status());
 
         // 200 for successful GET
         $getResponse = $this->actingAs($this->admin)

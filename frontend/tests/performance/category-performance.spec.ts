@@ -10,10 +10,7 @@ test.describe('Category Performance Testing', () => {
     await page.waitForURL('**/admin/dashboard');
   });
 
-  test('should render tree with 100 categories in under 500ms', async ({
-    page,
-    browser,
-  }) => {
+  test('should render tree with 100 categories in under 500ms', async ({ page, browser }) => {
     await page.goto('/admin/categories');
 
     const startTime = Date.now();
@@ -28,9 +25,7 @@ test.describe('Category Performance Testing', () => {
     await expect(tree).toBeVisible();
   });
 
-  test('should measure tree render time with category count', async ({
-    page,
-  }) => {
+  test('should measure tree render time with category count', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -50,9 +45,7 @@ test.describe('Category Performance Testing', () => {
     expect(nodeCount).toBeGreaterThan(0);
   });
 
-  test('should open category selector dropdown in under 1 second', async ({
-    page,
-  }) => {
+  test('should open category selector dropdown in under 1 second', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -63,9 +56,7 @@ test.describe('Category Performance Testing', () => {
     await page.waitForSelector('[role="dialog"]');
 
     // Measure dropdown open time
-    const selectDropdown = page
-      .locator('select, [role="combobox"]')
-      .first();
+    const selectDropdown = page.locator('select, [role="combobox"]').first();
 
     if (await selectDropdown.isVisible()) {
       const dropdownStartTime = Date.now();
@@ -78,9 +69,7 @@ test.describe('Category Performance Testing', () => {
     }
   });
 
-  test('should submit category form in under 2 seconds', async ({
-    page,
-  }) => {
+  test('should submit category form in under 2 seconds', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -105,9 +94,7 @@ test.describe('Category Performance Testing', () => {
     expect(totalTime).toBeLessThan(2000);
   });
 
-  test('should measure API response time for tree endpoint', async ({
-    page,
-  }) => {
+  test('should measure API response time for tree endpoint', async ({ page }) => {
     let apiResponseTime = 0;
 
     page.on('response', (response) => {
@@ -128,22 +115,18 @@ test.describe('Category Performance Testing', () => {
     expect(apiResponseTime).toBeLessThan(500);
   });
 
-  test('should handle no unnecessary re-renders when expanding nodes', async ({
-    page,
-  }) => {
+  test('should handle no unnecessary re-renders when expanding nodes', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    let renderCount = 0;
+    const renderCount = 0;
 
     // Intercept render cycles
     await page.addInitScript(() => {
       (window as any).__renderCount = 0;
     });
 
-    const expandButtons = await page
-      .locator('button[class*="expand"]')
-      .all();
+    const expandButtons = await page.locator('button[class*="expand"]').all();
 
     if (expandButtons.length > 0) {
       const startTime = Date.now();
@@ -162,9 +145,7 @@ test.describe('Category Performance Testing', () => {
     }
   });
 
-  test('should measure memory usage during tree operations', async ({
-    page,
-  }) => {
+  test('should measure memory usage during tree operations', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -213,15 +194,11 @@ test.describe('Category Performance Testing', () => {
     expect(metrics.measurements.categoryCount).toBeGreaterThan(0);
   });
 
-  test('should handle rapid expand/collapse without performance degradation', async ({
-    page,
-  }) => {
+  test('should handle rapid expand/collapse without performance degradation', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    const expandButtons = await page
-      .locator('button[class*="expand"]')
-      .all();
+    const expandButtons = await page.locator('button[class*="expand"]').all();
 
     if (expandButtons.length > 0 && expandButtons[0]) {
       const startTime = Date.now();
@@ -241,9 +218,7 @@ test.describe('Category Performance Testing', () => {
     }
   });
 
-  test('should measure category search/filter performance', async ({
-    page,
-  }) => {
+  test('should measure category search/filter performance', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -265,9 +240,7 @@ test.describe('Category Performance Testing', () => {
     }
   });
 
-  test('should maintain performance with form modal operations', async ({
-    page,
-  }) => {
+  test('should maintain performance with form modal operations', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -279,16 +252,11 @@ test.describe('Category Performance Testing', () => {
       await page.waitForSelector('[role="dialog"]');
 
       // Fill form
-      await page.fill(
-        'input[placeholder*="العrabية"]',
-        `فئة ${i}`
-      );
+      await page.fill('input[placeholder*="العrabية"]', `فئة ${i}`);
       await page.fill('input[placeholder*="English"]', `Category ${i}`);
 
       // Close without submit (click cancel)
-      const cancelButton = page.locator(
-        'button:has-text("إلغاء"), button[aria-label*="close"]'
-      );
+      const cancelButton = page.locator('button:has-text("إلغاء"), button[aria-label*="close"]');
 
       if (await cancelButton.isVisible()) {
         await cancelButton.click();

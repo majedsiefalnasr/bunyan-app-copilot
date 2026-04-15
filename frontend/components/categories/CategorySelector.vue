@@ -1,66 +1,67 @@
 <script setup lang="ts">
-import type { Category } from '~/types/categories';
+  import type { Category } from '~/types/categories';
 
-interface Props {
-  modelValue?: number | null;
-  categories: Category[];
-  placeholder?: string;
-  disabled?: boolean;
-  excludeId?: number | null; // Exclude this category from selection (useful for moving)
-}
+  interface Props {
+    modelValue?: number | null;
+    categories: Category[];
+    placeholder?: string;
+    disabled?: boolean;
+    excludeId?: number | null; // Exclude this category from selection (useful for moving)
+  }
 
-interface Emits {
-  (e: 'update:modelValue', value: number | null): void;
-}
+  interface Emits {
+    (e: 'update:modelValue', value: number | null): void;
+  }
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: null,
-  placeholder: 'categories.selectCategory',
-  disabled: false,
-});
+  const props = withDefaults(defineProps<Props>(), {
+    modelValue: null,
+    placeholder: 'categories.selectCategory',
+    disabled: false,
+    excludeId: null,
+  });
 
-defineEmits<Emits>();
+  defineEmits<Emits>();
 
-interface FlatOption {
-  value: number;
-  label: string;
-  indent: number;
-}
+  interface FlatOption {
+    value: number;
+    label: string;
+    indent: number;
+  }
 
-/**
- * Flatten tree structure into selectable options with indentation display
- */
-const flattenedOptions = computed(() => {
-  const options: FlatOption[] = [];
+  /**
+   * Flatten tree structure into selectable options with indentation display
+   */
+  const flattenedOptions = computed(() => {
+    const options: FlatOption[] = [];
 
-  const flatten = (items: Category[], level: number = 0) => {
-    items.forEach((item) => {
-      // Skip excluded category
-      if (props.excludeId && item.id === props.excludeId) {
-        return;
-      }
+    const flatten = (items: Category[], level: number = 0) => {
+      items.forEach((item) => {
+        // Skip excluded category
+        if (props.excludeId && item.id === props.excludeId) {
+          return;
+        }
 
-      options.push({
-        value: item.id,
-        label: `${'  '.repeat(level)}${item.name_ar}`,
-        indent: level,
+        options.push({
+          value: item.id,
+          label: `${'  '.repeat(level)}${item.name_ar}`,
+          indent: level,
+        });
+
+        if (item.children && item.children.length > 0) {
+          flatten(item.children, level + 1);
+        }
       });
+    };
 
-      if (item.children && item.children.length > 0) {
-        flatten(item.children, level + 1);
-      }
-    });
-  };
+    flatten(props.categories);
+    return options;
+  });
 
-  flatten(props.categories);
-  return options;
-});
-
-// Add null option for "no parent"
-const selectOptions = computed(() => [
-  { value: null, label: 'categories.noParent' } as { value: null | number; label: string },
-  ...flattenedOptions.value,
-]);
+  // Add null option for "no parent"
+  const selectOptions = computed(() => [
+    { value: null, label: 'categories.noParent' } as { value: null | number; label: string },
+    ...flattenedOptions.value,
+  ]);
 </script>
 
 <template>

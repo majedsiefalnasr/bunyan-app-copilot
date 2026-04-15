@@ -1,50 +1,48 @@
 <script setup lang="ts">
-import type { Category } from '~/types/categories';
-import CategoryTreeNode from './CategoryTreeNode.vue';
+  import type { Category } from '~/types/categories';
+  import CategoryTreeNode from './CategoryTreeNode.vue';
 
-interface Props {
-  category: Category;
-  level: number;
-  editable?: boolean;
-  selectable?: boolean;
-  expanded?: boolean;
-}
+  interface Props {
+    category: Category;
+    level: number;
+    editable?: boolean;
+    selectable?: boolean;
+    expanded?: boolean;
+  }
 
-interface Emits {
-  (e: 'select', category: Category): void;
-  (e: 'edit', category: Category): void;
-  (e: 'delete', category: Category): void;
-  (e: 'toggleExpanded', id: number): void;
-  (e: 'reorder', categoryId: number, newSortOrder: number): void;
-  (e: 'move', categoryId: number, newParentId: number | null): void;
-}
+  interface Emits {
+    (e: 'select' | 'edit' | 'delete', category: Category): void;
+    (e: 'toggleExpanded', id: number): void;
+    (e: 'reorder', categoryId: number, newSortOrder: number): void;
+    (e: 'move', categoryId: number, newParentId: number | null): void;
+  }
 
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
+  const props = defineProps<Props>();
+  const emit = defineEmits<Emits>();
 
-const hasChildren = computed(() => props.category.children && props.category.children.length > 0);
+  const hasChildren = computed(() => props.category.children && props.category.children.length > 0);
 
-// Calculate indentation
-const paddingStart = computed(() => `${props.level * 1.5}rem`);
+  // Calculate indentation
+  const paddingStart = computed(() => `${props.level * 1.5}rem`);
 
-const handleSelect = () => {
-  emit('select', props.category);
-};
+  const handleSelect = () => {
+    emit('select', props.category);
+  };
 
-const handleEdit = (e: Event) => {
-  e.stopPropagation();
-  emit('edit', props.category);
-};
+  const handleEdit = (e: Event) => {
+    e.stopPropagation();
+    emit('edit', props.category);
+  };
 
-const handleDelete = (e: Event) => {
-  e.stopPropagation();
-  emit('delete', props.category);
-};
+  const handleDelete = (e: Event) => {
+    e.stopPropagation();
+    emit('delete', props.category);
+  };
 
-const handleToggleExpanded = (e: Event) => {
-  e.stopPropagation();
-  emit('toggleExpanded', props.category.id);
-};
+  const handleToggleExpanded = (e: Event) => {
+    e.stopPropagation();
+    emit('toggleExpanded', props.category.id);
+  };
 </script>
 
 <template>
@@ -126,8 +124,12 @@ const handleToggleExpanded = (e: Event) => {
           @edit="emit('edit', $event)"
           @delete="emit('delete', $event)"
           @toggle-expanded="emit('toggleExpanded', $event as number)"
-          @reorder="(categoryId: number, sortOrder: number) => emit('reorder', categoryId, sortOrder)"
-          @move="(categoryId: number, parentId: number | null) => emit('move', categoryId, parentId)"
+          @reorder="
+            (categoryId: number, sortOrder: number) => emit('reorder', categoryId, sortOrder)
+          "
+          @move="
+            (categoryId: number, parentId: number | null) => emit('move', categoryId, parentId)
+          "
         />
       </div>
     </div>
@@ -135,7 +137,7 @@ const handleToggleExpanded = (e: Event) => {
 </template>
 
 <style scoped>
-.category-tree-node {
-  position: relative;
-}
+  .category-tree-node {
+    position: relative;
+  }
 </style>

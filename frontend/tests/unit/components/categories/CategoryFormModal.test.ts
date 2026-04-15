@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Category, CategoryFormData } from '~/types/categories';
+import { describe, expect, it, vi } from 'vitest';
 import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
+import type { Category } from '~/types/categories';
 
 // Stub Nuxt auto-imports
 vi.stubGlobal('useI18n', () => ({
@@ -236,20 +236,22 @@ describe('CategoryFormModal.vue', () => {
   });
 
   it('validates required name_ar field', async () => {
-    const validationSchema = (mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelect: false,
-          UCheckbox: false,
-          UButton: false,
+    const validationSchema = (
+      mount(CategoryFormModal, {
+        props: defaultProps,
+        global: {
+          stubs: {
+            UModal: false,
+            UForm: false,
+            UFormGroup: false,
+            UInput: false,
+            USelect: false,
+            UCheckbox: false,
+            UButton: false,
+          },
         },
-      },
-    }).vm as any).validationSchema;
+      }).vm as any
+    ).validationSchema;
 
     // Test that name_ar is required
     try {
@@ -263,20 +265,22 @@ describe('CategoryFormModal.vue', () => {
   });
 
   it('validates required name_en field', async () => {
-    const validationSchema = (mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelect: false,
-          UCheckbox: false,
-          UButton: false,
+    const validationSchema = (
+      mount(CategoryFormModal, {
+        props: defaultProps,
+        global: {
+          stubs: {
+            UModal: false,
+            UForm: false,
+            UFormGroup: false,
+            UInput: false,
+            USelect: false,
+            UCheckbox: false,
+            UButton: false,
+          },
         },
-      },
-    }).vm as any).validationSchema;
+      }).vm as any
+    ).validationSchema;
 
     // Test that name_en is required
     try {
@@ -290,20 +294,22 @@ describe('CategoryFormModal.vue', () => {
   });
 
   it('validates minimum character length for name_ar', async () => {
-    const validationSchema = (mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelect: false,
-          UCheckbox: false,
-          UButton: false,
+    const validationSchema = (
+      mount(CategoryFormModal, {
+        props: defaultProps,
+        global: {
+          stubs: {
+            UModal: false,
+            UForm: false,
+            UFormGroup: false,
+            UInput: false,
+            USelect: false,
+            UCheckbox: false,
+            UButton: false,
+          },
         },
-      },
-    }).vm as any).validationSchema;
+      }).vm as any
+    ).validationSchema;
 
     // Test minimum length
     try {
@@ -318,20 +324,22 @@ describe('CategoryFormModal.vue', () => {
   });
 
   it('validates maximum character length for names', async () => {
-    const validationSchema = (mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelect: false,
-          UCheckbox: false,
-          UButton: false,
+    const validationSchema = (
+      mount(CategoryFormModal, {
+        props: defaultProps,
+        global: {
+          stubs: {
+            UModal: false,
+            UForm: false,
+            UFormGroup: false,
+            UInput: false,
+            USelect: false,
+            UCheckbox: false,
+            UButton: false,
+          },
         },
-      },
-    }).vm as any).validationSchema;
+      }).vm as any
+    ).validationSchema;
 
     // Test maximum length exceeded
     const longName = 'a'.repeat(101);

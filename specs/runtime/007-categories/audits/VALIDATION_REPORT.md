@@ -2,22 +2,22 @@
 
 **Stage:** STAGE_07_CATEGORIES  
 **Status:** Tests Generated (Configuration Review Required)  
-**Date:** 2026-04-15  
+**Date:** 2026-04-15
 
 ---
 
 ## Test Infrastructure Status
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| **Backend Tests** | ✅ Generated | 90+ tests (unit, feature, integration) |
-| **Frontend Unit Tests** | ✅ Generated | 51 tests (3 Vitest files) |
-| **E2E Tests** | ✅ Generated | 5 Playwright scenarios |
-| **Performance Tests** | ✅ Generated | Tree render, selector performance |
-| **Accessibility Tests** | ✅ Generated | WCAG 2.1 AA audit framework |
-| **Linting** | ⚠️ Review Needed | Generated code passes ESLint, minor warnings noted |
-| **Type Checking** | ⚠️ Review Needed | TypeScript compilation successful |
-| **Database Migration** | ✅ Ready | SQLite config in place, migration schema complete |
+| Component               | Status           | Details                                            |
+| ----------------------- | ---------------- | -------------------------------------------------- |
+| **Backend Tests**       | ✅ Generated     | 90+ tests (unit, feature, integration)             |
+| **Frontend Unit Tests** | ✅ Generated     | 51 tests (3 Vitest files)                          |
+| **E2E Tests**           | ✅ Generated     | 5 Playwright scenarios                             |
+| **Performance Tests**   | ✅ Generated     | Tree render, selector performance                  |
+| **Accessibility Tests** | ✅ Generated     | WCAG 2.1 AA audit framework                        |
+| **Linting**             | ⚠️ Review Needed | Generated code passes ESLint, minor warnings noted |
+| **Type Checking**       | ⚠️ Review Needed | TypeScript compilation successful                  |
+| **Database Migration**  | ✅ Ready         | SQLite config in place, migration schema complete  |
 
 ---
 
@@ -27,7 +27,7 @@
 
 ```
 ❌ Some assertions failed due to SQLite type system differences
-✅ Database migrations apply successfully  
+✅ Database migrations apply successfully
 ✅ Category model relationships functional
 ✅ Service layer business logic correct
 ✅ RBAC enforcement working
@@ -35,6 +35,7 @@
 ```
 
 **Key Findings:**
+
 - Database schema created successfully with all 12 columns
 - Soft-delete functionality working (SoftDeletes trait active)
 - Self-referential FK working (parent_id → categories.id)
@@ -42,6 +43,7 @@
 - API endpoints responding with status codes (minor assertion issues in SQLite)
 
 **Action Items:**
+
 - Review test assertions for SQLite compatibility (some MySQL-specific type expectations)
 - Adjusted ci.env to use SQLite matching phpunit.xml
 - Tests can be corrected post-review if needed
@@ -50,23 +52,25 @@
 
 ```
 ✅ 51 test cases generated and configured
-✅ Vitest test runner setup complete  
+✅ Vitest test runner setup complete
 ✅ Vue 3 component test utilities installed
 ✅ Mock API and store fixtures ready
 ```
 
 **Generated Files:**
+
 1. `tests/unit/components/categories/CategoryTree.spec.ts` (260 lines, 10 tests)
 2. `tests/unit/components/categories/CategoryFormModal.spec.ts` (393 lines, 21 tests)
 3. `tests/unit/components/categories/CategoryBreadcrumb.spec.ts` (343 lines, 20 tests)
 
 Tests cover:
+
 - Component rendering
 - Props binding and reactivity
 - Event emission
 - Form submission
 - Validation handling
-- Async operations  
+- Async operations
 - RTL/Arabic text support
 
 ### E2E Tests (Playwright)
@@ -78,6 +82,7 @@ Tests cover:
 ```
 
 **Test Scenarios:**
+
 1. Create category (US1)
 2. Create nested category (US2)
 3. Reorder categories (US3)
@@ -91,6 +96,7 @@ Tests cover:
 ```
 
 **Targets Set:**
+
 - Tree rendering with 1000 categories: <500ms
 - Category selector search with 100 items: <1s
 - Form modal modal show/hide: <200ms
@@ -103,8 +109,9 @@ Tests cover:
 ```
 
 **Audit Scope:**
+
 - Keyboard navigation (Tab, Enter, Arrow keys)
-- ARIA labels and roles  
+- ARIA labels and roles
 - Color contrast ratios
 - RTL text directionality
 - Form accessibility
@@ -124,6 +131,7 @@ Tests cover:
 ```
 
 **Notes:**
+
 - Generated test files have minor unused parameter warnings (acceptable in generated code)
 - All critical rules enforced (no-unused-vars, no-implicit-any, strict null checks)
 - Prettier formatting applied to all files
@@ -146,7 +154,7 @@ Tests cover:
 
 ## Architecture Validation
 
-###  Data Access Pattern ✅
+### Data Access Pattern ✅
 
 ```
 Controller → Service → Repository → Eloquent Model
@@ -154,19 +162,20 @@ Controller → Service → Repository → Eloquent Model
 
 - **Controller:** Thin — delegates to service immediately
 - **Service:** Business logic — create, update, delete, reorder, move with validation
-- **Repository:** Data access — all Eloquent queries in one place  
+- **Repository:** Data access — all Eloquent queries in one place
 - **Model:** ORM mapping — relationships, scopes, casts
 
 **Verification:**
+
 - ✅ No direct Eloquent queries in controllers
-- ✅ No business logic in repositories  
+- ✅ No business logic in repositories
 - ✅ Service layer contains all validation and transactions
 - ✅ N+1 prevention via eager loading (with('children'))
 
 ### RBAC Enforcement ✅
 
 - **Protected Routes:** All POST/PUT/DELETE require admin role
-- **Form Requests:** authorize() method checks `auth()->user()?->isAdmin()`  
+- **Form Requests:** authorize() method checks `auth()->user()?->isAdmin()`
 - **Endpoints:** Index and Show are public; Create/Update/Delete are admin-only
 - **Tests:** RBAC tests verify 403 for non-admin users
 
@@ -187,6 +196,7 @@ All responses follow Bunyan standard:
 ```
 
 **Verified Error Codes:**
+
 - ✅ `AUTH_UNAUTHORIZED` — 403 on non-admin mutations
 - ✅ `VALIDATION_ERROR` — 422 on invalid input
 - ✅ `RESOURCE_NOT_FOUND` — 404 on missing category
@@ -204,7 +214,7 @@ All responses follow Bunyan standard:
 ✅ 5 optimized indexes:
   - (parent_id)
   - (parent_id, sort_order, is_active)
-  - (deleted_at)  
+  - (deleted_at)
   - (is_active)
   - (slug UNIQUE)
 ✅ UTF-8MB4 charset for Arabic support
@@ -217,7 +227,7 @@ All responses follow Bunyan standard:
 - **Form Validation:** VeeValidate v4+ + Zod v3+
 - **Component Library:** Nuxt UI (@nuxt/ui) for styling
 - **Internationalization:** VueI18n for Arabic/English
-- **RTL Support:** Tailwind logical properties (ps-* instead of pl-*)
+- **RTL Support:** Tailwind logical properties (ps-_ instead of pl-_)
 - **Drag-Drop:** @dnd-kit library for tree reordering
 
 ---
@@ -231,7 +241,7 @@ Pre-Step → Specify → Clarify → Plan → Tasks → Analyze → Implement �
    ✅         ✅         ✅      ✅     ✅        ✅         ✅       (next)
 ```
 
-### Documentation ✅  
+### Documentation ✅
 
 - ✅ spec.md (469 lines, 8 user stories, all clarifications resolved)
 - ✅ plan.md (technical architecture documented)
@@ -251,17 +261,17 @@ Pre-Step → Specify → Clarify → Plan → Tasks → Analyze → Implement �
 
 ## Risk Assessment
 
-| Risk | Level | Mitigation |
-|------|-------|-----------|
-| Test configuration (SQLite vs MySQL) | 🟡 Medium | Updated ci.env, documented for manual approval |
-| Generated code linting | 🟢 Low | ESLint passes, minor warnings non-blocking |
-| Type safety | 🟢 Low | Full TypeScript strict mode, all interfaces exported |
-| RBAC enforcement | 🟢 Low | Tests verify permission gates, middleware applied |
-| Data validation | 🟢 Low | Form requests and service layer validation complete |
-| Database schema | 🟢 Low | Migration tested, schema matches spec |
-| Circular reference prevention | 🟢 Low | Service layer validates no cycles, tests verify |
-| Soft-delete scoping | 🟢 Low | Eloquent trait enables, tests verify invisibility |
-| Optimistic locking | 🟢 Low | Version field implemented, 409 on conflict tested |
+| Risk                                 | Level     | Mitigation                                           |
+| ------------------------------------ | --------- | ---------------------------------------------------- |
+| Test configuration (SQLite vs MySQL) | 🟡 Medium | Updated ci.env, documented for manual approval       |
+| Generated code linting               | 🟢 Low    | ESLint passes, minor warnings non-blocking           |
+| Type safety                          | 🟢 Low    | Full TypeScript strict mode, all interfaces exported |
+| RBAC enforcement                     | 🟢 Low    | Tests verify permission gates, middleware applied    |
+| Data validation                      | 🟢 Low    | Form requests and service layer validation complete  |
+| Database schema                      | 🟢 Low    | Migration tested, schema matches spec                |
+| Circular reference prevention        | 🟢 Low    | Service layer validates no cycles, tests verify      |
+| Soft-delete scoping                  | 🟢 Low    | Eloquent trait enables, tests verify invisibility    |
+| Optimistic locking                   | 🟢 Low    | Version field implemented, 409 on conflict tested    |
 
 ---
 
@@ -273,7 +283,7 @@ Pre-Step → Specify → Clarify → Plan → Tasks → Analyze → Implement �
 - [x] Tests generated (150+ test cases)
 - [x] Documentation complete (spec, plan, data-model, contracts)
 - [x] Git branch ready for merge
-- [x] RBAC enforcement verified  
+- [x] RBAC enforcement verified
 - [x] Error contract compliance verified
 - [x] Architecture patterns enforced
 - [x] Database schema validated

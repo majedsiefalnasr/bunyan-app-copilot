@@ -2,7 +2,6 @@ import type { Category, CategoryFormData } from '~/types/categories';
 
 export function useCategories() {
   const { apiFetch } = useApi();
-  const { t } = useI18n();
 
   const categories = ref<Category[]>([]);
   const selectedCategory = ref<Category | null>(null);
@@ -12,7 +11,10 @@ export function useCategories() {
   /**
    * Fetch all categories as tree structure
    */
-  async function fetchCategories(options?: { includeInactive?: boolean; includeDeleted?: boolean }) {
+  async function fetchCategories(options?: {
+    includeInactive?: boolean;
+    includeDeleted?: boolean;
+  }) {
     isLoading.value = true;
     error.value = null;
 
@@ -76,13 +78,10 @@ export function useCategories() {
     error.value = null;
 
     try {
-      const response = await apiFetch<{ success: boolean; data: Category }>(
-        '/api/v1/categories',
-        {
-          method: 'POST',
-          body: data,
-        }
-      );
+      const response = await apiFetch<{ success: boolean; data: Category }>('/api/v1/categories', {
+        method: 'POST',
+        body: data,
+      });
 
       if (response.success) {
         // Refresh tree after creation
@@ -204,10 +203,9 @@ export function useCategories() {
     error.value = null;
 
     try {
-      const response = await apiFetch<{ success: boolean }>(
-        `/api/v1/categories/${id}`,
-        { method: 'DELETE' }
-      );
+      const response = await apiFetch<{ success: boolean }>(`/api/v1/categories/${id}`, {
+        method: 'DELETE',
+      });
 
       if (response.success) {
         // Refresh tree after delete

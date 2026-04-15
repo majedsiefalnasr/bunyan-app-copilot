@@ -3,9 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CategoryMigrationTest extends TestCase

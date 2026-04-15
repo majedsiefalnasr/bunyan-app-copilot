@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import type { Category } from '~/types/categories';
-import CategoryTreeNode from './CategoryTreeNode.vue';
+  import type { Category } from '~/types/categories';
+  import CategoryTreeNode from './CategoryTreeNode.vue';
 
-interface Props {
-  categories: Category[];
-  editable?: boolean;
-  selectable?: boolean;
-  onSelect?: (category: Category) => void;
-  onEdit?: (category: Category) => void;
-  onDelete?: (category: Category) => void;
-  onReorder?: (categoryId: number, newSortOrder: number) => void;
-  onMove?: (categoryId: number, newParentId: number | null) => void;
-}
-
-defineProps<Props>();
-
-const expandedIds = ref<Set<number>>(new Set());
-
-const toggleExpanded = (id: number) => {
-  if (!expandedIds.value) {
-    expandedIds.value = new Set();
+  interface Props {
+    categories: Category[];
+    editable?: boolean;
+    selectable?: boolean;
+    onSelect?: (category: Category) => void;
+    onEdit?: (category: Category) => void;
+    onDelete?: (category: Category) => void;
+    onReorder?: (categoryId: number, newSortOrder: number) => void;
+    onMove?: (categoryId: number, newParentId: number | null) => void;
   }
-  if (expandedIds.value.has(id)) {
-    expandedIds.value.delete(id);
-  } else {
-    expandedIds.value.add(id);
-  }
-};
 
-const isExpanded = (id: number) => expandedIds.value?.has(id) ?? false;
+  defineProps<Props>();
+
+  const expandedIds = ref<Set<number>>(new Set());
+
+  const toggleExpanded = (id: number) => {
+    if (!expandedIds.value) {
+      expandedIds.value = new Set();
+    }
+    if (expandedIds.value.has(id)) {
+      expandedIds.value.delete(id);
+    } else {
+      expandedIds.value.add(id);
+    }
+  };
+
+  const isExpanded = (id: number) => expandedIds.value?.has(id) ?? false;
 </script>
 
 <template>
@@ -57,13 +57,13 @@ const isExpanded = (id: number) => expandedIds.value?.has(id) ?? false;
 </template>
 
 <style scoped>
-.category-tree {
-  user-select: none;
-}
+  .category-tree {
+    user-select: none;
+  }
 
-.category-tree ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  .category-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 </style>

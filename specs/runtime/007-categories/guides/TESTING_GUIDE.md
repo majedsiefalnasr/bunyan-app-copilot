@@ -109,6 +109,7 @@ Expected: WCAG AA compliance, no keyboard traps, proper labels
 ### Scenario 1: Create Top-Level Category
 
 **Steps:**
+
 1. Login as Admin
 2. Navigate to /admin/categories
 3. Click "Add Category"
@@ -116,6 +117,7 @@ Expected: WCAG AA compliance, no keyboard traps, proper labels
 5. Click Save
 
 **Expected:**
+
 - Modal closes
 - Success toast appears
 - Category appears in tree at root level
@@ -123,6 +125,7 @@ Expected: WCAG AA compliance, no keyboard traps, proper labels
 - is_active = true
 
 **Database Check:**
+
 ```sql
 SELECT * FROM categories WHERE name_en = 'Building Materials';
 -- Verify: parent_id IS NULL, version = 0, deleted_at IS NULL
@@ -133,6 +136,7 @@ SELECT * FROM categories WHERE name_en = 'Building Materials';
 ### Scenario 2: Create Nested Category
 
 **Steps:**
+
 1. Create parent: "Electrical Materials"
 2. Click "+" on parent row
 3. Fill: name_ar = "الأسلاك", name_en = "Wires"
@@ -140,15 +144,17 @@ SELECT * FROM categories WHERE name_en = 'Building Materials';
 5. Save
 
 **Expected:**
+
 - Child appears indented under parent in tree
 - parent_id = parent.id
 - sort_order increments from siblings
 - GET /api/v1/categories/{parent_id} returns children array
 
 **Database Check:**
+
 ```sql
-SELECT id, name_en, parent_id, sort_order FROM categories 
-WHERE parent_id IS NOT NULL 
+SELECT id, name_en, parent_id, sort_order FROM categories
+WHERE parent_id IS NOT NULL
 ORDER BY parent_id, sort_order;
 ```
 
@@ -157,17 +163,20 @@ ORDER BY parent_id, sort_order;
 ### Scenario 3: Reorder Categories
 
 **Steps:**
+
 1. Create parent with 3 children (sort_order: 0, 1, 2)
 2. Drag child(2) to position(0)
 3. Drop
 
 **Expected:**
+
 - Children reorder: sort_order becomes [1, 2, 0] or [0, 1, 2] (recalculated)
 - API call PUT /api/v1/categories/{id}/reorder succeeds
 - No gaps in sort_order
 - version incremented
 
 **API Check:**
+
 ```bash
 PUT /api/v1/categories/{id}/reorder
 Body: { "newSortOrder": 0, "version": 1 }
@@ -179,12 +188,14 @@ Expected: 200 OK, version=2 in response
 ### Scenario 4: Move to Different Parent
 
 **Steps:**
+
 1. Create parent1 with child
 2. Create parent2
 3. Drag child from parent1 tree to parent2
 4. Drop
 
 **Expected:**
+
 - Child removed from parent1's tree
 - Child appears under parent2
 - parent_id changed from parent1.id to parent2.id
@@ -192,6 +203,7 @@ Expected: 200 OK, version=2 in response
 - Children (if any) move with parent
 
 **Terminal Check:**
+
 ```bash
 # Verify before move
 curl -H "Authorization: Bearer $TOKEN" \
@@ -207,12 +219,14 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### Scenario 5: Edit Category Details
 
 **Steps:**
+
 1. Click edit icon on any category
 2. Change name_en to "Updated Name"
 3. Toggle is_active checkbox
 4. Save
 
 **Expected:**
+
 - name_en updated
 - is_active status changes
 - slug remains immutable
@@ -220,6 +234,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 - updated_at timestamp changes
 
 **Concurrency Test:**
+
 - Open same category in 2 browser tabs
 - Edit Tab A: name_en = "Edit A", version = 1 → Success, version becomes 2
 - Tab B still has version = 1
@@ -230,17 +245,20 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### Scenario 6: Soft Delete with Children
 
 **Steps:**
+
 1. Create parent with 2 children
 2. Delete parent (click delete icon)
 3. Confirm deletion
 
 **Expected:**
+
 - Parent deleted_at filled (soft delete)
 - Parent hidden from tree (default queries)
 - Children remain (orphaned, not cascaded)
 - Breadcrumb no longer shows parent
 
 **Admin "Show Deleted" Toggle:**
+
 - Before toggle: deleted categories hidden
 - After toggle: deleted categories visible, grayed out
 - withTrashed() scope includes deleted_at IS NOT NULL
@@ -250,11 +268,13 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### Scenario 7: Prevent Circular References
 
 **Steps:**
+
 1. Create: GrandParent → Parent → Child hierarchy
 2. Try to edit GrandParent: parent_id = Child.id
 3. Save
 
 **Expected:**
+
 - API returns 422 VALIDATION_ERROR
 - Error code: WORKFLOW_INVALID_TRANSITION
 - Error message: mentions circular reference or similar
@@ -265,14 +285,17 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### Scenario 8: Non-Admin RBAC Enforcement
 
 **Steps:**
+
 1. Login as Customer (non-admin)
 2. Try to access /admin/categories
 
 **Expected:**
+
 - 403 Forbidden or redirect to dashboard
 - Cannot see admin page
 
 **API Test:**
+
 ```bash
 # Without admin token
 curl "http://localhost/api/v1/categories" \
@@ -288,16 +311,19 @@ curl "http://localhost/api/v1/categories" \
 ### Scenario 9: Form Validation Errors
 
 **Steps:**
+
 1. Open create form
 2. Leave name_ar blank
 3. Try to save
 
 **Expected:**
+
 - Form validation runs client-side (VeeValidate)
 - Error message: "مطلوب" (Required) below name_ar input
 - Submit button disabled or click blocked
 
 **Server Validation (if client validation skipped):**
+
 - POST fails with 422 VALIDATION_ERROR
 - error.details.name_ar array with error message
 
@@ -306,6 +332,7 @@ curl "http://localhost/api/v1/categories" \
 ### Scenario 10: Keyboard Navigation
 
 **Steps:**
+
 1. On categories page
 2. Press Tab to focus tree
 3. Use Arrow keys to navigate nodes
@@ -313,6 +340,7 @@ curl "http://localhost/api/v1/categories" \
 5. Press Delete to delete selected node
 
 **Expected:**
+
 - All navigation keyboard-accessible
 - Focus visible (outline or highlight)
 - No keyboard traps
@@ -363,14 +391,14 @@ $this->seed(CategorySeeder::class);
 
 ## Performance Baselines
 
-| Metric | Target | Status |
-|--------|--------|--------|
-| API Tree Query (<50 categories) | <100ms | ✓ |
-| API Tree Query (1000 categories) | <500ms | ✓ |
-| Tree Component Render | <500ms | ✓ |
-| Selector Dropdown Open | <1s | ✓ |
-| Form Submission & API | <2s | ✓ |
-| Memory Usage (100 categories) | <50MB | ✓ |
+| Metric                           | Target | Status |
+| -------------------------------- | ------ | ------ |
+| API Tree Query (<50 categories)  | <100ms | ✓      |
+| API Tree Query (1000 categories) | <500ms | ✓      |
+| Tree Component Render            | <500ms | ✓      |
+| Selector Dropdown Open           | <1s    | ✓      |
+| Form Submission & API            | <2s    | ✓      |
+| Memory Usage (100 categories)    | <50MB  | ✓      |
 
 ---
 
@@ -397,6 +425,7 @@ $this->seed(CategorySeeder::class);
 ### Issue: Tests fail with "Model does not exist"
 
 **Fix:**
+
 ```bash
 php artisan migrate:fresh --seed
 # Then retry tests
@@ -405,6 +434,7 @@ php artisan migrate:fresh --seed
 ### Issue: E2E tests timeout on Playwright
 
 **Fix:**
+
 ```bash
 # Increase timeout in playwright.config.ts:
 webServer: {
@@ -416,6 +446,7 @@ webServer: {
 ### Issue: "Cannot find module useCategories"
 
 **Fix:**
+
 - Ensure `frontend/composables/useCategories.ts` exists
 - Run `npm run build` to generate types
 - Restart IDE TypeScript server
@@ -423,6 +454,7 @@ webServer: {
 ### Issue: 409 Conflict always on update
 
 **Fix:**
+
 - Verify you're using latest version from GET response
 - Version field must match exactly
 - Refresh data before editing in concurrent scenarios
@@ -455,13 +487,13 @@ jobs:
 
 ## Test Coverage Target
 
-| Layer | Target | Achieved |
-|-------|--------|----------|
-| Backend Controllers | 90% | ✓ |
-| Backend Services | 90% | ✓ |
-| Backend Repositories | 85% | ✓ |
-| Frontend Components | 80% | ✓ |
-| **Overall** | **85%** | ✓ |
+| Layer                | Target  | Achieved |
+| -------------------- | ------- | -------- |
+| Backend Controllers  | 90%     | ✓        |
+| Backend Services     | 90%     | ✓        |
+| Backend Repositories | 85%     | ✓        |
+| Frontend Components  | 80%     | ✓        |
+| **Overall**          | **85%** | ✓        |
 
 ---
 

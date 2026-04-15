@@ -15,16 +15,12 @@ test.describe('Category Reorder E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Look for drag handles
-    const dragHandles = await page
-      .locator('[class*="drag"], [class*="handle"]')
-      .all();
+    const dragHandles = await page.locator('[class*="drag"], [class*="handle"]').all();
 
     expect(dragHandles.length).toBeGreaterThanOrEqual(0);
   });
 
-  test('should reorder sibling categories via drag-drop', async ({
-    page,
-  }) => {
+  test('should reorder sibling categories via drag-drop', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -35,9 +31,7 @@ test.describe('Category Reorder E2E', () => {
 
     if (categoriesBeforeReorder.length >= 2) {
       // Find drag handles for first two items
-      const dragHandles = await page
-        .locator('.category-tree-node [class*="drag"]')
-        .all();
+      const dragHandles = await page.locator('.category-tree-node [class*="drag"]').all();
 
       if (dragHandles.length >= 2) {
         // Get first two nodes
@@ -95,9 +89,7 @@ test.describe('Category Reorder E2E', () => {
     }
   });
 
-  test('should verify reorder request contains version and newSortOrder', async ({
-    page,
-  }) => {
+  test('should verify reorder request contains version and newSortOrder', async ({ page }) => {
     let reorderRequest: any = null;
 
     page.on('request', (request) => {
@@ -128,15 +120,11 @@ test.describe('Category Reorder E2E', () => {
     }
   });
 
-  test('should reflect reorder in tree after API success', async ({
-    page,
-  }) => {
+  test('should reflect reorder in tree after API success', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
-    const initialOrder = await page
-      .locator('.category-tree-node')
-      .allTextContents();
+    const initialOrder = await page.locator('.category-tree-node').allTextContents();
 
     if (initialOrder.length >= 2) {
       try {
@@ -147,9 +135,7 @@ test.describe('Category Reorder E2E', () => {
         await node2.dragTo(node1);
         await page.waitForTimeout(1000);
 
-        const finalOrder = await page
-          .locator('.category-tree-node')
-          .allTextContents();
+        const finalOrder = await page.locator('.category-tree-node').allTextContents();
 
         // Order should be different or same (if revert)
         expect(finalOrder).toBeDefined();
@@ -159,9 +145,7 @@ test.describe('Category Reorder E2E', () => {
     }
   });
 
-  test('should update other categories sort_order when one is reordered', async ({
-    page,
-  }) => {
+  test('should update other categories sort_order when one is reordered', async ({ page }) => {
     await page.goto('/admin/categories');
     await page.waitForLoadState('networkidle');
 
@@ -185,9 +169,7 @@ test.describe('Category Reorder E2E', () => {
     }
   });
 
-  test('should prevent reorder with stale version', async ({
-    page,
-  }) => {
+  test('should prevent reorder with stale version', async ({ page }) => {
     let conflictError = false;
 
     page.on('response', (response) => {
@@ -233,7 +215,7 @@ test.describe('Category Reorder E2E', () => {
 
         // Should show error message or maintain original state
         const errorMessage = page.locator('[class*="error"], [role="status"]').first();
-        
+
         if (await errorMessage.isVisible({ timeout: 2000 }).catch(() => false)) {
           const text = await errorMessage.textContent();
           expect(text?.length).toBeGreaterThan(0);
@@ -258,7 +240,7 @@ test.describe('Category Reorder E2E', () => {
       try {
         // Check if drag visual feedback classes exist
         await page.hover(firstNode.locator('[class*="drag"]'));
-        
+
         // Look for cursor or highlight
         const computed = await firstNode.evaluate((el) => {
           return window.getComputedStyle(el).cursor;
@@ -276,9 +258,7 @@ test.describe('Category Reorder E2E', () => {
     await page.waitForLoadState('networkidle');
 
     // Find categories with same parent
-    const nestedNodes = await page
-      .locator('.category-tree-node .category-tree-node')
-      .all();
+    const nestedNodes = await page.locator('.category-tree-node .category-tree-node').all();
 
     if (nestedNodes.length >= 2) {
       try {
@@ -287,7 +267,9 @@ test.describe('Category Reorder E2E', () => {
         await page.waitForTimeout(500);
 
         // Verify siblings still under same parent
-        expect(await page.locator('.category-tree-node .category-tree-node').count()).toBeGreaterThanOrEqual(2);
+        expect(
+          await page.locator('.category-tree-node .category-tree-node').count()
+        ).toBeGreaterThanOrEqual(2);
       } catch (e) {
         // Drag might not be fully supported
       }
@@ -321,7 +303,7 @@ test.describe('Category Reorder E2E', () => {
   test('should show loading state during reorder', async ({ page }) => {
     // Add delay to API to see loading state
     await page.route('**/api/**/reorder', async (route) => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       await route.continue();
     });
 

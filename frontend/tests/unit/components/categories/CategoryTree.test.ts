@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Category } from '~/types/categories';
+import { describe, expect, it, vi } from 'vitest';
 import CategoryTree from '~/components/categories/CategoryTree.vue';
+import type { Category } from '~/types/categories';
 
 // Stub Nuxt auto-imports
 vi.stubGlobal('useI18n', () => ({
@@ -275,8 +275,7 @@ describe('CategoryTree.vue', () => {
       global: {
         components: {
           CategoryTreeNode: {
-            template:
-              '<div @click="$emit(\'toggle-expanded\', categoryId)"><slot /></div>',
+            template: '<div @click="$emit(\'toggle-expanded\', categoryId)"><slot /></div>',
             props: ['categoryId', 'category'],
             setup(props: any) {
               return { categoryId: props.category.id };
