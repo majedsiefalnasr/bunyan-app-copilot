@@ -18,7 +18,9 @@ const serverURL = process.env.PW_SERVER_URL || `http://${serverHost}:${serverPor
 const baseURL = process.env.PW_BASE_URL || `http://localhost:${serverPort}`;
 const devServerCommand =
   process.env.PW_WEB_SERVER_COMMAND ||
-  `${ci ? 'npm run preview' : 'npm run dev'} -- --host ${serverHost} --port ${serverPort}`;
+  (ci
+    ? `npm run preview -- --port ${serverPort}`
+    : `npm run dev -- --host ${serverHost} --port ${serverPort}`);
 
 const headless = !isTruthy(process.env.PW_HEADED);
 const browsers = (process.env.PW_BROWSERS || '').trim().toLowerCase();
