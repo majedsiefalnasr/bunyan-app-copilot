@@ -8,18 +8,19 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: LOW
 Last Updated: 2026-04-15T00:00:00Z
 
-Scope Defined:
+Scope Planned:
 
-- 5 clarifications resolved (slug immutability, soft-delete behavior, tree format, visibility scoping, concurrency)
-- 8 user stories with full acceptance criteria
-- 4 reusable Vue 3 components architected
+- 3-wave implementation roadmap (Foundation 3.5d, Frontend 3d, Testing 4d)
+- Complete data model with self-referential hierarchy and optimistic locking
 - 6 RESTful API endpoints with nested tree response format
-- Optimistic locking via version field for concurrent edits
-- 150+ quality checklist items (security, performance, accessibility)
+- 4 reusable Vue 3 components (Tree, Form Modal, Breadcrumb, Selector)
+- Admin category management page with drag-and-drop reordering
+- 10+ construction categories seeder (Arabic + English)
+- 85%+ test coverage with unit, feature, and E2E tests
 
 Deferred Scope:
 
@@ -30,12 +31,14 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- All clarifications follow Bunyan patterns (RBAC, soft deletes, error contract)
-- Full RTL/Arabic support confirmed
-- Planning authorized
+- ✅ Architecture Guardian: PASS (3 improvement notes)
+- ✅ API Designer: PASS (minor documentation clarifications)
+- RBAC enforcement confirmed
+- Service layer and repository pattern architected
+- Error contract compliance verified
 
 Notes:
-All specification ambiguities resolved. Ready for technical planning.
+Technical plan complete and guardian-approved. Task generation ready.
 
 ## Objective
 
