@@ -99,6 +99,83 @@ marked N/A with a justification.
 
 ---
 
+## Route Model Binding
+
+- [ ] Route model binding registered for `supplier` → `SupplierProfile` in `AppServiceProvider::boot()`: `Route::model('supplier', SupplierProfile::class)`
+- [ ] Binding resolves on all six `{supplier}` route segments (index excluded)
+- [ ] Soft-deleted records are NOT resolvable via binding (default Eloquent behavior retained)
+
+---
+
+## Rating Aggregation Boundary
+
+- [ ] `SupplierService::aggregateRatings()` is a no-op stub only — zero aggregation/write logic in this stage
+- [ ] Method signature declared per spec: `aggregateRatings(int $supplierId): void`
+- [ ] No rating write path exists in any controller, request, or service in STAGE_09
+- [ ] `rating_avg` and `total_ratings` are excluded from `$fillable` (mass assignment blocked)
+
+---
+
+## Suspension Visibility
+
+- [ ] Suspended suppliers are hidden from `GET /suppliers` for ALL actors except Admin
+- [ ] Suspended supplier's products endpoint (`GET /suppliers/{id}/products`) returns `RESOURCE_NOT_FOUND` for non-admin requests
+- [ ] Suspension check occurs in service layer (`list()` and `show()`), not only in policy
+- [ ] Admin public-facing listing (all statuses) is explicitly differentiated from public listing (verified only) in the same `index` endpoint
+
+---
+
+## Unique Constraints (Dual Enforcement)
+
+- [ ] `commercial_reg` unique constraint enforced at DB level (migration `->unique()`)
+- [ ] `commercial_reg` unique constraint enforced at application level (`unique:supplier_profiles` in `StoreSupplierRequest`)
+- [ ] `commercial_reg` unique rule on `UpdateSupplierRequest` excludes current record: `Rule::unique('supplier_profiles')->ignore($supplier->id)`
+- [ ] `user_id` unique constraint enforced at DB level (migration `->unique()`)
+- [ ] `user_id` uniqueness enforced at application level in `SupplierPolicy::create()` — checks no existing profile for the user
+
+---
+
+## Pagination Structure
+
+- [ ] `GET /suppliers` response uses `data + meta` structure (not `data.data + data.meta` nesting)
+- [ ] `meta` includes: `current_page`, `per_page`, `total`, `last_page`
+- [ ] Pagination delegate calls `BaseApiController::paginated()` (or equivalent) to produce consistent shape
+- [ ] `per_page` is capped at 100 (enforced in request validation or service layer)
+- [ ] `GET /suppliers/{id}/products` also returns `data + meta` with empty array when no products exist
+
+---
+
+## Visibility Guards
+
+- [ ] Unauthenticated users see only `verified` suppliers on list endpoint
+- [ ] Unauthenticated users receive `RESOURCE_NOT_FOUND` for non-verified supplier detail
+- [ ] Contractor can view their own profile regardless of `verification_status`
+- [ ] Contractor CANNOT view another contractor's profile unless it is `verified`
+- [ ] Supervising Architect and Field Engineer are treated identically to public (verified only)
+- [ ] Customer is treated identically to public (verified only)
+- [ ] RBAC matrix from spec § 7 is fully implemented for all seven endpoints
+
+---
+
+## Verified At / Verified By Immutability
+
+- [ ] `verified_at` is NOT accepted in `StoreSupplierRequest` or `UpdateSupplierRequest`
+- [ ] `verified_by` is NOT accepted in `StoreSupplierRequest` or `UpdateSupplierRequest`
+- [ ] `verified_at` and `verified_by` are populated ONLY by `SupplierService::verify()`
+- [ ] `verified_at` set to `now()` on verify; not modified on suspend
+- [ ] `verified_by` set to the calling admin's `id` on verify; not modified on suspend
+
+---
+
+## Phone Validation
+
+- [ ] `phone` validated with regex `/^05\d{8}$/` in `StoreSupplierRequest`
+- [ ] `phone` validated with regex `/^05\d{8}$/` in `UpdateSupplierRequest` (when present)
+- [ ] Arabic validation message `phone.regex` defined in `lang/ar/suppliers.php`
+- [ ] English validation message `phone.regex` defined in `lang/en/suppliers.php`
+
+---
+
 ## i18n Translation Keys Defined
 
 - [ ] `lang/ar/suppliers.php` created with all keys from spec § 8

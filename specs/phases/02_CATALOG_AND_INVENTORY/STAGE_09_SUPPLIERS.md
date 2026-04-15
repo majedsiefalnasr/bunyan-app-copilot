@@ -8,9 +8,9 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
-Risk Level: UNKNOWN
-Last Updated: 2026-04-15T00:05:00Z
+Step: clarify
+Risk Level: MEDIUM
+Last Updated: 2026-04-15T00:10:00Z
 
 Scope Defined:
 
@@ -18,9 +18,11 @@ Scope Defined:
 - Verification workflow: pending → verified ↔ suspended
 - 7 API endpoints under /api/v1/suppliers
 - SupplierService, SupplierRepository, SupplierPolicy, SupplierResource
-- Form requests: Store, Update, Verify
+- Form requests: Store, Update, Verify, VerifySupplier
 - Frontend: public directory, profile, contractor dashboard form, admin management
 - Database: supplier_profiles table with soft deletes
+- Route model binding: {supplier} → SupplierProfile registered in AppServiceProvider
+- Pagination: data + meta structure (matches BaseApiController)
 
 Deferred Scope:
 
@@ -30,10 +32,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 

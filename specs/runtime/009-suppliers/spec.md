@@ -282,6 +282,9 @@ Route::prefix('suppliers')->name('api.v1.suppliers.')->group(function () {
 });
 ```
 
+> **Route model binding:** `{supplier}` binds to `App\Models\SupplierProfile` (not `User`).
+> Register in `app/Providers/AppServiceProvider.php` inside `boot()`: `Route::model('supplier', SupplierProfile::class);`
+
 ### 3.3 Database
 
 Migration file: `database/migrations/YYYY_MM_DD_HHMMSS_create_supplier_profiles_table.php`
@@ -316,30 +319,30 @@ Stores:
 
 ### Table: `supplier_profiles`
 
-| Column                | Type                                   | Constraints                    | Notes                         |
-| --------------------- | -------------------------------------- | ------------------------------ | ----------------------------- |
-| `id`                  | BIGINT UNSIGNED                        | PK, AUTO_INCREMENT             |                               |
-| `user_id`             | BIGINT UNSIGNED                        | NOT NULL, FK→users(id), UNIQUE | One profile per contractor    |
-| `company_name_ar`     | VARCHAR(255)                           | NOT NULL                       | Arabic company name           |
-| `company_name_en`     | VARCHAR(255)                           | NOT NULL                       | English company name          |
-| `commercial_reg`      | VARCHAR(100)                           | NOT NULL, UNIQUE               | Saudi commercial reg number   |
-| `tax_number`          | VARCHAR(50)                            | NULLABLE                       | VAT registration number       |
-| `city`                | VARCHAR(100)                           | NOT NULL                       | City of operation             |
-| `district`            | VARCHAR(100)                           | NULLABLE                       | District / neighborhood       |
-| `address`             | VARCHAR(500)                           | NULLABLE                       | Full address                  |
-| `phone`               | VARCHAR(20)                            | NOT NULL                       | Business phone (Saudi format) |
-| `verification_status` | ENUM('pending','verified','suspended') | NOT NULL, DEFAULT 'pending'    |                               |
-| `verified_at`         | TIMESTAMP                              | NULLABLE                       | Time of last verification     |
-| `verified_by`         | BIGINT UNSIGNED                        | NULLABLE, FK→users(id)         | Admin who verified            |
-| `rating_avg`          | DECIMAL(8,2)                           | NOT NULL, DEFAULT 0.00         | Calculated rating average     |
-| `total_ratings`       | INT UNSIGNED                           | NOT NULL, DEFAULT 0            | Count of ratings received     |
-| `description_ar`      | TEXT                                   | NULLABLE                       | Arabic company description    |
-| `description_en`      | TEXT                                   | NULLABLE                       | English company description   |
-| `logo`                | VARCHAR(500)                           | NULLABLE                       | Logo URL or storage path      |
-| `website`             | VARCHAR(255)                           | NULLABLE                       | Company website URL           |
-| `created_at`          | TIMESTAMP                              | NULLABLE                       |                               |
-| `updated_at`          | TIMESTAMP                              | NULLABLE                       |                               |
-| `deleted_at`          | TIMESTAMP                              | NULLABLE                       | Soft delete                   |
+| Column                | Type                                   | Constraints                    | Notes                                                                  |
+| --------------------- | -------------------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `id`                  | BIGINT UNSIGNED                        | PK, AUTO_INCREMENT             |                                                                        |
+| `user_id`             | BIGINT UNSIGNED                        | NOT NULL, FK→users(id), UNIQUE | One profile per contractor                                             |
+| `company_name_ar`     | VARCHAR(255)                           | NOT NULL                       | Arabic company name                                                    |
+| `company_name_en`     | VARCHAR(255)                           | NOT NULL                       | English company name                                                   |
+| `commercial_reg`      | VARCHAR(100)                           | NOT NULL, UNIQUE               | Saudi commercial reg number                                            |
+| `tax_number`          | VARCHAR(50)                            | NULLABLE                       | VAT registration number                                                |
+| `city`                | VARCHAR(100)                           | NOT NULL                       | City of operation                                                      |
+| `district`            | VARCHAR(100)                           | NULLABLE                       | District / neighborhood                                                |
+| `address`             | VARCHAR(500)                           | NULLABLE                       | Full address                                                           |
+| `phone`               | VARCHAR(20)                            | NOT NULL                       | Business phone (Saudi format)                                          |
+| `verification_status` | ENUM('pending','verified','suspended') | NOT NULL, DEFAULT 'pending'    |                                                                        |
+| `verified_at`         | TIMESTAMP                              | NULLABLE                       | Time of last verification                                              |
+| `verified_by`         | BIGINT UNSIGNED                        | NULLABLE, FK→users(id)         | Admin who verified                                                     |
+| `rating_avg`          | DECIMAL(8,2)                           | NOT NULL, DEFAULT 0.00         | Calculated rating average                                              |
+| `total_ratings`       | INT UNSIGNED                           | NOT NULL, DEFAULT 0            | Count of ratings received                                              |
+| `description_ar`      | TEXT                                   | NULLABLE                       | Arabic company description                                             |
+| `description_en`      | TEXT                                   | NULLABLE                       | English company description                                            |
+| `logo`                | VARCHAR(500)                           | NULLABLE                       | Logo URL string only; file upload deferred to STAGE_15_FILE_MANAGEMENT |
+| `website`             | VARCHAR(255)                           | NULLABLE                       | Company website URL                                                    |
+| `created_at`          | TIMESTAMP                              | NULLABLE                       |                                                                        |
+| `updated_at`          | TIMESTAMP                              | NULLABLE                       |                                                                        |
+| `deleted_at`          | TIMESTAMP                              | NULLABLE                       | Soft delete                                                            |
 
 **Indexes:**
 
@@ -379,31 +382,27 @@ Sanctum token passed as `Authorization: Bearer {token}` where required.
 ```json
 {
   "success": true,
-  "data": {
-    "items": [
-      {
-        "id": 1,
-        "user_id": 42,
-        "company_name_ar": "شركة البناء المتقدم",
-        "company_name_en": "Advanced Construction Co.",
-        "city": "الرياض",
-        "district": "العليا",
-        "phone": "0512345678",
-        "verification_status": "verified",
-        "rating_avg": "4.50",
-        "total_ratings": 28,
-        "logo": "https://cdn.example.com/logos/1.png",
-        "created_at": "2026-04-15T00:00:00Z"
-      }
-    ],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 120,
-      "last_page": 8,
-      "from": 1,
-      "to": 15
+  "data": [
+    {
+      "id": 1,
+      "user_id": 42,
+      "company_name_ar": "شركة البناء المتقدم",
+      "company_name_en": "Advanced Construction Co.",
+      "city": "الرياض",
+      "district": "العليا",
+      "phone": "0512345678",
+      "verification_status": "verified",
+      "rating_avg": "4.50",
+      "total_ratings": 28,
+      "logo": "https://cdn.example.com/logos/1.png",
+      "created_at": "2026-04-15T00:00:00Z"
     }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 120,
+    "last_page": 8
   },
   "error": null
 }
@@ -572,16 +571,12 @@ Sanctum token passed as `Authorization: Bearer {token}` where required.
 ```json
 {
   "success": true,
-  "data": {
-    "items": [],
-    "pagination": {
-      "current_page": 1,
-      "per_page": 15,
-      "total": 0,
-      "last_page": 1,
-      "from": null,
-      "to": null
-    }
+  "data": [],
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 0,
+    "last_page": 1
   },
   "error": null
 }
@@ -616,10 +611,11 @@ pending ◄────────────── suspended
 
 - Unauthenticated requests can only see `verified` suppliers
 - Contractor can only create one profile (UNIQUE constraint on `user_id`)
-- Contractor can only view/update their own profile
+- Contractor can only view/update their own profile; a contractor cannot view another contractor's unverified or suspended profile
+- Only Admin and the owning Contractor can see non-verified (pending/suspended) profiles; all other actors receive `RESOURCE_NOT_FOUND`
 - Admin can create, read, update, verify, suspend, and delete any profile
 - `commercial_reg` must be globally unique across all supplier profiles
-- Soft-deleted profiles are excluded from all public queries
+- Soft-deleted profiles are **completely invisible to all actors including Admin**; `SoftDeletes` excludes them from all queries without exception — Admin uses `suspend` to hide a profile, not delete
 
 ### 6.3 Validation Rules (server-side)
 
@@ -641,7 +637,8 @@ pending ◄────────────── suspended
 ### 6.4 Rating Aggregation
 
 - `rating_avg` and `total_ratings` are computed columns (not user-submitted)
-- Updated by `SupplierService::aggregateRatings()` called from the reviews stage
+- `SupplierService::aggregateRatings(int $supplierId): void` is a **stub-only** method in this stage — implemented as a no-op; no aggregation logic is written here
+- Rating updates will be triggered **externally** by the future reviews/ratings stage; no rating writes occur in STAGE_09
 - Never directly writeable via API
 
 ---
@@ -846,7 +843,22 @@ The following are explicitly **not** included in this stage:
 
 ## 12. Clarifications
 
-> This section is reserved for open questions identified during review (Step 2 — clarify).
+### Session 2026-04-15
 
-- [NEEDS CLARIFICATION] Should admins receive email/in-app notifications when a new supplier profile is submitted (pending)? Or is this deferred to the notifications stage?
-- [NEEDS CLARIFICATION] Is `logo` stored as a URL pointing to an external CDN, or does it go through the platform file-upload system? Currently specced as a URL string; if internal upload is needed, this scope must be expanded.
+All open questions resolved. No `[NEEDS CLARIFICATION]` markers remain.
+
+1. **Logo field type** — `logo` is a URL string (`VARCHAR(500)`, `url` validation rule) in this stage. Platform file-upload integration is deferred to STAGE_15_FILE_MANAGEMENT or equivalent. Column note updated in §4.
+
+2. **Admin notifications on new supplier submissions** — Deferred to the notifications stage. No notifications subsystem exists in STAGE_09. Documented in §10 Out of Scope.
+
+3. **Can a Contractor view another contractor's unverified profile?** — **No.** Only Admin and the owning Contractor can see non-verified (pending/suspended) profiles. All other actors — including other Contractors — receive `RESOURCE_NOT_FOUND`. Explicit rule added to §6.2; already encoded in §7 RBAC Matrix.
+
+4. **Phone format `^05\d{8}$`** — **Confirmed correct for Saudi Arabia.** Saudi mobile numbers are 10 digits: prefix `05` + 8 digits. `^05\d{8}$` matches this exactly. No change needed.
+
+5. **`rating_avg` update mechanism** — `SupplierService::aggregateRatings()` is a **stub-only no-op** in STAGE_09. No rating logic is implemented. The future reviews/ratings stage will call this method to trigger aggregation. §6.4 updated accordingly.
+
+6. **Pagination response shape** — The `data.items` + `data.pagination` draft shape **does not match** the codebase. The authoritative pattern (`BaseApiController::paginated()`) is: `data` as a top-level array + `meta` object at root with keys `current_page`, `per_page`, `total`, `last_page`. §5.1 and §5.7 updated to match. Non-standard `from`/`to` fields removed.
+
+7. **Route model binding for `{supplier}`** — `{supplier}` binds to `App\Models\SupplierProfile` (not `User`). Must register `Route::model('supplier', SupplierProfile::class)` in `AppServiceProvider::boot()`. Note added to §3.2.
+
+8. **Soft-deleted profiles visibility** — Soft-deleted profiles are **invisible to all actors including Admin**. Laravel's `SoftDeletes` trait enforces this globally. Admin uses `suspend` to hide active profiles. Hard delete is an admin-only emergency operation with permanent effect. §6.2 updated.
