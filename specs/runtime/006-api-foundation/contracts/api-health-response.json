@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "api-health-response.json",
+  "title": "Health Check Response",
+  "description": "Schema for GET /api/health response body. Follows the Bunyan unified API response contract.",
+  "type": "object",
+  "required": ["success", "data", "error"],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "true when HTTP status is 200 (healthy or degraded), false when HTTP status is 503 (unhealthy)"
+    },
+    "data": {
+      "description": "Health status payload. Present (object) when HTTP 200; null when HTTP 503 (error contract: data is null on error).",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["status", "version", "environment", "checks", "timestamp"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["healthy", "degraded"],
+              "description": "healthy: all checks pass. degraded: non-critical check failed (cache only)."
+            },
+            "version": {
+              "type": "string",
+              "description": "Application version string from config('app.version').",
+              "example": "1.0.0"
+            },
+            "environment": {
+              "type": "string",
+              "description": "Laravel application environment.",
+              "enum": ["local", "testing", "staging", "production"],
+              "example": "production"
+            },
+            "checks": {
+              "type": "object",
+              "required": ["database", "cache"],
+              "properties": {
+                "database": { "type": "boolean" },
+                "cache": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-04-14T00:00:00+00:00"
+            }
+          },
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "error": {
+      "description": "null when HTTP 200. Error object when HTTP 503 (unhealthy). Probe details in error.details.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["code", "message", "details"],
+          "properties": {
+            "code": {
+              "type": "string",
+              "const": "HEALTH_CHECK_FAILED",
+              "description": "New error code added by STAGE_06. Registered in ApiErrorCode enum."
+            },
+            "message": {
+              "type": "string",
+              "example": "One or more critical health checks failed."
+            },
+            "details": {
+              "type": "object",
+              "description": "Probe results and metadata moved to error.details on 503 to preserve data:null error contract.",
+              "required": ["status", "version", "environment", "checks", "timestamp"],
+              "properties": {
+                "status": { "type": "string", "const": "unhealthy" },
+                "version": { "type": "string" },
+                "environment": { "type": "string" },
+                "checks": {
+                  "type": "object",
+                  "required": ["database", "cache"],
+                  "properties": {
+                    "database": { "type": "boolean" },
+                    "cache": { "type": "boolean" }
+                  }
+                },
+                "timestamp": { "type": "string", "format": "date-time" }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "comment": "All systems healthy — HTTP 200",
+      "success": true,
+      "data": {
+        "status": "healthy",
+        "version": "1.0.0",
+        "environment": "production",
+        "checks": {
+          "database": true,
+          "cache": true
+        },
+        "timestamp": "2026-04-14T00:00:00+00:00"
+      },
+      "error": null
+    },
+    {
+      "comment": "Cache unavailable, DB healthy — HTTP 200 degraded",
+      "success": true,
+      "data": {
+        "status": "degraded",
+        "version": "1.0.0",
+        "environment": "production",
+        "checks": {
+          "database": true,
+          "cache": false
+        },
+        "timestamp": "2026-04-14T00:00:00+00:00"
+      },
+      "error": null
+    },
+    {
+      "comment": "Database unavailable — HTTP 503 unhealthy (data:null per error contract, probe details in error.details)",
+      "success": false,
+      "data": null,
+      "error": {
+        "code": "HEALTH_CHECK_FAILED",
+        "message": "One or more critical health checks failed.",
+        "details": {
+          "status": "unhealthy",
+          "version": "1.0.0",
+          "environment": "production",
+          "checks": {
+            "database": false,
+            "cache": false
+          },
+          "timestamp": "2026-04-14T00:00:00+00:00"
+        }
+      }
+    }
+  ]
+}

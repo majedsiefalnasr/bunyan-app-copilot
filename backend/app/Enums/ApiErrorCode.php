@@ -34,6 +34,7 @@ enum ApiErrorCode: string
 
     // Server Error (5xx)
     case SERVER_ERROR = 'SERVER_ERROR';
+    case HEALTH_CHECK_FAILED = 'HEALTH_CHECK_FAILED';
 
     /**
      * Get HTTP status code for this error code.
@@ -68,6 +69,9 @@ enum ApiErrorCode: string
 
             // 500 Internal Server Error
             self::SERVER_ERROR => 500,
+
+            // 503 Service Unavailable
+            self::HEALTH_CHECK_FAILED => 503,
         };
     }
 
@@ -99,6 +103,7 @@ enum ApiErrorCode: string
                 self::PAYMENT_FAILED => 'فشلت عملية الدفع. يرجى المحاولة مرة أخرى',
                 self::RATE_LIMIT_EXCEEDED => 'عدد كبير جداً من الطلبات. يرجى الانتظار قبل المحاولة مرة أخرى',
                 self::SERVER_ERROR => 'حدث خطأ غير متوقع. يرجى محاولة القيام بذلك لاحقاً',
+                self::HEALTH_CHECK_FAILED => 'فحص صحة المنصة فشل. يرجى المحاولة لاحقاً',
             };
         }
 
@@ -116,6 +121,7 @@ enum ApiErrorCode: string
             self::PAYMENT_FAILED => 'Payment processing failed. Please try again',
             self::RATE_LIMIT_EXCEEDED => 'Too many requests. Please wait before trying again',
             self::SERVER_ERROR => 'An unexpected error occurred. Please try again later',
+            self::HEALTH_CHECK_FAILED => 'Platform health check failed. Please try again later',
         };
     }
 }

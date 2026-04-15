@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Bunyan API",
+    "description": "Bunyan (بنيان) — Full-stack Arabic construction services and building materials marketplace API. Provides endpoints for project management, user authentication, role-based access control, and building materials catalog.",
+    "contact": {
+      "name": "Bunyan API Team",
+      "email": "api@bunyan.sa"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://bunyan.sa/terms"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Bunyan API v1 — Production"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Platform health check",
+        "description": "Probes the database and cache layer. Returns healthy/degraded/unhealthy status.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Platform is healthy or degraded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "example": "healthy",
+                          "enum": ["healthy", "degraded"]
+                        },
+                        "version": {
+                          "type": "string",
+                          "example": "1.0.0"
+                        },
+                        "environment": {
+                          "type": "string",
+                          "example": "production"
+                        },
+                        "checks": {
+                          "properties": {
+                            "database": {
+                              "type": "string",
+                              "example": "ok",
+                              "enum": ["ok", "fail"]
+                            },
+                            "cache": {
+                              "type": "string",
+                              "example": "ok",
+                              "enum": ["ok", "fail"]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-04-14T12:00:00Z"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "error": {
+                      "type": "null",
+                      "example": null
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Platform is unhealthy (database probe failed)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "data": {
+                      "type": "null",
+                      "example": null
+                    },
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "example": "HEALTH_CHECK_FAILED"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Platform health check failed. Please try again later"
+                        },
+                        "details": {
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "example": "unhealthy"
+                            },
+                            "checks": {
+                              "properties": {
+                                "database": {
+                                  "type": "string",
+                                  "example": "fail"
+                                },
+                                "cache": {
+                                  "type": "string",
+                                  "example": "fail"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "version": {
+                              "type": "string",
+                              "example": "1.0.0"
+                            },
+                            "environment": {
+                              "type": "string",
+                              "example": "production"
+                            },
+                            "timestamp": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "description": "Laravel Sanctum bearer token. Obtain via POST /api/v1/auth/login.",
+        "bearerFormat": "JWT",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Health"
+    }
+  ]
+}

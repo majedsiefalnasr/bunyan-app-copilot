@@ -281,7 +281,8 @@ class ErrorResponseContractTest extends TestCase
     }
 
     /**
-     * Test all 12 error codes are accessible and return proper response.
+     * Test all 13 error codes are accessible and return proper response.
+     * Note: HEALTH_CHECK_FAILED was added in STAGE_06 (T017).
      */
     public function test_all_error_codes_registry_complete(): void
     {
@@ -298,9 +299,10 @@ class ErrorResponseContractTest extends TestCase
             'PAYMENT_FAILED',
             'RATE_LIMIT_EXCEEDED',
             'SERVER_ERROR',
+            'HEALTH_CHECK_FAILED',
         ];
 
-        $this->assertCount(12, $expectedCodes);
+        $this->assertCount(13, $expectedCodes);
 
         foreach (ApiErrorCode::cases() as $errorCode) {
             $this->assertContains($errorCode->value, $expectedCodes);
