@@ -106,7 +106,7 @@ and can sell products.
 - [ ] Only Admin may call this endpoint; others receive `RBAC_ROLE_DENIED` (403)
 - [ ] Sets `verified_at` to current timestamp and `verified_by` to admin user id
 - [ ] If already `verified`, the operation is idempotent (returns 200 with current state)
-- [ ] Cannot verify a `suspended` supplier directly; must un-suspend first
+- [ ] Admin can transition `suspended → verified` directly (re-verification without a separate un-suspend step)
 
 ### US6 — Suspend Supplier (Admin)
 
@@ -428,6 +428,7 @@ Sanctum token passed as `Authorization: Bearer {token}` where required.
     "phone": "0512345678",
     "verification_status": "verified",
     "verified_at": "2026-04-15T10:00:00Z",
+    "verified_by": 1,
     "rating_avg": "4.50",
     "total_ratings": 28,
     "description_ar": "نحن شركة ...",
@@ -528,20 +529,6 @@ Sanctum token passed as `Authorization: Bearer {token}` where required.
     "verified_by": 1
   },
   "error": null
-}
-```
-
-**Error 422 (invalid transition):**
-
-```json
-{
-  "success": false,
-  "data": null,
-  "error": {
-    "code": "WORKFLOW_INVALID_TRANSITION",
-    "message": "لا يمكن التحقق من مورّد معلّق، يجب إلغاء التعليق أولاً",
-    "details": null
-  }
 }
 ```
 
@@ -670,7 +657,6 @@ return [
     'not_found'                => 'المورّد غير موجود',
     'already_exists'           => 'يمتلك هذا المقاول ملف شركة مسجّل مسبقاً',
     'role_required'            => 'يجب أن تكون مقاولاً لإنشاء ملف مورّد',
-    'cannot_verify_suspended'  => 'لا يمكن التحقق من مورّد معلّق، يجب إلغاء التعليق أولاً',
     'validation' => [
         'company_name_ar.required' => 'اسم الشركة بالعربية مطلوب',
         'company_name_en.required' => 'اسم الشركة بالإنجليزية مطلوب',
@@ -694,7 +680,6 @@ return [
     'not_found'                => 'Supplier not found',
     'already_exists'           => 'This contractor already has a registered supplier profile',
     'role_required'            => 'You must be a contractor to create a supplier profile',
-    'cannot_verify_suspended'  => 'Cannot verify a suspended supplier; unsuspend first',
     'validation' => [
         'company_name_ar.required' => 'Arabic company name is required',
         'company_name_en.required' => 'English company name is required',
