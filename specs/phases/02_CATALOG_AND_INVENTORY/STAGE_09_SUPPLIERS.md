@@ -8,20 +8,32 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: UNKNOWN
-Initiated: 2026-04-15T00:00:00Z
+Last Updated: 2026-04-15T00:05:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- SupplierProfile model with Contractor user relationship
+- Verification workflow: pending → verified ↔ suspended
+- 7 API endpoints under /api/v1/suppliers
+- SupplierService, SupplierRepository, SupplierPolicy, SupplierResource
+- Form requests: Store, Update, Verify
+- Frontend: public directory, profile, contractor dashboard form, admin management
+- Database: supplier_profiles table with soft deletes
+
+Deferred Scope:
+
+- File upload for logos (URL string in this stage)
+- Admin notifications for new submissions
+- Ratings write path (aggregation stub only)
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 
