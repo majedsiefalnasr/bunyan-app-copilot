@@ -7,20 +7,20 @@
 
 ## Stage Status
 
-Status: DRAFT
-Step: plan
+Status: IN PROGRESS
+Step: tasks
 Risk Level: LOW
 Last Updated: 2026-04-15T00:00:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- 3-wave implementation roadmap (Foundation 3.5d, Frontend 3d, Testing 4d)
-- Complete data model with self-referential hierarchy and optimistic locking
-- 6 RESTful API endpoints with nested tree response format
-- 4 reusable Vue 3 components (Tree, Form Modal, Breadcrumb, Selector)
-- Admin category management page with drag-and-drop reordering
-- 10+ construction categories seeder (Arabic + English)
-- 85%+ test coverage with unit, feature, and E2E tests
+- Total: 79 atomic tasks organized in 3 waves
+- Wave 1 (Backend): 45 tasks — 8 HIGH, 13 MEDIUM, 24 LOW risk
+- Wave 2 (Frontend): 19 tasks — UI components, admin page, i18n
+- Wave 3 (Testing): 15 tasks — unit, E2E, performance, accessibility
+- Estimated Effort: 10.5 days (3.5 + 3 + 4)
+- Parallelizable: 35 tasks (44%)
+- MVP Checkpoint: After Wave 1 backend (T045), all core features working
 
 Deferred Scope:
 
@@ -31,14 +31,13 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- ✅ Architecture Guardian: PASS (3 improvement notes)
-- ✅ API Designer: PASS (minor documentation clarifications)
-- RBAC enforcement confirmed
-- Service layer and repository pattern architected
-- Error contract compliance verified
+- All tasks traced to user stories (US1-6)
+- Critical path identified: T001→T002→T003→T004→T006-T013
+- Guardian verdicts documented (PASS)
+- High-risk tasks flagged for experienced developers
 
 Notes:
-Technical plan complete and guardian-approved. Task generation ready.
+Atomic tasks ready for implementation. Drift analysis pending.
 
 ## Objective
 
