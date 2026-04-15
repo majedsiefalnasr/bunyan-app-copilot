@@ -403,13 +403,13 @@
 
 ### API Composable
 
-- [ ] T046 [P] Create category API composable at `frontend/composables/useCategories.ts`:
+- [x] T046 [P] Create category API composable at `frontend/composables/useCategories.ts`:
   - Methods: fetchCategories(), fetchCategory(id), createCategory(data), updateCategory(id, data), reorderCategory(id, newSortOrder), moveCategory(id, newParentId), deleteCategory(id)
   - Use $fetch or API middleware for HTTP calls
   - Error handling with standard contract (success, data, error)
   - Loading states for each method
 
-- [ ] T047 [P] Create Pinia store at `frontend/stores/categoryStore.ts`:
+- [x] T047 [P] Create Pinia store at `frontend/stores/categoryStore.ts`:
   - State: categories (tree), selectedCategory, isLoading, error
   - Actions: loadCategories(), selectCategory(id), createCategory(data), updateCategory(data), reorderCategory(data), moveCategory(data), deleteCategory(id)
   - Getters: categoriesTree, selectedCategoryPath (ancestors), isReady
@@ -423,7 +423,7 @@
 
 ### Tree Components
 
-- [ ] T048 [P] Create CategoryTree component at `frontend/components/categories/CategoryTree.vue`:
+- [x] T048 [P] Create CategoryTree component at `frontend/components/categories/CategoryTree.vue`:
   - Use Composition API with <script setup>
   - Props: categories (array), selectable (boolean), onSelect callback
   - Render as recursive tree using v-for with :key="category.id"
@@ -432,13 +432,13 @@
   - Show icon if present
   - RTL-ready: use Tailwind logical properties
 
-- [ ] T049 [P] Create CategoryTreeNode sub-component at `frontend/components/categories/CategoryTreeNode.vue`:
+- [x] T049 [P] Create CategoryTreeNode sub-component at `frontend/components/categories/CategoryTreeNode.vue`:
   - Props: category, level (for indentation), selectable
   - Child component for individual tree node
   - Emit: select, expand, collapse
   - Drag-handle for reordering (add visual indicator)
 
-- [ ] T050 [P] Add drag-and-drop support to CategoryTree:
+- [x] T050 [P] Add drag-and-drop support to CategoryTree:
   - Drag node to reorder siblings
   - Drag node to move to different parent (on drop, call moveCategory)
   - Visual feedback during drag (highlight drop zone)
@@ -455,7 +455,7 @@
 
 ### Form Components
 
-- [ ] T051 [P] Create CategoryFormModal at `frontend/components/categories/CategoryFormModal.vue`:
+- [x] T051 [P] Create CategoryFormModal at `frontend/components/categories/CategoryFormModal.vue`:
   - Props: isOpen, category (null = create, object = edit), onClose, onSubmit
   - Use VeeValidate + Zod for validation
   - Fields: name_ar, name_en, parent_id (select dropdown), icon, is_active checkbox
@@ -464,14 +464,14 @@
   - Submit button disabled until valid
   - Show optimistic lock version field on edit
 
-- [ ] T052 [P] Create CategorySelector dropdown at `frontend/components/categories/CategorySelector.vue`:
+- [x] T052 [P] Create CategorySelector dropdown at `frontend/components/categories/CategorySelector.vue`:
   - Props: modelValue (category_id), @update:modelValue callback
   - Drop-down showing category tree with indentation
   - Search/filter by name_ar or name_en
   - Support select=null for none option
   - RTL: tree indentation flipped
 
-- [ ] T053 [P] Create CategoryBreadcrumb component at `frontend/components/categories/CategoryBreadcrumb.vue`:
+- [x] T053 [P] Create CategoryBreadcrumb component at `frontend/components/categories/CategoryBreadcrumb.vue`:
   - Props: category_id
   - Fetch and render ancestors
   - Display: "/" separator between ancestors
@@ -487,7 +487,7 @@
 
 ### Admin UI
 
-- [ ] T054 Create admin categories page at `frontend/pages/admin/categories.vue`:
+- [x] T054 Create admin categories page at `frontend/pages/admin/categories.vue`:
   - Layout: left sidebar tree + right panel (create/edit forms)
   - Tree: CategoryTree component with categories from store
   - Create button: opens CategoryFormModal with category=null
@@ -498,7 +498,7 @@
   - Loading spinner during operations
   - Error toast on failure
 
-- [ ] T055 Implement admin page logic in `frontend/pages/admin/categories.vue`:
+- [x] T055 Implement admin page logic in `frontend/pages/admin/categories.vue`:
   - Mount: fetch categories from store (useCategories)
   - Handle form submit: createCategory, updateCategory
   - Handle delete: confirm dialog then deleteCategory with soft delete
@@ -514,7 +514,7 @@
 **Purpose**: Arabic/English support and RTL layout  
 **Dependencies**: Depends on components
 
-- [ ] T056 [P] Add i18n keys to `frontend/locales/ar.json` and `frontend/locales/en.json`:
+- [x] T056 [P] Add i18n keys to `frontend/locales/ar.json` and `frontend/locales/en.json`:
   - categories.title
   - categories.create
   - categories.edit
@@ -529,12 +529,12 @@
   - errors.validationMin
   - errors.validationCircularRef
 
-- [ ] T057 [P] Apply i18n in CategoryFormModal:
+- [x] T057 [P] Apply i18n in CategoryFormModal:
   - Use $t() for all labels and error messages
   - Support Arabic/English language toggle
   - RTL class applied to form when lang=ar
 
-- [ ] T058 [P] Apply RTL tweaks in CategoryTree and components:
+- [x] T058 [P] Apply RTL tweaks in CategoryTree and components:
   - Use Tailwind logical properties (ms- instead of ml-, text-start instead of text-left)
   - Reverse indentation for RTL (padding-inline-start)
   - Reverse breadcrumb order

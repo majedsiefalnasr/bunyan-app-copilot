@@ -86,3 +86,6 @@ declare module 'vue-router' {
     requiredRole?: UserRoleType | UserRoleType[];
   }
 }
+
+// Re-export category types
+export type { Category, CategoryFormData, CategoryUpdateData } from './categories';
