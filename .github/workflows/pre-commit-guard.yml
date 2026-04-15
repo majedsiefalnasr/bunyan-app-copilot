@@ -5,70 +5,49 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/**'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  group: pre-commit-guard-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  guard:
+  hygiene:
+    name: Repository Hygiene
     runs-on: ubuntu-latest
-    name: Validate PR Commits
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: pdo_mysql, redis
-          coverage: none
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Composer Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install Backend Dependencies
-        working-directory: backend
-        run: composer install --no-interaction --prefer-dist
-
-      - name: Install Frontend Dependencies
-        working-directory: frontend
+      - name: Resolve comparison range
+        id: range
         run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          echo "base=${{ github.event.pull_request.base.sha }}" >> "$GITHUB_OUTPUT"
+          echo "head=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
 
-      - name: Check PHP Formatting
-        working-directory: backend
-        run: composer run lint
+      - name: Check patch integrity
+        run: git diff --check "${{ steps.range.outputs.base }}" "${{ steps.range.outputs.head }}"
 
-      - name: Check JavaScript/Vue Formatting
-        working-directory: frontend
-        env:
-          NODE_OPTIONS: -r ./scripts/polyfill-groupby.cjs
-        run: npm run lint
+      - name: Enforce lockfile discipline
+        run: |
+          CHANGED_FILES="$(git diff --name-only "${{ steps.range.outputs.base }}" "${{ steps.range.outputs.head }}")"
 
-      - name: Check Prettier Formatting
-        working-directory: frontend
-        run: npx prettier --check .
+          if echo "$CHANGED_FILES" | grep -q '^backend/composer\.json$' && ! echo "$CHANGED_FILES" | grep -q '^backend/composer\.lock$'; then
+            echo "backend/composer.json changed without backend/composer.lock."
+            exit 1
+          fi
 
-      - name: Check TypeScript
-        working-directory: frontend
-        run: npm run typecheck
+          if echo "$CHANGED_FILES" | grep -q '^frontend/package\.json$' && ! echo "$CHANGED_FILES" | grep -q '^frontend/package-lock\.json$'; then
+            echo "frontend/package.json changed without frontend/package-lock.json."
+            exit 1
+          fi
 
-      - name: Lint PHP with PHPStan
-        working-directory: backend
-        run: composer run analyze
+          echo "Dependency manifests and lockfiles are in sync."

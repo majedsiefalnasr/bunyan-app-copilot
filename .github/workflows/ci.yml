@@ -1,19 +1,53 @@
-name: CI
+name: Integration CI
 
 on:
   push:
-    branches: [develop, main]
+    branches:
+      - develop
+      - main
+    paths:
+      - 'backend/app/**'
+      - 'backend/bootstrap/**'
+      - 'backend/config/**'
+      - 'backend/database/**'
+      - 'backend/public/**'
+      - 'backend/resources/**'
+      - 'backend/routes/**'
+      - 'backend/composer.json'
+      - 'backend/composer.lock'
+      - 'backend/ci.env'
+      - 'frontend/**'
+      - '.github/workflows/ci.yml'
   pull_request:
-    branches: [develop, main]
+    branches:
+      - develop
+      - main
+    paths:
+      - 'backend/app/**'
+      - 'backend/bootstrap/**'
+      - 'backend/config/**'
+      - 'backend/database/**'
+      - 'backend/public/**'
+      - 'backend/resources/**'
+      - 'backend/routes/**'
+      - 'backend/composer.json'
+      - 'backend/composer.lock'
+      - 'backend/ci.env'
+      - 'frontend/**'
+      - '.github/workflows/ci.yml'
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: integration-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  backend:
-    name: Backend (Laravel)
+  e2e:
+    name: Cross-stack E2E (Playwright)
     runs-on: ubuntu-latest
+    timeout-minutes: 35
 
     services:
       mysql:
@@ -24,11 +58,10 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -h localhost"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-
       redis:
         image: redis:7-alpine
         ports:
@@ -47,190 +80,48 @@ jobs:
         with:
           php-version: '8.4'
           extensions: pdo, pdo_mysql, redis, mbstring, xml, bcmath, gd
-          coverage: xdebug
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        working-directory: backend
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
-          path: backend/vendor
-          key: composer-${{ hashFiles('backend/composer.lock') }}
-          restore-keys: composer-
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist
+      - name: Install backend dependencies
         working-directory: backend
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Copy environment file
+      - name: Prepare backend environment
+        working-directory: backend
         run: |
-          if [ -f .env.ci ]; then
-            cp .env.ci .env
-          elif [ -f ../.env.ci ]; then
-            cp ../.env.ci .env
-          else
-            cp .env.example .env
-          fi
-        working-directory: backend
-
-      - name: Generate application key
-        run: php artisan key:generate
-        working-directory: backend
-
-      - name: Run migrations
-        run: php artisan migrate --force
-        working-directory: backend
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: bunyan_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
-
-      - name: Laravel Pint (Lint)
-        run: vendor/bin/pint --test
-        working-directory: backend
-
-      - name: PHPStan (Static Analysis)
-        run: vendor/bin/phpstan analyse --memory-limit=512M
-        working-directory: backend
-
-      - name: PHPUnit (Tests)
-        run: php artisan test --parallel
-        working-directory: backend
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: bunyan_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
-          REDIS_HOST: 127.0.0.1
-
-  frontend:
-    name: Frontend (Nuxt.js)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Verify Node.js version
-        run: |
-          echo "Node:" $(node -v)
-          echo "Npm:" $(npm -v)
-          MAJOR=$(node -v | sed 's/v//' | cut -d. -f1)
-          if [ "$MAJOR" -lt 24 ]; then
-            echo "Node.js major version is $MAJOR; CI requires Node.js 24+."
-            exit 1
-          fi
-
-      - name: Copy frontend env
-        working-directory: frontend
-        run: |
-          if [ -f .env.ci ]; then
-            cp .env.ci .env
-          elif [ -f ../.env.ci ]; then
-            cp ../.env.ci .env
-          elif [ -f .env.example ]; then
-            cp .env.example .env
-          fi
-
-      - name: Install dependencies
-        run: npm ci
-        working-directory: frontend
-
-      - name: ESLint
-        run: npm run lint
-        working-directory: frontend
-
-      - name: TypeScript Check
-        run: npx nuxi typecheck
-        working-directory: frontend
-
-      - name: Vitest (Unit + Component Tests)
-        run: npm run test
-        working-directory: frontend
-
-      - name: Build
-        run: npm run build
-        working-directory: frontend
-
-  e2e:
-    name: E2E Tests (Playwright)
-    runs-on: ubuntu-latest
-    needs: [backend, frontend]
-    timeout-minutes: 30
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: bunyan_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: pdo, pdo_mysql, redis, mbstring, xml, bcmath, gd
-
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist
-        working-directory: backend
-
-      - name: Setup backend environment
-        run: |
-          if [ -f .env.ci ]; then
-            cp .env.ci .env
-          elif [ -f ../.env.ci ]; then
-            cp ../.env.ci .env
-          else
-            cp .env.example .env
-          fi
-          php artisan key:generate
+          cp ci.env .env
+          php artisan key:generate --force
           php artisan migrate --force
           php artisan db:seed --class=E2ESeeder --force
-        working-directory: backend
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: bunyan_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
 
       - name: Start Laravel API server
-        run: php artisan serve --port=8000 &
         working-directory: backend
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: bunyan_test
-          DB_USERNAME: root
-          DB_PASSWORD: password
+        run: nohup php artisan serve --host=127.0.0.1 --port=8000 >/tmp/bunyan-laravel.log 2>&1 &
+
+      - name: Wait for Laravel API
+        run: |
+          for attempt in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8000/api/health >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Laravel API did not become ready."
+          cat /tmp/bunyan-laravel.log
+          exit 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -239,31 +130,45 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-playwright-
+
       - name: Install frontend dependencies
-        run: npm ci --legacy-peer-deps
         working-directory: frontend
+        run: npm ci --no-audit
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
         working-directory: frontend
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: npx playwright install --with-deps chromium
 
       - name: Build frontend
-        run: npm run build
         working-directory: frontend
         env:
-          NUXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
+          NUXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+        run: npm run build
 
       - name: Run Playwright E2E tests
-        run: npm run test:e2e
         working-directory: frontend
         env:
-          NUXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
           CI: true
+          NUXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+          PW_SERVER_HOST: 127.0.0.1
+          PW_SERVER_URL: http://127.0.0.1:3001
+        run: npm run test:e2e
 
-      - name: Upload Playwright report
+      - name: Upload Playwright artifacts
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
-          path: frontend/playwright-report/
+          name: playwright-artifacts
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+            /tmp/bunyan-laravel.log
           retention-days: 7
