@@ -6,8 +6,8 @@
   "branch": "spec/006-api-foundation",
   "base_branch": "develop",
   "pkg_manager": "composer+npm",
-  "current_step": "implement",
-  "stage_status": "BACKEND CLOSED",
+  "current_step": "stage_production_ready",
+  "stage_status": "PRODUCTION READY",
   "auto_advance": true,
   "clarifications_resolved": true,
   "drift_passed": true,
@@ -27,14 +27,15 @@
   "parallel_task_groups": [],
   "current_parallel_group": null,
   "session_started_at": "2026-04-14T00:00:00Z",
-  "last_updated": "2026-04-14T13:00:00Z",
+  "last_updated": "2026-04-14T14:00:00Z",
   "step_timings": {
     "specify": { "started_at": "2026-04-14T00:00:30Z", "completed_at": "2026-04-14T00:01:00Z" },
     "clarify": { "started_at": "2026-04-14T00:01:10Z", "completed_at": "2026-04-14T00:02:00Z" },
     "plan": { "started_at": "2026-04-14T00:02:10Z", "completed_at": "2026-04-14T00:05:00Z" },
     "tasks": { "started_at": "2026-04-14T00:05:10Z", "completed_at": "2026-04-14T00:06:00Z" },
     "analyze": { "started_at": "2026-04-14T00:06:30Z", "completed_at": "2026-04-14T12:00:00Z" },
-    "implement": { "started_at": "2026-04-14T12:01:00Z", "completed_at": "2026-04-14T13:00:00Z" }
+    "implement": { "started_at": "2026-04-14T12:01:00Z", "completed_at": "2026-04-14T13:00:00Z" },
+    "closure": { "started_at": "2026-04-14T13:00:00Z", "completed_at": "2026-04-14T14:00:00Z" }
   },
   "history": [
     {
@@ -67,6 +68,15 @@
       "event": "stage_backend_closed",
       "tasks_completed": 34,
       "timestamp": "2026-04-14T13:00:00Z"
+    },
+    {
+      "event": "pre_closure_review_approved",
+      "auto_advance": true,
+      "timestamp": "2026-04-14T13:00:01Z"
+    },
+    {
+      "event": "stage_production_ready",
+      "timestamp": "2026-04-14T14:00:00Z"
     }
   ]
 }
