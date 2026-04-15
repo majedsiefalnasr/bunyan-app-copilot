@@ -8,17 +8,18 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: LOW
 Last Updated: 2026-04-15T00:00:00Z
 
 Scope Defined:
 
-- 8 user stories spanning category creation, nesting, reordering, moving, editing, and deletion
-- 4 reusable Vue 3 components (tree, form modal, breadcrumb, selector)
-- 6 RESTful API endpoints with full RBAC enforcement
-- Soft-delete support with bilingual (Arabic + English) category names
-- 10+ default construction categories as seeder data
+- 5 clarifications resolved (slug immutability, soft-delete behavior, tree format, visibility scoping, concurrency)
+- 8 user stories with full acceptance criteria
+- 4 reusable Vue 3 components architected
+- 6 RESTful API endpoints with nested tree response format
+- Optimistic locking via version field for concurrent edits
+- 150+ quality checklist items (security, performance, accessibility)
 
 Deferred Scope:
 
@@ -29,13 +30,12 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
-- RBAC enforcement confirmed (admin-only writes)
-- Service layer and repository pattern architected
-- Error contract compliance planned
+- All clarifications follow Bunyan patterns (RBAC, soft deletes, error contract)
+- Full RTL/Arabic support confirmed
+- Planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 

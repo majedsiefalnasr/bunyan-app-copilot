@@ -235,9 +235,9 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
 
 #### Backend
 
-- **FR-001**: System MUST define Category Eloquent model with fields: id, parent_id (nullable, self-relation), name_ar, name_en, slug (unique, auto-generated from name_en), icon (nullable), sort_order (default 0, ordered ascending), is_active (boolean, default true), created_at, updated_at, deleted_at (soft delete)
+- **FR-001**: System MUST define Category Eloquent model with fields: id, parent_id (nullable, self-relation), name_ar, name_en, slug (unique, auto-generated from name_en, **immutable after creation**), icon (nullable), sort_order (default 0, ordered ascending), is_active (boolean, default true), **version** (integer, default 0 for optimistic locking), created_at, updated_at, deleted_at (soft delete)
 
-- **FR-002**: System MUST enforce self-referential hierarchy via parent_id foreign key (categories.id) with cascade on delete or soft-delete handling
+- **FR-002**: System MUST enforce self-referential hierarchy via parent_id foreign key (categories.id); soft-delete handling MUST NOT cascade to children (parent can be soft-deleted independently; children retain parent_id for audit purposes)
 
 - **FR-003**: System MUST provide CategoryRepository with methods:
   - `getTree(includeDeleted=false)`: Return full hierarchy with nested children
@@ -291,10 +291,10 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
 #### API Endpoints
 
 - **FR-010**: GET /api/v1/categories
-  - Return full tree hierarchy (nested children)
-  - Exclude soft-deleted by default
+  - Return **full nested tree hierarchy** with recursive children arrays (not flat list)
+  - Exclude soft-deleted by default (scope: withoutTrashed)
   - Optional query param: parent_id to filter by parent
-  - Response: `{ "success": true, "data": [{ id, parent_id, name_ar, name_en, slug, icon, sort_order, is_active, children: [...] }], "error": null }`
+  - Response: `{ "success": true, "data": [{ id, parent_id, name_ar, name_en, slug, icon, sort_order, is_active, children: [{ id, ..., children: [...] }] }], "error": null }`
 
 - **FR-011**: POST /api/v1/categories
   - Create category with validation
@@ -310,10 +310,11 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
 
 - **FR-013**: PUT /api/v1/categories/{id}
   - Update category fields (name_ar, name_en, icon, is_active, parent_id [with validation])
-  - Request: `{ name_ar (optional), name_en (optional), icon (optional), is_active (optional), parent_id (optional) }`
-  - Response: Updated category resource
+  - **Slug is immutable and cannot be changed via this endpoint**
+  - Request: `{ name_ar (optional), name_en (optional), icon (optional), is_active (optional), parent_id (optional), version (optional for optimistic locking) }`
+  - Response: Updated category resource with incremented version
   - Authorization: Admin only
-  - Error codes: VALIDATION_ERROR (422), RESOURCE_NOT_FOUND (404), AUTH_UNAUTHORIZED (403), WORKFLOW_INVALID_TRANSITION (422 if parent_id creates cycle)
+  - Error codes: VALIDATION_ERROR (422), RESOURCE_NOT_FOUND (404), AUTH_UNAUTHORIZED (403), WORKFLOW_INVALID_TRANSITION (422 if parent_id creates cycle), CONFLICT_ERROR (409 if version mismatch)
 
 - **FR-014**: DELETE /api/v1/categories/{id}
   - Soft-delete category
@@ -322,12 +323,12 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
   - Error: RESOURCE_NOT_FOUND (404), AUTH_UNAUTHORIZED (403)
 
 - **FR-015**: PUT /api/v1/categories/{id}/reorder
-  - Reorder category within siblings
-  - Request: `{ sort_order: <int> }` or `{ position: <int> }` (position may be more intuitive)
+  - Reorder category within siblings using **optimistic locking**
+  - Request: `{ sort_order: <int>, version: <int> }` (version prevents concurrent update conflicts)
   - Recalculate sort_order for affected siblings
-  - Response: Updated category with new sort_order
+  - Response: Updated category with new sort_order and incremented version
   - Authorization: Admin only
-  - Error: VALIDATION_ERROR (422)
+  - Error: VALIDATION_ERROR (422), CONFLICT_ERROR (409 if version mismatch indicates concurrent modification)
 
 #### Frontend
 
@@ -414,23 +415,145 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
 
 - **Architecture**: Category tree is stored in single `categories` table with self-referential parent_id; no materialized path or closure table required for MVP
 - **Scope**: Categories are limited to products only (not projects or phases), as per STAGE_07 scope
-- **Slug generation**: Slugs are auto-generated from name_en using Laravel helper (Str::slug), kept stable after creation (not dynamically regenerated on name change, or regenerated per TBD business rule)
-- **Reordering**: sort_order is the single source of truth for display order; no weighted/priority system
+- **Slug generation**: Slugs are auto-generated from name_en using Laravel helper (Str::slug) and remain **immutable** after creation. Updates to name_en do not regenerate the slug; this preserves URL stability and prevents breaking category references.
+- **Reordering**: sort_order is the single source of truth for display order; no weighted/priority system. Concurrent reorder requests use **optimistic locking** (version/timestamp field) to prevent data loss.
 - **Circular references**: Prevented at API validation layer; database constraint (CHECK) optional but recommended
-- **Soft deletes**: Deleted categories are hidden from public queries but retained in database for audit; admin can restore
+- **Soft deletes**: Deleted categories are hidden from public queries but retained in database for audit; admin can restore. When a parent is soft-deleted, **children remain with parent_id intact** (not cascaded); this preserves audit audit and gives admins granular control.
 - **Icon storage**: Icon is stored as a CSS class name or icon library identifier (e.g., "lucide-box", "fas-cube"), not an image URL or blob
 - **Permissions**: Only Admin role can manage categories; no delegation to other roles (e.g., Contractor cannot create categories)
 - **Arabic-first data**: Seeder provides Arabic names (name_ar) as primary; English (name_en) as localized fallback
+- **Tree response format**: GET /api/v1/categories returns full **nested tree structure** with recursive children arrays. Clients assemble tree from nested objects rather than flat list. This aligns with modern REST conventions and simplifies frontend rendering.
+- **Soft-deleted category visibility**: When a category is soft-deleted, it becomes **invisible to products** (scoped out via `withoutTrashed()`). Products cannot query deleted categories; the category effectively disappears from the system except via admin-only audit scopes.
 
 ---
 
-## [NEEDS CLARIFICATION: 3 items]
+## Clarifications
 
-1. **Slug management on name change**: When an admin updates a category's name_en, should the slug auto-regenerate (potentially breaking existing URL links)? Or should slug be immutable once created? → **Suggested assumption**: Slug is immutable; name can change without affecting slug.
+### Session Date: 2026-04-15
 
-2. **Behavior when deleting category with active children**: If admin soft-deletes a parent category with active child categories, should children also be soft-deleted, or orphaned? → **Suggested assumption**: Parent can be soft-deleted independently; children retain parent_id (may be null if parent is restored, or remains for audit).
+The following ambiguities were identified and resolved based on project governance and architectural best practices:
 
-3. **Category-to-product soft-delete cascade**: If a product is soft-deleted but linked to a category, should the category remain visible? → **Suggested assumption**: Category visibility is independent of product state; categories are deleted only via admin action.
+#### Clarification 1: Slug Immutability Strategy
+
+**Decision**: **Immutable slug strategy**
+
+**Justification**:
+
+- Aligns with Laravel URL patterns where slugs are used for URL generation and should remain stable
+- Prevents breaking changes to category URLs when metadata is updated
+- If name_en is critical to the category identifier, create a separate searchable `display_name` field that can change
+- Products and external systems linking to `/categories/{slug}` won't break
+
+**Implementation Impact**:
+
+- Slug is read-only after creation; never regenerated in PUT endpoint
+- Name updates do not affect slug
+- Slug uniqueness constraint remains at database level
+- Migration: No versioning or redirect table needed; slug is the permanent identifier
+
+**Reference**: FR-001, FR-005, FR-011, FR-013
+
+---
+
+#### Clarification 2: Parent Soft-Delete Cascade Behavior
+
+**Decision**: **Children remain orphaned (parent_id stays intact, parent marked deleted_at)**
+
+**Justification**:
+
+- Preserves audit trail: deleted category remains in database with deleted_at; soft-delete philosophy is honored
+- Gives admins granular control: can selectively soft-delete parents without forcing cascading deletes
+- Prevents accidental bulk deletion of entire subtrees
+- Allows restoration of parent while children remain linked
+
+**Implementation Impact**:
+
+- DELETE /api/v1/categories/{id} sets deleted_at on target category only; no cascade
+- Children foreign keys remain valid; orphaned records can be queried with `whereNull('deleted_at')` and parent still deleted
+- CategoryRepository::getTree() excludes deleted parents; children of deleted parents also hidden (via EXISTS subquery or JOIN with deleted_at IS NULL)
+- Possible edge case: orphaned children remain with deleted_at IS NULL but parent is deleted — this is acceptable per audit design
+
+**Reference**: FR-002, FR-014, Edge Cases section
+
+---
+
+#### Clarification 3: Tree Response Format
+
+**Decision**: **Nested tree structure with recursive children arrays (not flat)**
+
+**Justification**:
+
+- Modern REST API practice for hierarchical data
+- Simplifies frontend rendering: no manual tree assembly needed
+- Aligns with Nuxt component expectations (recursive render)
+- Category relationships are inherently hierarchical; nested JSON reflects data structure
+
+**Implementation Impact**:
+
+- GET /api/v1/categories returns `[{ id, name_ar, name_en, ..., children: [{ id, ..., children: [...] }] }, ...]`
+- GET /api/v1/categories/{id} returns single category with nested children array
+- GET /api/v1/categories?parent_id={id} also returns nested (children of specified parent with their descendants)
+- CategoryResource must use recursive transformation: `$this->children->map(fn($child) => new CategoryResource($child))`
+- Use `loadMissing('children')` in controller to eager-load all descendants (or recursive query)
+
+**Reference**: FR-010, FR-012, NFR-004
+
+---
+
+#### Clarification 4: Soft-Deleted Category Visibility to Products
+
+**Decision**: **Soft-deleted categories are globally invisible** (scoped out in default queries)
+
+**Justification**:
+
+- Products query categories via repository scope; soft-deleted categories always excluded unless explicitly `->withTrashed()`
+- Keeps query logic clean: soft deletes act like hard deletes to end users; only audit queries see them
+- No null/error handling needed; products never encounter deleted categories
+- Aligns with Laravel philosophy: soft deletes are transparent unless admin specifically audits
+
+**Implementation Impact**:
+
+- Default scope in Category model: `->withoutTrashed()` (or global scope)
+- Products query: `Category::find($id)` returns null if category is soft-deleted
+- Products display: No category → product category field is empty/null
+- Admin audit queries: `Category::withTrashed()->find($id)` shows soft-deleted categoria with deleted_at timestamp
+- Migration: No change needed; soft delete is a query-level concern
+
+**Reference**: FR-003, FR-008, FR-010, NFR-008
+
+---
+
+#### Clarification 5: Concurrent Reorder Request Handling
+
+**Decision**: **Optimistic locking with version/timestamp field**
+
+**Justification**:
+
+- Prevents last-write-wins data loss when two admins reorder simultaneously
+- Lighter than database-level FOR UPDATE locking; doesn't serialize all requests
+- Aligns with Laravel Eloquent patterns (timestamps, version fields)
+- Prevents accidental overwrites: rejector request returns conflict error
+
+**Implementation Impact**:
+
+- Add `version` integer field (or use `updated_at` as version) to categories table
+- PUT /api/v1/categories/{id}/reorder receives request with version field: `{ sort_order: 2, version: 5 }`
+- Controller compares: if category.version !== request.version, return CONFLICT_ERROR (409)
+- On successful reorder, increment version and updated_at
+- Frontend: fetch category, extract version, pass in reorder request; if rejected, refetch and retry
+- Migration: `$table->integer('version')->default(0)` or use existing `updated_at` with timestamp comparison
+
+**Reference**: FR-015, SC-004, SC-010
+
+---
+
+### Remaining Open Questions (if any)
+
+None at this time. All five key clarification points have been resolved and encoded into the spec.
+
+### Assumptions Updated
+
+The following assumptions section (above) has been updated with the clarifications integrated. No separate assumptions remain outstanding.
 
 ---
 
