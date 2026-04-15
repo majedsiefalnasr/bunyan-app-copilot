@@ -21,13 +21,13 @@
 
 ### Database Migration & Schema
 
-- [ ] T001 [P] Create migration file `backend/database/migrations/2026_04_15_000000_create_categories_table.php` with full schema (parent_id FK, slug unique index, composite indexes on parent_sort_order_active)
-- [ ] T002 [P] Seed default categories table with 10+ sample categories (building materials, electrical, plumbing, hardware, tools) in `backend/database/seeders/CategorySeeder.php`
-- [ ] T003 [P] Create database indexes and verify performance on 1000+ categories query in migration
+- [x] T001 [P] Create migration file `backend/database/migrations/2026_04_15_000000_create_categories_table.php` with full schema (parent_id FK, slug unique index, composite indexes on parent_sort_order_active)
+- [x] T002 [P] Seed default categories table with 10+ sample categories (building materials, electrical, plumbing, hardware, tools) in `backend/database/seeders/CategorySeeder.php`
+- [x] T003 [P] Create database indexes and verify performance on 1000+ categories query in migration
 
 ### Eloquent Model
 
-- [ ] T004 [P] Create Category model at `backend/app/Models/Category.php` with:
+- [x] T004 [P] Create Category model at `backend/app/Models/Category.php` with:
   - SoftDeletes trait
   - Relationships: parent (BelongsTo), children (HasMany)
   - Scopes: active(), roots(), leaves(), ordered(), forTree()
@@ -43,7 +43,7 @@
 
 ### Repository Layer
 
-- [ ] T005 [P] Create CategoryRepository at `backend/app/Repositories/CategoryRepository.php` with methods:
+- [x] T005 [P] Create CategoryRepository at `backend/app/Repositories/CategoryRepository.php` with methods:
   - getTree(includeDeleted, activeOnly): Collection
   - getChildren(parentId, activeOnly): Collection
   - getAncestors(categoryId): Collection
@@ -51,13 +51,13 @@
   - findById(id): ?Category
   - Eager loading strategy to prevent N+1 queries
 
-- [ ] T006 [P] Implement reorder logic in CategoryRepository:
+- [x] T006 [P] Implement reorder logic in CategoryRepository:
   - reorder(categoryId, newSortOrder): Category
   - Recalculate sort_order for siblings
   - Preserve unchanged sibling order
   - Update only affected siblings
 
-- [ ] T007 [P] Implement tree retrieval in CategoryRepository:
+- [x] T007 [P] Implement tree retrieval in CategoryRepository:
   - Use WITH recursive CTE or recursive children loading
   - Support active_only filter
   - Support include_deleted for admins
@@ -65,7 +65,7 @@
 
 ### Service Layer
 
-- [ ] T008 Create CategoryService at `backend/app/Services/CategoryService.php` with:
+- [x] T008 Create CategoryService at `backend/app/Services/CategoryService.php` with:
   - create(data): Category - business validation, slug generation, sort_order assignment
   - update(id, data, version): Category - optimistic locking, circular ref check
   - delete(id): bool - soft delete via CategoryRepository
@@ -73,7 +73,7 @@
   - reorder(id, newSortOrder, version): Category - delegate to repository
   - move(id, newParentId, version): Category - move category to different parent
 
-- [ ] T009 Implement business logic in CategoryService:
+- [x] T009 Implement business logic in CategoryService:
   - Slug generation from name_en with collision detection
   - Circular reference prevention before accepting parent_id
   - Optimistic locking: check version match before update
@@ -89,7 +89,7 @@
 
 ### Form Request Classes
 
-- [ ] T010 [P] Create StoreCategoryRequest at `backend/app/Http/Requests/StoreCategoryRequest.php` with rules:
+- [x] T010 [P] Create StoreCategoryRequest at `backend/app/Http/Requests/StoreCategoryRequest.php` with rules:
   - name_ar: required|string|min:2|max:100
   - name_en: required|string|min:2|max:100
   - parent_id: nullable|integer|exists:categories,id,deleted_at,NULL (no circular refs)
@@ -97,7 +97,7 @@
   - sort_order: nullable|integer|min:0
   - is_active: nullable|boolean
 
-- [ ] T011 [P] Create UpdateCategoryRequest at `backend/app/Http/Requests/UpdateCategoryRequest.php` with:
+- [x] T011 [P] Create UpdateCategoryRequest at `backend/app/Http/Requests/UpdateCategoryRequest.php` with:
   - All fields optional
   - version field for optimistic locking mandatory for update
   - parent_id change validation (circular ref check)
@@ -111,12 +111,12 @@
 
 ### API Resources
 
-- [ ] T012 [P] Create CategoryResource at `backend/app/Http/Resources/CategoryResource.php` with:
+- [x] T012 [P] Create CategoryResource at `backend/app/Http/Resources/CategoryResource.php` with:
   - Transform all category fields (id, parent_id, name_ar, name_en, slug, icon, sort_order, is_active, version, timestamps)
   - Recursive children transformation (if children key exists)
   - Support tree format with nested children arrays
 
-- [ ] T013 [P] Create CategoryCollection at `backend/app/Http/Resources/CategoryCollection.php` for:
+- [x] T013 [P] Create CategoryCollection at `backend/app/Http/Resources/CategoryCollection.php` for:
   - Wrapping tree responses
   - Preserving nested structure in collection response
 
@@ -129,39 +129,39 @@
 
 ### Implementation
 
-- [ ] T014 [US1] Create CategoryController at `backend/app/Http/Controllers/CategoryController.php` with store() method for POST /api/v1/categories
+- [x] T014 [US1] Create CategoryController at `backend/app/Http/Controllers/CategoryController.php` with store() method for POST /api/v1/categories
   - Inject CategoryService
   - Validate via StoreCategoryRequest
   - Call service.create(validated_data)
   - Transform response via CategoryResource
   - Return 201 Created with success contract
 
-- [ ] T015 [US1] Implement CategoryController::index() for GET /api/v1/categories
+- [x] T015 [US1] Implement CategoryController::index() for GET /api/v1/categories
   - Query via CategoryRepository::getTree(activeOnly=true)
   - Support parent_id query parameter filter
   - Transform via CategoryCollection + CategoryResource
   - Return tree structure with nested children
 
-- [ ] T016 [US1] Implement validation in StoreCategoryRequest:
+- [x] T016 [US1] Implement validation in StoreCategoryRequest:
   - parent_id must not already exist (no circular ref check needed for top-level where parent_id=null)
   - slug must be unique (validated implicitly after service generates slug)
   - Set default is_active=true, sort_order to max+1
 
 ### Testing for US1
 
-- [ ] T017 [P] [US1] Unit test for CategoryService::create in `backend/tests/Unit/Services/CategoryServiceTest.php`:
+- [x] T017 [P] [US1] Unit test for CategoryService::create in `backend/tests/Unit/Services/CategoryServiceTest.php`:
   - Test slug generation from name_en
   - Test sort_order assignment as max+1
   - Test CategoryCreated event dispatch
   - Test returns Category model
 
-- [ ] T018 [P] [US1] Feature test for CategoryController::store in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T018 [P] [US1] Feature test for CategoryController::store in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - Admin can POST /api/v1/categories with valid data → 201 Created
   - Non-admin cannot create (403 RBAC_ROLE_DENIED)
   - Invalid name_ar → 422 VALIDATION_ERROR
   - Response follows standard contract (success, data, error)
 
-- [ ] T019 [P] [US1] Feature test for CategoryController::index in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T019 [P] [US1] Feature test for CategoryController::index in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - GET /api/v1/categories returns tree structure (children arrays)
   - Filter by parent_id=null returns top-level only
   - active_only=true excludes inactive categories
@@ -178,35 +178,35 @@
 
 ### Implementation
 
-- [ ] T020 [US2] Implement parent_id validation in StoreCategoryRequest:
+- [x] T020 [US2] Implement parent_id validation in StoreCategoryRequest:
   - parent_id must exist: exists:categories,id,deleted_at,NULL
   - CategoryService must reject circular references
   - Prevent self-referential parent_id=id
 
-- [ ] T021 [US2] Implement circular reference prevention in CategoryService::create:
+- [x] T021 [US2] Implement circular reference prevention in CategoryService::create:
   - Before create, check if parent_id creates cycle
   - Query ancestors of parent_id, verify current is not among them
   - Throw WORKFLOW_INVALID_TRANSITION error if cycle detected
 
-- [ ] T022 [US2] Implement parent_id support in CategoryController::index:
+- [x] T022 [US2] Implement parent_id support in CategoryController::index:
   - Support query param ?parent_id=X to filter children only
   - Or return full tree by default (parent_id=null auto-included in filter)
 
 ### Testing for US2
 
-- [ ] T023 [P] [US2] Unit test for circular reference prevention in `backend/tests/Unit/Services/CategoryServiceTest.php`:
+- [x] T023 [P] [US2] Unit test for circular reference prevention in `backend/tests/Unit/Services/CategoryServiceTest.php`:
   - Create parent → child → grandchild chain
   - Attempt to set grandchild.parent_id = child fails ✓
   - Attempt to set parent.parent_id = grandchild fails ✓
   - Verification: getAncestors does not include self
 
-- [ ] T024 [P] [US2] Feature test for nested category creation in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T024 [P] [US2] Feature test for nested category creation in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - POST /api/v1/categories with valid parent_id → 201
   - parent_id=invalid → 422 RESOURCE_NOT_FOUND
   - parent_id=self → 422 WORKFLOW_INVALID_TRANSITION (circular)
   - Tree API returns children nested under parent
 
-- [ ] T025 [P] [US2] Feature test for CategoryController::show in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T025 [P] [US2] Feature test for CategoryController::show in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - GET /api/v1/categories/{id} returns single category with children
   - children array is recursive (grandchildren included)
 
@@ -221,34 +221,34 @@
 
 ### Implementation
 
-- [ ] T026 [US3] Implement CategoryController::reorder() for PUT /api/v1/categories/{id}/reorder:
+- [x] T026 [US3] Implement CategoryController::reorder() for PUT /api/v1/categories/{id}/reorder:
   - Inject CategoryService
   - Validate via UpdateCategoryRequest (requires version for optimistic lock)
   - Call service.reorder(id, newSortOrder, version)
   - Transform via CategoryResource
   - Return 200 OK with updated category
 
-- [ ] T027 [US3] Implement reorder business logic in CategoryService::reorder:
+- [x] T027 [US3] Implement reorder business logic in CategoryService::reorder:
   - Check version match for optimistic locking
   - Query siblings (same parent_id)
   - Recalculate sort_order values within sibling group
   - Increment updated_at and version++
   - Dispatch CategoryReordered event
 
-- [ ] T028 [US3] Implement reorder repository method in CategoryRepository::reorder:
+- [x] T028 [US3] Implement reorder repository method in CategoryRepository::reorder:
   - Use transaction for atomic sibling recalculation
   - Update affected siblings' sort_order
   - Prevent gaps in sort_order sequence
 
 ### Testing for US3
 
-- [ ] T029 [P] [US3] Unit test for CategoryService::reorder in `backend/tests/Unit/Services/CategoryServiceTest.php`:
+- [x] T029 [P] [US3] Unit test for CategoryService::reorder in `backend/tests/Unit/Services/CategoryServiceTest.php`:
   - Sibling[1,2,3] exist with sort_order[0,1,2]
   - Reorder sibling[3] to position 0 → sort_order become [1,2,0] ✓
   - version incremented ✓
   - CategoryReordered event dispatched ✓
 
-- [ ] T030 [P] [US3] Feature test for CategoryController::reorder in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T030 [P] [US3] Feature test for CategoryController::reorder in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - PUT /api/v1/categories/{id}/reorder with valid newSortOrder → 200
   - version mismatch → 409 CONFLICT_ERROR (optimistic lock)
   - Missing version → 422 VALIDATION_ERROR
@@ -265,32 +265,32 @@
 
 ### Implementation
 
-- [ ] T031 [US4] Implement CategoryController::move() for PUT /api/v1/categories/{id}/move:
+- [x] T031 [US4] Implement CategoryController::move() for PUT /api/v1/categories/{id}/move:
   - Inject CategoryService
   - Validate via UpdateCategoryRequest (requires new_parent_id)
   - Call service.move(id, newParentId, version)
   - Transform via CategoryResource
   - Return 200 OK with updated category
 
-- [ ] T032 [US4] Implement move logic in CategoryService::move:
+- [x] T032 [US4] Implement move logic in CategoryService::move:
   - Check version match for optimistic locking
   - Check new_parent_id does not create cycle (validate circular ref again)
   - Update parent_id on category
   - Recalculate sort_order if new parent has different sibling count
   - Dispatch CategoryMoved event
 
-- [ ] T033 [US4] Implement parent_id change in UpdateCategoryRequest:
+- [x] T033 [US4] Implement parent_id change in UpdateCategoryRequest:
   - new_parent_id field: nullable|integer|exists:categories,id,deleted_at,NULL
   - Only validates existence; service validates cycles
 
 ### Testing for US4
 
-- [ ] T034 [P] [US4] Unit test for CategoryService::move in `backend/tests/Unit/Services/CategoryServiceTest.php`:
+- [x] T034 [P] [US4] Unit test for CategoryService::move in `backend/tests/Unit/Services/CategoryServiceTest.php`:
   - Move child from parent1 to parent2 → parent_id updated ✓
   - Descendants move with parent (implicit - no extra update needed)
   - Attempt to move parent into descendant → WORKFLOW_INVALID_TRANSITION ✓
 
-- [ ] T035 [P] [US4] Feature test for CategoryController::move in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T035 [P] [US4] Feature test for CategoryController::move in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - PUT /api/v1/categories/{id}/move with new_parent_id → 200
   - new_parent_id=self → 422 WORKFLOW_INVALID_TRANSITION
   - version mismatch → 409 CONFLICT_ERROR
@@ -306,14 +306,14 @@
 
 ### Implementation
 
-- [ ] T036 [US5] Implement CategoryController::update() for PUT /api/v1/categories/{id}:
+- [x] T036 [US5] Implement CategoryController::update() for PUT /api/v1/categories/{id}:
   - Inject CategoryService
   - Validate via UpdateCategoryRequest
   - Call service.update(id, data, version)
   - Transform via CategoryResource
   - Return 200 OK with updated category
 
-- [ ] T037 [US5] Implement update logic in CategoryService::update:
+- [x] T037 [US5] Implement update logic in CategoryService::update:
   - Check version match for optimistic locking
   - Allow name_ar, name_en, icon, is_active changes
   - Slug is immutable (do not regenerate)
@@ -322,7 +322,7 @@
 
 ### Testing for US5
 
-- [ ] T038 [P] [US5] Feature test for CategoryController::update in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T038 [P] [US5] Feature test for CategoryController::update in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - PUT /api/v1/categories/{id} with name_en change → 200, name persisted ✓
   - PUT with is_active=false → category marked inactive ✓
   - slug ignored in request (immutable) ✓
@@ -339,25 +339,25 @@
 
 ### Implementation
 
-- [ ] T039 [US6] Implement CategoryController::destroy() for DELETE /api/v1/categories/{id}:
+- [x] T039 [US6] Implement CategoryController::destroy() for DELETE /api/v1/categories/{id}:
   - Inject CategoryService
   - Call service.delete(id)
   - Return 200 OK with empty success response
 
-- [ ] T040 [US6] Implement soft delete logic in CategoryService::delete:
+- [x] T040 [US6] Implement soft delete logic in CategoryService::delete:
   - Call repository.delete(id) which triggers Eloquent softDelete()
   - Set deleted_at timestamp
   - Dispatch CategoryDeleted event
   - Return boolean success
 
-- [ ] T041 [US6] Implement soft delete scoping in Category model:
+- [x] T041 [US6] Implement soft delete scoping in Category model:
   - Ensure all queries by default exclude deleted (SoftDeletes trait handles)
   - Support withTrashed() for admin queries
   - Active scope includes whereNull('deleted_at')
 
 ### Testing for US6
 
-- [ ] T042 [P] [US6] Feature test for soft delete in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
+- [x] T042 [P] [US6] Feature test for soft delete in `backend/tests/Feature/Http/Controllers/CategoryControllerTest.php`:
   - DELETE /api/v1/categories/{id} → 200, deleted_at set ✓
   - GET /api/v1/categories does not include deleted ✓
   - GET /api/v1/categories?include_deleted=true returns deleted (admin only) ✓
@@ -372,7 +372,7 @@
 **Purpose**: Populate test data and verify full backend flow  
 **Dependencies**: Depends on all Wave 1 completion
 
-- [ ] T043 [P] Enhanced CategorySeeder in `backend/database/seeders/CategorySeeder.php`:
+- [x] T043 [P] Enhanced CategorySeeder in `backend/database/seeders/CategorySeeder.php`:
   - Create 10+ top-level categories (Building Materials, Electrical, Plumbing, Hardware, Tools, Safety, Fasteners, Paints, Lighting, Storage)
   - Create 3-5 nested children per parent
   - Create 2-3 grandchildren under selected children
@@ -380,13 +380,13 @@
   - Set varied sort_order values
   - Test data covers all user story scenarios
 
-- [ ] T044 [P] Run seeder and verify:
+- [x] T044 [P] Run seeder and verify:
   - `php artisan db:seed --class=CategorySeeder` completes without error
   - Database contains expected hierarchy (count parent, children, grandchildren levels)
   - Verify queries on 50+ categories return correctly
   - Dump tree structure for sanity check
 
-- [ ] T045 Integration test for full backend flow in `backend/tests/Feature/CategoryIntegrationTest.php`:
+- [x] T045 Integration test for full backend flow in `backend/tests/Feature/CategoryIntegrationTest.php`:
   - Admin creates 3 categories
   - Admin creates 3 children under category 1
   - Admin reorders child 3 to position 0
