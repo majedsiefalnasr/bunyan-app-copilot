@@ -8,18 +8,20 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: MEDIUM
-Last Updated: 2026-04-15T00:20:00Z
+Last Updated: 2026-04-15T00:35:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- 37 file operations (33 CREATE + 4 MODIFY) across 5 phases
-- Database: supplier_profiles table, SupplierVerificationStatus enum
-- Backend: SupplierService, SupplierRepository, SupplierPolicy, SupplierResource
-- HTTP: 4 Form Requests, Controller, Route file
-- Frontend: 3 Components, 4 Pages, Pinia store, composable
-- Tests + i18n: Feature tests, unit tests, translation keys
+- Total: 39 atomic tasks across 6 phases
+- P0 Database: 5 tasks (migration, enum, model, factory, User relationship)
+- P1 Backend Core: 4 tasks (interface, repository, service, bindings)
+- P2 HTTP Layer: 9 tasks (4 Form Requests, Policy, Resource, Controller, Routes)
+- P3 Frontend: 10 tasks (types, composable, store, 3 components, 4 pages)
+- P4 Tests + i18n: 8 tasks (seeder, 4 translation files, 3 test suites)
+- Validation Pipeline: 3 tasks (lint, PHPUnit, frontend checks)
+- 10 tasks parallelizable (4 Form Requests, Policy+Resource, 2 components, 4 i18n)
 
 Deferred Scope:
 
@@ -29,13 +31,13 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- ADR-009-01 formalized
+- ADR-009-01 formalized and binding on T016
 - Architecture Guardian: PASS (after 6 findings remediated)
 - API Designer: PASS (after 5 findings remediated)
-- Technical plan compliant — task generation authorized
+- Task set compliant — drift analysis gate required before implementation
 
 Notes:
-Technical plan complete. Task breakdown in progress.
+Atomic task set generated (39 tasks). Drift analysis gate pending.
 
 ## Objective
 
