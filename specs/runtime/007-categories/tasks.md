@@ -551,26 +551,26 @@
 
 ### Unit & Component Tests
 
-- [ ] T059 [P] Component unit tests for CategoryTree in `frontend/tests/components/CategoryTree.spec.ts`:
+- [x] T059 [P] Component unit tests for CategoryTree in `frontend/tests/components/CategoryTree.spec.ts`:
   - Test rendering list of categories with correct structure
   - Test expand/collapse toggle
   - Test select emit on node click
   - Test tree handles empty array
 
-- [ ] T060 [P] Component unit tests for CategoryFormModal in `frontend/tests/components/CategoryFormModal.spec.ts`:
+- [x] T060 [P] Component unit tests for CategoryFormModal in `frontend/tests/components/CategoryFormModal.spec.ts`:
   - Test form renders with empty state (create)
   - Test form renders with category data (edit)
   - Test VeeValidate validation (required, min/max)
   - Test submit emits correct data
 
-- [ ] T061 [P] Component unit tests for CategoryBreadcrumb in `frontend/tests/components/CategoryBreadcrumb.spec.ts`:
+- [x] T061 [P] Component unit tests for CategoryBreadcrumb in `frontend/tests/components/CategoryBreadcrumb.spec.ts`:
   - Test renders ancestor chain
   - Test clicks navigate via router.push
   - Test RTL order reversal
 
 ### E2E Tests
 
-- [ ] T062 [P] E2E test for category creation flow in `frontend/tests/e2e/categories.spec.ts`:
+- [x] T062 [P] E2E test for category creation flow in `frontend/tests/e2e/category-create.spec.ts`:
   - Login as admin
   - Navigate to /admin/categories
   - Click "Create Category"
@@ -579,19 +579,19 @@
   - Verify category appears in tree
   - Verify API call to POST /api/v1/categories
 
-- [ ] T063 [P] E2E test for nested hierarchy in `frontend/tests/e2e/categories.spec.ts`:
+- [x] T063 [P] E2E test for nested hierarchy in `frontend/tests/e2e/category-hierarchy.spec.ts`:
   - Create parent category
   - Create child under parent
   - Verify tree shows indented hierarchy
   - Verify breadcrumb shows parent → child path
 
-- [ ] T064 [P] E2E test for drag-and-drop reorder in `frontend/tests/e2e/categories.spec.ts`:
+- [x] T064 [P] E2E test for drag-and-drop reorder in `frontend/tests/e2e/category-reorder.spec.ts`:
   - Create 3 sibling categories
   - Drag sibling 3 to position 1
   - Verify API called with new sort_order
   - Verify tree reflects new order
 
-- [ ] T065 [P] E2E test for soft delete in `frontend/tests/e2e/categories.spec.ts`:
+- [x] T065 [P] E2E test for soft delete in `frontend/tests/e2e/category-delete.spec.ts`:
   - Create category
   - Click delete
   - Confirm deletion
@@ -607,13 +607,13 @@
 
 ### Performance Testing
 
-- [ ] T066 [P] Performance test for tree rendering in `frontend/tests/performance/categories.spec.ts`:
+- [x] T066 [P] Performance test for tree rendering in `frontend/tests/performance/category-performance.spec.ts`:
   - Render tree with 1000 categories
   - Measure time to interactive (target: <500ms)
   - Measure memory usage
   - Verify no unnecessary re-renders
 
-- [ ] T067 [P] API performance test for tree endpoint in `backend/tests/Performance/CategoryControllerTest.php`:
+- [x] T067 [P] API performance test for tree endpoint in `backend/tests/Performance/CategoryControllerTest.php`:
   - Query 1000-category tree with GET /api/v1/categories
   - Verify response time <200ms
   - Verify query count ≤3 (prevent N+1)
@@ -621,7 +621,7 @@
 
 ### Accessibility Testing
 
-- [ ] T068 [P] WCAG 2.1 AA compliance audit in `frontend/tests/a11y/categories.spec.ts`:
+- [x] T068 [P] WCAG 2.1 AA compliance audit in `frontend/tests/a11y/category-a11y.spec.ts`:
   - Tree navigation keyboard-accessible (Tab, Arrow keys)
   - Form inputs have labels and ARIA
   - Color contrast ≥4.5:1
@@ -638,19 +638,19 @@
 
 ### Integration Testing
 
-- [ ] T069 Full migration test in `backend/tests/Feature/MigrationTest.php`:
+- [x] T069 Full migration test in `backend/tests/Feature/CategoryMigrationTest.php`:
   - Run migration
   - Verify categories table structure
   - Verify indexes created
   - Rollback migration
   - Verify table dropped properly
 
-- [ ] T070 Seeding test in `backend/tests/Feature/SeedingTest.php`:
+- [x] T070 Seeding test in `backend/tests/Feature/CategoryMigrationTest.php`:
   - Run CategorySeeder
   - Verify data integrity (tree structure correct, counts match)
   - Verify no FK constraint violations
 
-- [ ] T071 End-to-end workflow test spanning backend + frontend:
+- [x] T071 End-to-end workflow test spanning backend + frontend in `backend/tests/Feature/CategoryWorkflowTest.php`:
   - Frontend creates category via form
   - Backend persists to database
   - Frontend fetches tree API
@@ -659,16 +659,16 @@
 
 ### Documentation & Validation
 
-- [ ] T072 [P] Update API documentation in `backend/storage/api-docs/`:
+- [x] T072 [P] Update API documentation in `backend/storage/api-docs/`:
   - Add CategoryController endpoints to Swagger/OpenAPI spec
   - Document request/response schemas
   - Document error codes and examples
 
-- [ ] T073 [P] Update README files:
+- [x] T073 [P] Update README files:
   - Add "Category System" section to backend README explaining architecture
   - Add "Admin Categories Page" section to frontend README with usage examples
 
-- [ ] T074 [P] Code cleanup and refactoring:
+- [x] T074 [P] Code cleanup and refactoring:
   - Remove any dead code or debug statements
   - Verify all comments are accurate
   - Run linting: `composer run lint` and `npm run lint`
@@ -681,19 +681,19 @@
 **Purpose**: Validation and final checks before deployment  
 **Dependencies**: Depends on all testing completion
 
-- [ ] T075 [P] Run full test suite:
+- [x] T075 [P] Run full test suite:
   - Backend: `php artisan test --parallel` (expect 30-35 tests, 85%+ coverage)
   - Frontend: `npm run test` (expect 15-20 tests)
   - E2E: `npm run test:e2e` (expect 5-6 scenarios)
 
-- [ ] T076 [P] Verify coverage targets:
+- [x] T076 [P] Verify coverage targets:
   - Backend CategoryController: ≥90%
   - Backend CategoryService: ≥90%
   - Backend CategoryRepository: ≥85%
   - Frontend components: ≥80%
   - Overall target: ≥85%
 
-- [ ] T077 Code review checklist:
+- [x] T077 Code review checklist:
   - RBAC enforced on all endpoints (admin-only for mutations)
   - Error responses follow standard contract
   - Soft deletes implemented correctly
@@ -703,13 +703,13 @@
   - Arabic/English bilingual support complete
   - RTL layout tested in all components
 
-- [ ] T078 Security audit:
+- [x] T078 Security audit:
   - Verify no SQL injection vectors
   - Verify CSRF protection on forms
   - Verify rate limiting on API endpoints
   - Verify soft delete data not exposed to unauthorized users
 
-- [ ] T079 Run pre-commit checks:
+- [x] T079 Run pre-commit checks:
   - `composer run lint` passes
   - `npm run lint` passes
   - `npm run typecheck` passes
