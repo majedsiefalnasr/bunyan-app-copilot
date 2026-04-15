@@ -58,6 +58,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // CORS security guard: prevent wildcard origin + credentials misconfiguration
+        // in non-local environments. Throws InvalidArgumentException to fail fast.
+        $this->guardCorsWildcard();
+
         // Admin superuser bypass — Admin bypasses all Gate/Policy checks
         Gate::before(function (User $user, string $ability) {
             if ($user->hasEnumRole(UserRole::ADMIN)) {
@@ -117,5 +121,66 @@ class AppServiceProvider extends ServiceProvider
             // T047: 5 avatar upload attempts per 15 minutes per user
             return Limit::perMinutes(15, 5)->by($request->user()?->id ?: $request->ip());
         });
+
+        // STAGE_06: API Foundation rate limiters
+        RateLimiter::for('api-authenticated', function (Request $request) {
+            // 60 req/min for authenticated users, keyed by user ID with IP fallback
+            $key = $request->user()?->id
+                ? 'user:'.$request->user()->id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute(60)->by($key);
+        });
+
+        RateLimiter::for('api-public', function (Request $request) {
+            // 10 req/min for unauthenticated requests, keyed by IP via TrustProxies
+            return Limit::perMinute(10)->by($request->ip());
+        });
+
+        RateLimiter::for('api-admin', function (Request $request) {
+            // 300 req/min for admin users, keyed by admin user ID
+            $key = $request->user()?->id
+                ? 'admin:'.$request->user()->id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute(300)->by($key);
+        });
+    }
+
+    /**
+     * Guard against CORS wildcard + credentials misconfiguration.
+     *
+     * In non-local environments, having CORS_ALLOWED_ORIGINS contain '*' while
+     * supports_credentials = true is a security misconfiguration that exposes
+     * the API to cross-origin credential theft. We fail fast with an
+     * InvalidArgumentException rather than logging quietly.
+     *
+     * @throws \InvalidArgumentException When wildcard + credentials is detected in non-local env
+     */
+    private function guardCorsWildcard(): void
+    {
+        $env = config('app.env', 'production');
+
+        if ($env === 'local' || $env === 'testing') {
+            return;
+        }
+
+        $corsConfig = config('cors');
+
+        if (! is_array($corsConfig)) {
+            return;
+        }
+
+        $allowedOrigins = $corsConfig['allowed_origins'] ?? [];
+        $supportsCredentials = $corsConfig['supports_credentials'] ?? false;
+
+        if ($supportsCredentials && in_array('*', (array) $allowedOrigins, true)) {
+            throw new \InvalidArgumentException(
+                'CORS misconfiguration detected: CORS_ALLOWED_ORIGINS cannot contain "*" '
+                .'when supports_credentials is true. '
+                .'This is a security vulnerability. '
+                .'Set CORS_ALLOWED_ORIGINS to the specific origin(s) for your frontend application.'
+            );
+        }
     }
 }

@@ -1,9 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\AdminRbacController;
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\TestController;
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -12,9 +10,19 @@ use Illuminate\Support\Facades\Route;
  * Note: These routes are automatically prefixed with /api and versioned (/v1)
  * All routes accessed via: /api/v1/...
  * Authentication via Laravel Sanctum bearer tokens
+ *
+ * Route sub-files:
+ * - api/v1/auth.php   — Registration, login, logout, password reset, email verification, profile
+ * - api/v1/users.php  — Avatar upload, profile management
+ * - api/v1/admin.php  — Admin RBAC: role and permission management
  */
-// Ensure API middleware group is applied so throttle, bindings, and other
-// api-scoped middleware run for these test endpoints.
+
+/**
+ * Health Check — Outside v1 prefix, no auth, no throttle.
+ * Accessed via: GET /api/health
+ */
+Route::get('health', [HealthController::class, 'check'])->name('api.health');
+
 Route::middleware('api')->prefix('v1')->group(function () {
     /**
      * Health & Test Endpoints
@@ -43,58 +51,8 @@ Route::middleware('api')->prefix('v1')->group(function () {
         Route::match(['get', 'post'], 'error/server-error', [TestController::class, 'testServerError']);
     });
 
-    // Additional API routes will be added by other stages
-
-    /**
-     * Authentication Endpoints
-     * Registration, login, logout, password reset, email verification, profile
-     */
-    Route::prefix('auth')->group(function () {
-        // Public auth routes (with rate limiting)
-        Route::post('register', [AuthController::class, 'register'])
-            ->middleware('throttle:auth-register');
-        Route::post('login', [AuthController::class, 'login'])
-            ->middleware(['throttle:auth-login', 'check-account-lockout']);
-        Route::post('forgot-password', [AuthController::class, 'forgotPassword'])
-            ->middleware('throttle:auth-forgot-password');
-        Route::post('reset-password', [AuthController::class, 'resetPassword']);
-
-        // Email verification (signed URL — no auth required)
-        Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
-            ->middleware('signed')
-            ->name('verification.verify');
-
-        // Authenticated routes
-        Route::middleware('auth:sanctum')->group(function () {
-            Route::post('logout', [AuthController::class, 'logout']);
-            Route::post('refresh', [AuthController::class, 'refreshToken']);
-            Route::get('user', [AuthController::class, 'user']);
-            Route::put('user', [AuthController::class, 'updateProfile']);
-            Route::post('email/resend', [AuthController::class, 'resendVerification'])
-                ->middleware('throttle:auth-email-resend');
-        });
-    });
-
-    /**
-    /**
-     * User Endpoints
-     * Avatar upload, profile management
-     */
-    Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-        Route::post('avatar', [UserController::class, 'uploadAvatar'])
-            ->middleware('throttle:user-avatar-upload');
-    });
-
-    /**
-     * Admin RBAC Endpoints
-     * Role and permission management (admin-only)
-     */
-    Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
-        Route::get('roles', [AdminRbacController::class, 'listRoles']);
-        Route::get('roles/{id}', [AdminRbacController::class, 'showRole']);
-        Route::put('roles/{id}/permissions', [AdminRbacController::class, 'syncPermissions']);
-        Route::post('users/{id}/role', [AdminRbacController::class, 'assignRole']);
-        Route::get('users', [AdminRbacController::class, 'listUsers']);
-        Route::get('permissions', [AdminRbacController::class, 'listPermissions']);
-    });
+    // V1 route sub-files — extracted for maintainability
+    require __DIR__.'/api/v1/auth.php';
+    require __DIR__.'/api/v1/users.php';
+    require __DIR__.'/api/v1/admin.php';
 });

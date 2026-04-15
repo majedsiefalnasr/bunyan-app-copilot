@@ -9,14 +9,13 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin User
  *
  * @property UserRole|null $role
  */
-class UserResource extends JsonResource
+class UserResource extends BaseApiResource
 {
     /**
      * @return array<string, mixed>

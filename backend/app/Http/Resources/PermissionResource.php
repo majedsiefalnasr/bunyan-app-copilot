@@ -6,12 +6,11 @@ namespace App\Http\Resources;
 
 use App\Models\Permission;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin Permission
  */
-class PermissionResource extends JsonResource
+class PermissionResource extends BaseApiResource
 {
     /**
      * @return array<string, mixed>

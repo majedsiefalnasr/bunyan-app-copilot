@@ -182,7 +182,8 @@ class ApiErrorCodeTest extends TestCase
     }
 
     /**
-     * Test that 12 error codes are defined (registry completeness).
+     * Test that 13 error codes are defined (registry completeness).
+     * Note: HEALTH_CHECK_FAILED was added in STAGE_06 (T017).
      */
     public function test_all_required_error_codes_present(): void
     {
@@ -199,6 +200,7 @@ class ApiErrorCodeTest extends TestCase
             'PAYMENT_FAILED',
             'RATE_LIMIT_EXCEEDED',
             'SERVER_ERROR',
+            'HEALTH_CHECK_FAILED',
         ];
 
         $definedCodes = array_map(fn ($ec) => $ec->value, ApiErrorCode::cases());

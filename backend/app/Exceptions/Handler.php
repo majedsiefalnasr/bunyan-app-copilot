@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 
 /**
@@ -247,16 +248,30 @@ class Handler extends ExceptionHandler
         ], 403);
     }
 
+    /**
+     * Handle rate limit exceptions.
+     *
+     * Returns 429 Too Many Requests with Retry-After and X-RateLimit-* headers
+     * forwarded from the ThrottleRequests middleware.
+     */
     private function handleRateLimitException(Throwable $e): JsonResponse
     {
-        return response()->json([
+        $headers = [];
+
+        if ($e instanceof TooManyRequestsHttpException) {
+            $headers = $e->getHeaders();
+        }
+
+        $response = response()->json([
             'success' => false,
             'data' => null,
             'error' => [
                 'code' => ApiErrorCode::RATE_LIMIT_EXCEEDED->value,
                 'message' => ApiErrorCode::RATE_LIMIT_EXCEEDED->defaultMessage(),
             ],
-        ], 429);
+        ], 429, $headers);
+
+        return $response;
     }
 
     /**

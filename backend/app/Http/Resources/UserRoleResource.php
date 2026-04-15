@@ -6,12 +6,11 @@ namespace App\Http\Resources;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin User
  */
-class UserRoleResource extends JsonResource
+class UserRoleResource extends BaseApiResource
 {
     /**
      * @return array<string, mixed>
