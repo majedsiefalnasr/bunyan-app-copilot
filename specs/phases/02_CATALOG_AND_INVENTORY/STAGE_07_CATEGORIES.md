@@ -8,20 +8,34 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: LOW
-Initiated: 2026-04-15T00:00:00Z
+Last Updated: 2026-04-15T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- 8 user stories spanning category creation, nesting, reordering, moving, editing, and deletion
+- 4 reusable Vue 3 components (tree, form modal, breadcrumb, selector)
+- 6 RESTful API endpoints with full RBAC enforcement
+- Soft-delete support with bilingual (Arabic + English) category names
+- 10+ default construction categories as seeder data
+
+Deferred Scope:
+
+- Materialized path optimization (use adjacency list for MVP)
+- Category-level pricing overrides
+- Bulk operations
+- Category export/import tools
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
+- RBAC enforcement confirmed (admin-only writes)
+- Service layer and repository pattern architected
+- Error contract compliance planned
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 

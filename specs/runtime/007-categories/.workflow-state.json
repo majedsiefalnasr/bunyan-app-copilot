@@ -6,7 +6,7 @@
   "branch": "spec/007-categories",
   "base_branch": "develop",
   "pkg_manager": "composer",
-  "current_step": "pre_step",
+  "current_step": "specify",
   "stage_status": "DRAFT",
   "clarifications_resolved": false,
   "drift_passed": false,
@@ -21,11 +21,20 @@
   "auto_advance": true,
   "session_started_at": "2026-04-15T00:00:00Z",
   "last_updated": "2026-04-15T00:00:00Z",
-  "step_timings": {},
+  "step_timings": {
+    "specify": {
+      "started_at": "2026-04-15T00:00:00Z",
+      "completed_at": "2026-04-15T00:00:00Z"
+    }
+  },
   "history": [
     {
       "event": "branch_created",
       "branch": "spec/007-categories",
+      "timestamp": "2026-04-15T00:00:00Z"
+    },
+    {
+      "event": "specify_complete",
       "timestamp": "2026-04-15T00:00:00Z"
     }
   ]
