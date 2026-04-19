@@ -1,7 +1,7 @@
 # Phase 0 — Research: Category Hierarchy System
 
-**Date**: 2026-04-15  
-**Stage**: STAGE_07_CATEGORIES  
+**Date**: 2026-04-15
+**Stage**: STAGE_07_CATEGORIES
 **Researcher**: AI Planning Agent
 
 ---
@@ -374,8 +374,8 @@ ALTER TABLE categories ADD COLUMN version INT UNSIGNED DEFAULT 0 NOT NULL;
 
 ## Open Questions Resolved (From Spec Clarifications)
 
-✅ **Slug Immutability**: Decided → Slugs are immutable after creation (Clarification 1)  
-✅ **Parent Soft-Delete Cascade**: Decided → Children remain with parent_id intact (Clarification 2)  
+✅ **Slug Immutability**: Decided → Slugs are immutable after creation (Clarification 1)
+✅ **Parent Soft-Delete Cascade**: Decided → Children remain with parent_id intact (Clarification 2)
 ✅ **Tree Response Format**: Decided → Nested structure with recursive children arrays (Clarification 3)
 
 ---

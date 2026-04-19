@@ -1,7 +1,7 @@
 # Quality Requirements Checklist — STAGE_07_CATEGORIES
 
-**Stage**: STAGE_07_CATEGORIES (Product Category Hierarchy)  
-**Generated**: 2026-04-15  
+**Stage**: STAGE_07_CATEGORIES (Product Category Hierarchy)
+**Generated**: 2026-04-15
 **Scope**: Category Eloquent model, repository, service, API endpoints, admin UI, seeder
 
 ---

@@ -2,8 +2,8 @@
 
 **Title:** Feature: Product Category Hierarchy with RBAC & Optimistic Locking (STAGE_07_CATEGORIES)
 
-**Branch:** `spec/007-categories`  
-**Base:** `develop`  
+**Branch:** `spec/007-categories`
+**Base:** `develop`
 **Status:** READY FOR REVIEW
 
 ---
@@ -339,7 +339,7 @@ For questions or clarifications:
 
 ---
 
-**PR Status:** ✅ **READY FOR MERGE**  
-**All 79 tasks complete and tested**  
-**ZeroArchitecture governance violations**  
+**PR Status:** ✅ **READY FOR MERGE**
+**All 79 tasks complete and tested**
+**ZeroArchitecture governance violations**
 **All CI checks passing**

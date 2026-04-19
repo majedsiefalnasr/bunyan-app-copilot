@@ -176,7 +176,7 @@ describe('CategoryTree Component', () => {
               <div data-testid="category-tree-node">
                 <div>{{ category.name_en }}</div>
                 <div v-if="category.children?.length">
-                  <category-tree-node 
+                  <category-tree-node
                     v-for="child in category.children"
                     :key="child.id"
                     :category="child"

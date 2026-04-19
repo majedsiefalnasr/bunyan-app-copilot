@@ -1,9 +1,9 @@
 # Tasks: Product Category Hierarchy (007-Categories)
 
-**Input**: Design documents from `/specs/runtime/007-categories/`  
-**Prerequisites**: plan.md (tech stack, architecture), spec.md (8 user stories, priorities), data-model.md (schema), contracts/api.md (endpoints)  
-**Output**: Fully functional category hierarchy system with admin UI and full RBAC  
-**Timeline**: 5-7 working days (Wave 1: 2d, Wave 2: 2d, Wave 3: 1-2d)  
+**Input**: Design documents from `/specs/runtime/007-categories/`
+**Prerequisites**: plan.md (tech stack, architecture), spec.md (8 user stories, priorities), data-model.md (schema), contracts/api.md (endpoints)
+**Output**: Fully functional category hierarchy system with admin UI and full RBAC
+**Timeline**: 5-7 working days (Wave 1: 2d, Wave 2: 2d, Wave 3: 1-2d)
 **Coverage Target**: 85%+ test coverage
 
 **Format**: `- [ ] T### [P?] [US#] Description with exact file path`
@@ -16,7 +16,7 @@
 
 ## Phase 1: Database & Eloquent Foundation (Backend Infrastructure Setup)
 
-**Purpose**: Database schema, migrations, and core ORM layer  
+**Purpose**: Database schema, migrations, and core ORM layer
 **Dependencies**: None - can start immediately
 
 ### Database Migration & Schema
@@ -38,7 +38,7 @@
 
 ## Phase 2: Repository & Service Layer (Business Logic)
 
-**Purpose**: Data access and business logic layers  
+**Purpose**: Data access and business logic layers
 **Dependencies**: Depends on Phase 1 (Model must exist)
 
 ### Repository Layer
@@ -84,7 +84,7 @@
 
 ## Phase 3: Form Requests & Validation
 
-**Purpose**: HTTP input validation  
+**Purpose**: HTTP input validation
 **Dependencies**: Depends on Model existence
 
 ### Form Request Classes
@@ -106,7 +106,7 @@
 
 ## Phase 4: API Resources & Transformation
 
-**Purpose**: API response transformation  
+**Purpose**: API response transformation
 **Dependencies**: Depends on Model existence
 
 ### API Resources
@@ -124,7 +124,7 @@
 
 ## Wave 1: User Story 1 - Create & Organize Top-Level Categories (P1)
 
-**Goal**: Admins can create foundational top-level categories for organization  
+**Goal**: Admins can create foundational top-level categories for organization
 **Independent Test**: Admin creates ≥3 categories (Building Materials, Electrical, Plumbing) and retrieves them via API with correct sort_order and slug
 
 ### Implementation
@@ -173,7 +173,7 @@
 
 ## Wave 1: User Story 2 - Create Nested Sub-Categories (P1)
 
-**Goal**: Admins create multi-level hierarchy by assigning parent_id  
+**Goal**: Admins create multi-level hierarchy by assigning parent_id
 **Independent Test**: Admin creates parent then ≥2 children under it. Tree API returns correct parent-child links. UI renders indented hierarchy.
 
 ### Implementation
@@ -216,7 +216,7 @@
 
 ## Wave 1: User Story 3 - Reorder Categories Within Same Level (P2)
 
-**Goal**: Admin drag-drop reorders categories at same level (siblings only)  
+**Goal**: Admin drag-drop reorders categories at same level (siblings only)
 **Independent Test**: Admin moves category 3 to position 1 within same parent. sort_order recalculated. API returns 200 with updated category.
 
 ### Implementation
@@ -260,7 +260,7 @@
 
 ## Wave 1: User Story 4 - Move Category to Different Parent (P2)
 
-**Goal**: Admin restructures hierarchy by moving category + descendants to new parent  
+**Goal**: Admin restructures hierarchy by moving category + descendants to new parent
 **Independent Test**: Admin moves "Cables" from "Electrical" to "Hardware". All descendants move. parent_id updated. Tree API shows new hierarchy.
 
 ### Implementation
@@ -301,7 +301,7 @@
 
 ## Wave 1: User Story 5 - Edit Category Details (P2)
 
-**Goal**: Admin updates metadata (names, icon, is_active status)  
+**Goal**: Admin updates metadata (names, icon, is_active status)
 **Independent Test**: Admin edits name_ar, icon, is_active. Changes persist. API returns updated record with new updated_at.
 
 ### Implementation
@@ -334,7 +334,7 @@
 
 ## Wave 1: User Story 6 - Soft-Delete Category (P3)
 
-**Goal**: Admin marks category as deleted (soft delete via deleted_at) preserving data  
+**Goal**: Admin marks category as deleted (soft delete via deleted_at) preserving data
 **Independent Test**: Admin soft-deletes category. deleted_at set. Category hidden from default queries. Admin can query with include_deleted.
 
 ### Implementation
@@ -369,7 +369,7 @@
 
 ## Phase 5: API Seeding & Backend Integration Tests
 
-**Purpose**: Populate test data and verify full backend flow  
+**Purpose**: Populate test data and verify full backend flow
 **Dependencies**: Depends on all Wave 1 completion
 
 - [x] T043 [P] Enhanced CategorySeeder in `backend/database/seeders/CategorySeeder.php`:
@@ -398,7 +398,7 @@
 
 ## Wave 2: Frontend Setup & API Integration
 
-**Purpose**: Vue 3 composables, Pinia stores, HTTP client  
+**Purpose**: Vue 3 composables, Pinia stores, HTTP client
 **Dependencies**: Depends on Wave 1 API completion
 
 ### API Composable
@@ -418,7 +418,7 @@
 
 ## Wave 2: Components - Tree Rendering
 
-**Purpose**: Vue 3 components for category display  
+**Purpose**: Vue 3 components for category display
 **Dependencies**: Depends on API composables and Pinia store
 
 ### Tree Components
@@ -450,7 +450,7 @@
 
 ## Wave 2: Components - Forms & Modals
 
-**Purpose**: Vue 3 forms for category CRUD  
+**Purpose**: Vue 3 forms for category CRUD
 **Dependencies**: Depends on API composables
 
 ### Form Components
@@ -482,7 +482,7 @@
 
 ## Wave 2: Admin Page & Integration
 
-**Purpose**: Admin management page tying all components together  
+**Purpose**: Admin management page tying all components together
 **Dependencies**: Depends on all Wave 2 components
 
 ### Admin UI
@@ -511,7 +511,7 @@
 
 ## Wave 2: Internationalization & RTL
 
-**Purpose**: Arabic/English support and RTL layout  
+**Purpose**: Arabic/English support and RTL layout
 **Dependencies**: Depends on components
 
 - [x] T056 [P] Add i18n keys to `frontend/locales/ar.json` and `frontend/locales/en.json`:
@@ -546,7 +546,7 @@
 
 ## Wave 3: Component Testing & E2E
 
-**Purpose**: Unit tests, component tests, E2E Playwright tests  
+**Purpose**: Unit tests, component tests, E2E Playwright tests
 **Dependencies**: Depends on Wave 2 component completion
 
 ### Unit & Component Tests
@@ -602,7 +602,7 @@
 
 ## Wave 3: Performance & Accessibility Testing
 
-**Purpose**: Performance benchmarks and accessibility compliance  
+**Purpose**: Performance benchmarks and accessibility compliance
 **Dependencies**: Depends on Wave 2 completion
 
 ### Performance Testing
@@ -633,7 +633,7 @@
 
 ## Wave 3: Full Integration & Validation
 
-**Purpose**: End-to-end system validation  
+**Purpose**: End-to-end system validation
 **Dependencies**: Depends on all prior phases
 
 ### Integration Testing
@@ -678,7 +678,7 @@
 
 ## Final Phase: Quality Gates & Deployment Readiness
 
-**Purpose**: Validation and final checks before deployment  
+**Purpose**: Validation and final checks before deployment
 **Dependencies**: Depends on all testing completion
 
 - [x] T075 [P] Run full test suite:

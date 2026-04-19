@@ -1,9 +1,9 @@
 # Feature Specification: Product Category Hierarchy
 
-**Stage**: STAGE_07_CATEGORIES  
-**Phase**: 02_CATALOG_AND_INVENTORY  
-**Created**: 2026-04-15  
-**Status**: Draft  
+**Stage**: STAGE_07_CATEGORIES
+**Phase**: 02_CATALOG_AND_INVENTORY
+**Created**: 2026-04-15
+**Status**: Draft
 **Spec Type**: Product/Service Category System
 
 ---
@@ -18,7 +18,7 @@ Implement a hierarchical category system for organizing construction products an
 
 ### User Story 1 — Admin Creates and Organizes Top-Level Categories (Priority: P1)
 
-**Description**:  
+**Description**:
 An admin user creates the foundational category structure for the construction materials marketplace. This establishes the primary organization system that all products will reference.
 
 **Why this priority**: Foundational — category hierarchy cannot exist without top-level categories. This is the MVP entry point.
@@ -27,27 +27,27 @@ An admin user creates the foundational category structure for the construction m
 
 **Acceptance Scenarios**:
 
-1. **Given** admin is logged in,  
-   **When** admin navigates to Category Management page,  
+1. **Given** admin is logged in,
+   **When** admin navigates to Category Management page,
    **Then** admin sees empty category tree with "Create Category" button
 
-2. **Given** category creation form is open,  
-   **When** admin enters name_ar="مواد بناء", name_en="Building Materials", icon="box", sort_order=1, parent_id=null,  
+2. **Given** category creation form is open,
+   **When** admin enters name_ar="مواد بناء", name_en="Building Materials", icon="box", sort_order=1, parent_id=null,
    **Then** category is created, appears in tree, and slug is auto-generated as "building-materials"
 
-3. **Given** multiple top-level categories exist,  
-   **When** admin retrieves GET /api/v1/categories (with parent_id filter),  
+3. **Given** multiple top-level categories exist,
+   **When** admin retrieves GET /api/v1/categories (with parent_id filter),
    **Then** API returns flat array with correct parent-child relationships (parent_id=null for top-level)
 
-4. **Given** category is created,  
-   **When** category is accessed in database,  
+4. **Given** category is created,
+   **When** category is accessed in database,
    **Then** created_at, updated_at timestamps are populated, deleted_at is null, is_active=true by default
 
 ---
 
 ### User Story 2 — Admin Creates Nested Sub-Categories (Priority: P1)
 
-**Description**:  
+**Description**:
 Admin creates sub-categories under existing top-level categories to build a multi-level hierarchy. For example, "Concrete" under "Building Materials", or "Cables" under "Electrical".
 
 **Why this priority**: Core to the category system — without nested categories, the hierarchy is flat and unusable for complex product organization.
@@ -56,27 +56,27 @@ Admin creates sub-categories under existing top-level categories to build a mult
 
 **Acceptance Scenarios**:
 
-1. **Given** top-level category "Building Materials" exists,  
-   **When** admin creates sub-category with name_ar="أسمنت", name_en="Concrete", parent_id=[building-materials-id],  
+1. **Given** top-level category "Building Materials" exists,
+   **When** admin creates sub-category with name_ar="أسمنت", name_en="Concrete", parent_id=[building-materials-id],
    **Then** sub-category is created with parent_id set correctly
 
-2. **Given** sub-category is created,  
-   **When** admin retrieves GET /api/v1/categories?parent_id=[id],  
+2. **Given** sub-category is created,
+   **When** admin retrieves GET /api/v1/categories?parent_id=[id],
    **Then** API returns only children of that parent
 
-3. **Given** category tree exists with 3 levels (e.g., Building Materials > Concrete > Portland Cement),  
-   **When** admin requests full tree via GET /api/v1/categories,  
+3. **Given** category tree exists with 3 levels (e.g., Building Materials > Concrete > Portland Cement),
+   **When** admin requests full tree via GET /api/v1/categories,
    **Then** API returns hierarchical structure with nested children arrays (tree format, not flat)
 
-4. **Given** admin is viewing category tree UI,  
-   **When** tree is rendered,  
+4. **Given** admin is viewing category tree UI,
+   **When** tree is rendered,
    **Then** parent categories are collapsible, child categories indent under parents, and sort order is preserved
 
 ---
 
 ### User Story 3 — Admin Reorders Categories within Same Level (Priority: P2)
 
-**Description**:  
+**Description**:
 Admin reorganizes the display order of categories at the same hierarchy level (e.g., reorder top-level categories by dragging, or reorder children within a parent).
 
 **Why this priority**: Improves UX — allows merchants and users to see most important categories first. Not critical for MVP but enhances usability immediately after launch.
@@ -85,23 +85,23 @@ Admin reorganizes the display order of categories at the same hierarchy level (e
 
 **Acceptance Scenarios**:
 
-1. **Given** top-level categories exist (sort_order 1, 2, 3),  
-   **When** admin drags category 3 to position 1,  
+1. **Given** top-level categories exist (sort_order 1, 2, 3),
+   **When** admin drags category 3 to position 1,
    **Then** sort_order values are recalculated (3 moves to 1, others increment), and PUT /api/v1/categories/{id}/reorder is called with new position
 
-2. **Given** reorder request is sent with valid sort_order,  
-   **When** reorder completes successfully,  
+2. **Given** reorder request is sent with valid sort_order,
+   **When** reorder completes successfully,
    **Then** updated_at timestamp is refreshed, and API returns 200 OK with updated category
 
-3. **Given** admin drags within a nested level,  
-   **When** reorder happens,  
+3. **Given** admin drags within a nested level,
+   **When** reorder happens,
    **Then** sibling categories (same parent_id) are reordered only; other levels unaffected
 
 ---
 
 ### User Story 4 — Admin Moves Category to Different Parent (Priority: P2)
 
-**Description**:  
+**Description**:
 Admin restructures the hierarchy by moving a category and its descendants to a different parent. Example: moving "Electrical Cables" sub-category from "Electrical" parent to "Hardware" parent.
 
 **Why this priority**: Advanced hierarchy editing — enables reorganization when business needs evolve. Deferred to P2 because initial hierarchy is often stable post-launch.
@@ -110,19 +110,19 @@ Admin restructures the hierarchy by moving a category and its descendants to a d
 
 **Acceptance Scenarios**:
 
-1. **Given** "Cables" category is a child of "Electrical" (parent_id=electrical_id),  
-   **When** admin requests to move "Cables" to parent "Hardware" (parent_id=hardware_id),  
+1. **Given** "Cables" category is a child of "Electrical" (parent_id=electrical_id),
+   **When** admin requests to move "Cables" to parent "Hardware" (parent_id=hardware_id),
    **Then** parent_id is updated, descendants remain intact, sort_order is recalculated within new parent
 
-2. **Given** category move is completed,  
-   **When** admin retrieves tree,  
+2. **Given** category move is completed,
+   **When** admin retrieves tree,
    **Then** "Cables" now appears under "Hardware", and original position under "Electrical" is empty
 
 ---
 
 ### User Story 5 — Admin Edits Category Details (Priority: P2)
 
-**Description**:  
+**Description**:
 Admin updates category metadata (names, icon, status) after creation. Example: correcting a typo in Arabic name, updating icon, or toggling is_active status.
 
 **Why this priority**: Maintenance — essential for fixing errors and managing category visibility, but not required for MVP launch.
@@ -131,23 +131,23 @@ Admin updates category metadata (names, icon, status) after creation. Example: c
 
 **Acceptance Scenarios**:
 
-1. **Given** category edit form is open,  
-   **When** admin changes name_ar and icon,  
+1. **Given** category edit form is open,
+   **When** admin changes name_ar and icon,
    **Then** PUT /api/v1/categories/{id} is called, and database reflects changes
 
-2. **Given** admin toggles is_active to false,  
-   **When** toggle is saved,  
+2. **Given** admin toggles is_active to false,
+   **When** toggle is saved,
    **Then** category is_active=false, and products linked to this inactive category may be queried (behavior TBD in filtering)
 
-3. **Given** category is updated,  
-   **When** update completes,  
+3. **Given** category is updated,
+   **When** update completes,
    **Then** updated_at is refreshed, slug may be regenerated if name changed, or kept stable (TBD)
 
 ---
 
 ### User Story 6 — Admin Soft-Deletes Category (Priority: P3)
 
-**Description**:  
+**Description**:
 Admin marks a category as deleted (soft delete via deleted_at) instead of hard-deleting, preserving historical data and preventing orphaned products.
 
 **Why this priority**: Data integrity — soft deletes protect audit trails and linked records. Deferred to P3 as not needed for initial category creation.
@@ -156,23 +156,23 @@ Admin marks a category as deleted (soft delete via deleted_at) instead of hard-d
 
 **Acceptance Scenarios**:
 
-1. **Given** category is active,  
-   **When** admin clicks "Delete Category",  
+1. **Given** category is active,
+   **When** admin clicks "Delete Category",
    **Then** confirmation dialog appears asking to confirm
 
-2. **Given** confirmation is accepted,  
-   **When** DELETE /api/v1/categories/{id} is called,  
+2. **Given** confirmation is accepted,
+   **When** DELETE /api/v1/categories/{id} is called,
    **Then** category.deleted_at is set to current timestamp, record is not hard-deleted
 
-3. **Given** deleted category is soft-deleted,  
-   **When** admin views category tree,  
+3. **Given** deleted category is soft-deleted,
+   **When** admin views category tree,
    **Then** soft-deleted categories are hidden from default view (scope excludes deleted)
 
 ---
 
 ### User Story 7 — Frontend: Category Breadcrumb Component (Priority: P2)
 
-**Description**:  
+**Description**:
 A reusable Vue 3 Composition API component displays the full path from root to current category (e.g., "Products / Building Materials / Concrete"). Enables navigation and UX clarity in product pages and filters.
 
 **Why this priority**: UX enhancement — improves navigation and context awareness. P2 because it's used by product display features, not core to category creation.
@@ -181,19 +181,19 @@ A reusable Vue 3 Composition API component displays the full path from root to c
 
 **Acceptance Scenarios**:
 
-1. **Given** Breadcrumb component is rendered with category_id=[concrete_id],  
-   **When** component mounts,  
+1. **Given** Breadcrumb component is rendered with category_id=[concrete_id],
+   **When** component mounts,
    **Then** it fetches ancestors via API and renders "/ Building Materials / Concrete"
 
-2. **Given** breadcrumb is rendered,  
-   **When** user clicks a parent link,  
+2. **Given** breadcrumb is rendered,
+   **When** user clicks a parent link,
    **Then** navigation occurs (router.push or callback fired)
 
 ---
 
 ### User Story 8 — Frontend: Category Selector Dropdown Component (Priority: P2)
 
-**Description**:  
+**Description**:
 A reusable Vue 3 dropdown component for selecting a category when creating/editing products. Displays the full tree with indentation and search capability. Used in product creation/edit forms.
 
 **Why this priority**: Product creation UI dependency — required for Product assignments, but can be simple initially and enhanced later.
@@ -202,16 +202,16 @@ A reusable Vue 3 dropdown component for selecting a category when creating/editi
 
 **Acceptance Scenarios**:
 
-1. **Given** Category Selector is rendered in Product form,  
-   **When** dropdown is opened,  
+1. **Given** Category Selector is rendered in Product form,
+   **When** dropdown is opened,
    **Then** all active categories are displayed as a tree with indentation
 
-2. **Given** tree is displayed,  
-   **When** user types "concrete" in search,  
+2. **Given** tree is displayed,
+   **When** user types "concrete" in search,
    **Then** tree filters to show only matching categories and ancestors
 
-3. **Given** category is selected,  
-   **When** selection is made,  
+3. **Given** category is selected,
+   **When** selection is made,
    **Then** component emits or updates selected category ID, form persists the value
 
 ---

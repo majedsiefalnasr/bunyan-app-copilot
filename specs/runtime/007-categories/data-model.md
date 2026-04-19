@@ -1,6 +1,6 @@
 # Phase 1 — Data Model: Category Hierarchy
 
-**Stage**: STAGE_07_CATEGORIES  
+**Stage**: STAGE_07_CATEGORIES
 **Date**: 2026-04-15
 
 ---

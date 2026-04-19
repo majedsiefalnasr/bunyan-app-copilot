@@ -227,9 +227,9 @@ describe('CategoryFormModal Component', () => {
         stubs: {
           UInput: {
             template: `
-              <input 
-                data-testid="input" 
-                :value="modelValue" 
+              <input
+                data-testid="input"
+                :value="modelValue"
                 :minlength="2"
                 :maxlength="100"
                 @input="$emit('update:modelValue', $event.target.value)"

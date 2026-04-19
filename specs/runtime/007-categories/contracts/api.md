@@ -1,9 +1,9 @@
 # API Contracts: Category System
 
-**Stage**: STAGE_07_CATEGORIES  
-**Version**: v1  
-**Base Path**: `/api/v1/categories`  
-**Authentication**: Bearer Token (Sanctum)  
+**Stage**: STAGE_07_CATEGORIES
+**Version**: v1
+**Base Path**: `/api/v1/categories`
+**Authentication**: Bearer Token (Sanctum)
 **Authorization**: Admin-only for mutations (POST/PUT/DELETE)
 
 ---
@@ -14,7 +14,7 @@
 
 **Description**: Retrieve full nested hierarchy of categories. Returns tree structure with recursive children arrays.
 
-**Authentication**: Required (any authenticated user)  
+**Authentication**: Required (any authenticated user)
 **Authorization**: Public read; any authenticated user can view
 
 **Query Parameters**:
@@ -89,7 +89,7 @@ Accept: application/json
 
 **Description**: Retrieve a single category with nested children.
 
-**Authentication**: Required  
+**Authentication**: Required
 **Authorization**: Public read
 
 **Path Parameters**:
@@ -154,7 +154,7 @@ Accept: application/json
 
 **Description**: Create a new category (admin only).
 
-**Authentication**: Required  
+**Authentication**: Required
 **Authorization**: Admin role required
 
 **Request Body**:
@@ -257,7 +257,7 @@ Content-Type: application/json
 
 **Description**: Update category metadata (admin only). **Slug is immutable and cannot be changed.**
 
-**Authentication**: Required  
+**Authentication**: Required
 **Authorization**: Admin role required
 
 **Path Parameters**:
@@ -360,7 +360,7 @@ Content-Type: application/json
 
 **Description**: Soft-delete a category (set deleted_at). Children remain with parent_id intact.
 
-**Authentication**: Required  
+**Authentication**: Required
 **Authorization**: Admin role required
 
 **Path Parameters**:
@@ -399,7 +399,7 @@ Authorization: Bearer {admin-token}
 
 **Description**: Update sort_order and recalculate siblings using optimistic locking (version).
 
-**Authentication**: Required  
+**Authentication**: Required
 **Authorization**: Admin role required
 
 **Path Parameters**:

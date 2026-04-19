@@ -1,7 +1,7 @@
 # Category System - Testing Guide
 
-**Date**: 2026-04-15  
-**Stage**: STAGE_07_CATEGORIES  
+**Date**: 2026-04-15
+**Stage**: STAGE_07_CATEGORIES
 **Testing Scope**: Unit tests, Feature tests, E2E tests, Performance tests, Accessibility tests
 
 ---

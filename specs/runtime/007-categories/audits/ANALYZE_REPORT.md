@@ -300,7 +300,7 @@ T001 (Migration) → T002 (Model) → T003 (Repository) → T004 (Service)
 
 ## Next Steps
 
-→ **Step 6 — Implement**: Execute tasks in Wave 1 → Wave 2 → Wave 3 sequence  
+→ **Step 6 — Implement**: Execute tasks in Wave 1 → Wave 2 → Wave 3 sequence
 → **Step 7 — Closure**: Validate completeness, run pre-commit hooks, generate PR summary
 
 **Status**: ✅ **DRIFT ANALYSIS PASSED - IMPLEMENTATION AUTHORIZED**

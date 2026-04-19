@@ -58,10 +58,10 @@
 
 ## Architecture Alignment
 
-✅ **RBAC**: Admin-only category management enforced at middleware level  
-✅ **Repository Pattern**: CategoryRepository handles all data access  
-✅ **Service Layer**: CategoryService contains business logic (reorder, move, tree traversal)  
-✅ **Error Contract**: All endpoints return standard error response format  
+✅ **RBAC**: Admin-only category management enforced at middleware level
+✅ **Repository Pattern**: CategoryRepository handles all data access
+✅ **Service Layer**: CategoryService contains business logic (reorder, move, tree traversal)
+✅ **Error Contract**: All endpoints return standard error response format
 ✅ **i18n**: Full Arabic/English support with bilingual database fields
 
 ## Checklist Status
@@ -77,8 +77,8 @@
 
 ## Next Steps
 
-→ **Step 2 — Clarify**: Address 3 flagged ambiguities and generate technical checklists  
-→ **Step 3 — Plan**: Create implementation plan with dependencies  
+→ **Step 2 — Clarify**: Address 3 flagged ambiguities and generate technical checklists
+→ **Step 3 — Plan**: Create implementation plan with dependencies
 → **Step 4 — Tasks**: Generate atomic task breakdown
 
 **Status**: ✅ **READY FOR CLARIFICATION**

@@ -1,7 +1,7 @@
 # Security Checklist — STAGE_07_CATEGORIES
 
-**Purpose**: Unit test for requirement quality and completeness of security controls.  
-**Generated**: 2026-04-15  
+**Purpose**: Unit test for requirement quality and completeness of security controls.
+**Generated**: 2026-04-15
 **Spec Reference**: specs/runtime/007-categories/spec.md
 
 ---

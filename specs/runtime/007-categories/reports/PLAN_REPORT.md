@@ -152,8 +152,8 @@ Guardian validation is pending. Awaiting verdicts from:
 
 ## Next Steps
 
-→ **Step 4 — Tasks**: Generate atomic task breakdown for implementation  
-→ **Step 5 — Analyze**: Run drift analysis and guardian validation gates  
+→ **Step 4 — Tasks**: Generate atomic task breakdown for implementation
+→ **Step 5 — Analyze**: Run drift analysis and guardian validation gates
 → **Step 6 — Implement**: Execute 3-wave implementation roadmap
 
 **Status**: ✅ **READY FOR TASK GENERATION**

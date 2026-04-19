@@ -158,7 +158,7 @@
 
 ## Next Steps
 
-→ **Step 5 — Analyze**: Run drift analysis and validate all tasks against spec  
+→ **Step 5 — Analyze**: Run drift analysis and validate all tasks against spec
 → **Step 6 — Implement**: Execute tasks in sequence, marking complete as `- [X]` in tasks.md
 
 **Status**: ✅ **READY FOR DRIFT ANALYSIS**
