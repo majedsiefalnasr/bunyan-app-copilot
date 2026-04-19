@@ -171,7 +171,7 @@
             v-model="formState.name_ar"
             :placeholder="$t('categories.enterNameAr')"
             size="md"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting.value"
           /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
@@ -182,7 +182,7 @@
             dir="ltr"
             :placeholder="$t('categories.enterNameEn')"
             size="md"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting.value"
           /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
@@ -193,7 +193,7 @@
             :options="parentCategories"
             option-attribute="name_ar"
             :placeholder="$t('categories.selectParent')"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting.value"
             nullable
             searchable
             value-attribute="id"
@@ -206,7 +206,7 @@
             v-model="formState.icon"
             :placeholder="$t('categories.enterIcon')"
             size="md"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting.value"
           /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
@@ -215,18 +215,18 @@
           <div class="flex items-center">
             <UCheckbox
               v-model="formState.is_active"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting.value"
             /><!-- @ts-expect-error Nuxt UI type -->
           </div>
         </UFormGroup>
 
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4">
-          <UButton color="neutral" :disabled="isSubmitting" @click="handleClose"
+          <UButton color="neutral" :disabled="isSubmitting.value" @click="handleClose"
             ><!-- @ts-expect-error Nuxt UI type -->
             {{ $t('common.cancel') }}
           </UButton>
-          <UButton type="submit" :loading="isSubmitting"
+          <UButton type="submit" :loading="isSubmitting.value"
             ><!-- @ts-expect-error Nuxt UI type -->
             {{ mode === 'edit' ? $t('common.update') : $t('common.create') }}
           </UButton>
