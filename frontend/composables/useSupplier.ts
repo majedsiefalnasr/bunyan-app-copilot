@@ -4,7 +4,7 @@ import type {
   SupplierListFilters,
   SupplierProfile,
   UpdateSupplierPayload,
-} from '~~/types/supplier';
+} from '~/types/supplier';
 
 interface ApiResponse<T> {
   success: boolean;

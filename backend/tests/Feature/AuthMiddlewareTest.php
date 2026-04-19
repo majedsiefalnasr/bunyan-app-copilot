@@ -34,7 +34,7 @@ class AuthMiddlewareTest extends TestCase
             'success' => false,
             'data' => null,
             'error' => [
-                'code' => ApiErrorCode::AUTH_INVALID_CREDENTIALS->value,
+                'code' => ApiErrorCode::AUTH_UNAUTHORIZED->value,
             ],
         ]);
     }

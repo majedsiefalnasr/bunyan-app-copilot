@@ -4,7 +4,7 @@
     StoreSupplierPayload,
     SupplierProfile,
     UpdateSupplierPayload,
-  } from '~~/types/supplier';
+  } from '~/types/supplier';
 
   const props = defineProps<{
     supplier?: SupplierProfile;

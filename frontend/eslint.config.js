@@ -7,7 +7,7 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat';
  * that Prettier will undo (and vice versa). Use `npm run lint:fix` for a stable Prettier → ESLint order.
  * @see https://eslint.nuxt.com/packages/module
  */
-export default createConfigForNuxt(
+const nuxtConfig = createConfigForNuxt(
   {
     features: {
       // Match previous setup: rely on Prettier for formatting; avoid noisy stylistic rules in CI.
@@ -21,8 +21,22 @@ export default createConfigForNuxt(
       'vue/no-multiple-template-root': 'off',
     },
   }
-)
+);
+
+// Test files need more relaxed rules
+const testFilesConfig = {
+  files: ['tests/**'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-expressions': 'off',
+    'prefer-const': 'off',
+  },
+};
+
+export default nuxtConfig
   .prepend({
     ignores: ['playwright-report/**', 'test-results/**', '.nuxt/**', '.output/**'],
   })
+  .append(testFilesConfig)
   .append(eslintConfigPrettier);

@@ -55,5 +55,6 @@ Route::middleware('api')->prefix('v1')->group(function () {
     require __DIR__.'/api/v1/auth.php';
     require __DIR__.'/api/v1/users.php';
     require __DIR__.'/api/v1/admin.php';
+    require __DIR__.'/api/v1/categories.php';
     require __DIR__.'/api/v1/suppliers.php';
 });

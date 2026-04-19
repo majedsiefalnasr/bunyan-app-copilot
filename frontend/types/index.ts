@@ -73,16 +73,27 @@ export interface UiPreferences {
 }
 
 // PageMeta augmentation for breadcrumb support
-declare module '#app' {
-  interface PageMeta {
-    breadcrumb?: BreadcrumbItem[];
-    requiredRole?: UserRoleType | UserRoleType[];
-  }
-}
-
 declare module 'vue-router' {
   interface RouteMeta {
     breadcrumb?: BreadcrumbItem[];
     requiredRole?: UserRoleType | UserRoleType[];
   }
 }
+
+// Re-export category types
+export type { Category, CategoryFormData, CategoryUpdateData } from './categories';
+
+// Re-export auth schemas and types (from app/config/validation/auth.ts)
+// These are re-exported here for easier access via ~/types
+export {
+  loginSchema,
+  registerSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from '~/config/validation/auth';
+export type {
+  LoginFormData,
+  RegisterFormData,
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+} from '~/config/validation/auth';

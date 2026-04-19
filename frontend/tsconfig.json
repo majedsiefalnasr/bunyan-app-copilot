@@ -1,12 +1,13 @@
 {
-  // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.app.json",
   "compilerOptions": {
-    "types": ["node"]
+    "baseUrl": ".",
+    "paths": {
+      "~/types/*": ["types/*"],
+      "~types/*": ["types/*"],
+      "~/types": ["types/index.ts"]
+    }
   },
-  "vueCompilerOptions": {
-    "plugins": []
-  },
-  "include": [".nuxt/**/*", "types/**/*.d.ts", "**/*.ts", "**/*.vue"],
-  "exclude": ["tests/**/*", "node_modules"]
+  "include": [".nuxt/**/*", "types/**/*", "**/*.ts", "**/*.vue"],
+  "exclude": ["tests", "tests/**/*", "**/*.spec.ts", "**/*.test.ts", "test-results", "node_modules"]
 }

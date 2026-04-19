@@ -298,6 +298,65 @@
       "roles": "الأدوار"
     }
   },
+  "categories": {
+    "title": "إدارة الفئات",
+    "description": "إدارة فئات المنتجات والتسلسل الهرمي",
+    "addCategory": "إضافة فئة",
+    "editCategory": "تعديل الفئة",
+    "deleteCategory": "حذف الفئة",
+    "deleteConfirm": "تأكيد الحذف",
+    "deleteWarning": "هل أنت متأكد من رغبتك في حذف هذه الفئة؟ سيتم حذفها بشكل نهائي.",
+    "categoryName": "اسم الفئة",
+    "nameAr": "الاسم بالعربية",
+    "enterNameAr": "أدخل اسم الفئة بالعربية",
+    "nameEn": "الاسم بالإنجليزية",
+    "enterNameEn": "أدخل اسم الفئة بالإنجليزية",
+    "parentCategory": "الفئة الأب",
+    "selectParent": "اختر فئة أب",
+    "noParent": "بدون فئة أب",
+    "icon": "الأيقونة",
+    "enterIcon": "أدخل اسم الأيقونة (مثل: i-heroicons-user)",
+    "isActive": "نشطة",
+    "inactive": "معطلة",
+    "noCategories": "لا توجد فئات",
+    "sortOrder": "ترتيب الفئة",
+    "created": "تم الإنشاء",
+    "updated": "تم التحديث",
+    "slug": "الرابط الودي",
+    "feedback": {
+      "success": {
+        "created": "تم إنشاء الفئة بنجاح",
+        "updated": "تم تحديث الفئة بنجاح",
+        "deleted": "تم حذف الفئة بنجاح",
+        "reordered": "تم إعادة ترتيب الفئة بنجاح",
+        "moved": "تم نقل الفئة بنجاح",
+        "refreshed": "تم التحديث بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الفئات",
+        "submitFailed": "فشل تقديم النموذج",
+        "deleteFailed": "فشل حذف الفئة",
+        "reorderFailed": "فشل إعادة ترتيب الفئة",
+        "moveFailed": "فشل نقل الفئة",
+        "refreshFailed": "فشل التحديث"
+      }
+    }
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "minChars": "يجب أن يكون حد أدنى من {count} أحرف",
+    "maxChars": "يجب ألا يتجاوز {count} حرف",
+    "invalid": "القيمة غير صحيحة",
+    "fieldRequired": "حقل الاسم مطلوب",
+    "minLength": "الحد الأدنى للأحرف هو {min}",
+    "maxLength": "الحد الأقصى للأحرف هو {max}"
+  },
+  "common": {
+    "home": "الرئيسية",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "refresh": "تحديث"
+  },
   "suppliers": {
     "not_found": "المورد غير موجود.",
     "already_exists": "يوجد ملف تعريف مورد لهذا المستخدم مسبقاً.",

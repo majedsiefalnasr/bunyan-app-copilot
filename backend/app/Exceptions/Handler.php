@@ -155,11 +155,15 @@ class Handler extends ExceptionHandler
      */
     private function handleAuthenticationException(AuthenticationException $e): JsonResponse
     {
-        $code = ApiErrorCode::AUTH_INVALID_CREDENTIALS;
+        $code = ApiErrorCode::AUTH_UNAUTHORIZED;
 
         // Check if it's a token expiration scenario
         if (str_contains($e->getMessage(), 'expired') || str_contains($e->getMessage(), 'token')) {
             $code = ApiErrorCode::AUTH_TOKEN_EXPIRED;
+        }
+        // Check for invalid credentials specifically
+        elseif (str_contains($e->getMessage(), 'Invalid') || str_contains($e->getMessage(), 'credentials')) {
+            $code = ApiErrorCode::AUTH_INVALID_CREDENTIALS;
         }
 
         return response()->json([
@@ -167,7 +171,7 @@ class Handler extends ExceptionHandler
             'data' => null,
             'error' => [
                 'code' => $code->value,
-                'message' => $code->defaultMessage(),
+                'message' => $e->getMessage(),
             ],
         ], 401);
     }
@@ -200,16 +204,41 @@ class Handler extends ExceptionHandler
     /**
      * Handle AuthorizationException.
      *
-     * Returns 403 Forbidden.
+     * Returns 403 Forbidden. Differentiates between:
+     * - RBAC denied (user authenticated but role lacks permission): RBAC_ROLE_DENIED
+     * - Generic authorization failure: AUTH_UNAUTHORIZED
      */
     private function handleAuthorizationException(AuthorizationException $e): JsonResponse
     {
+        $message = $e->getMessage();
+
+        // Check if this is a role/permission based authorization failure
+        // FormRequest authorization failures typically mention "role" or "permission"
+        // or return a specific message when authorize() returns false
+        // Default message is "This action is unauthorized."
+        $isRbacFailure = str_contains($message, 'role')
+            || str_contains($message, 'permission')
+            || str_contains($message, 'not authorized to')
+            || str_contains($message, 'do not have')
+            || str_contains($message, 'This action is unauthorized');
+
+        if ($isRbacFailure) {
+            return response()->json([
+                'success' => false,
+                'data' => null,
+                'error' => [
+                    'code' => ApiErrorCode::RBAC_ROLE_DENIED->value,
+                    'message' => $message,
+                ],
+            ], 403);
+        }
+
         return response()->json([
             'success' => false,
             'data' => null,
             'error' => [
                 'code' => ApiErrorCode::AUTH_UNAUTHORIZED->value,
-                'message' => ApiErrorCode::AUTH_UNAUTHORIZED->defaultMessage(),
+                'message' => $message,
             ],
         ], 403);
     }

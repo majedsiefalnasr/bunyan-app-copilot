@@ -6,7 +6,7 @@ import type {
   SupplierListFilters,
   SupplierProfile,
   UpdateSupplierPayload,
-} from '~~/types/supplier';
+} from '~/types/supplier';
 
 export const useSupplierStore = defineStore('supplier', () => {
   const suppliers = ref<SupplierProfile[]>([]);
@@ -56,7 +56,7 @@ export const useSupplierStore = defineStore('supplier', () => {
     isLoading.value = true;
     try {
       const result = await composable.update(id, payload);
-      const idx = suppliers.value.findIndex((s) => s.id === id);
+      const idx = suppliers.value.findIndex((s: SupplierProfile) => s.id === id);
       if (idx !== -1) suppliers.value[idx] = result;
       if (currentSupplier.value?.id === id) currentSupplier.value = result;
       return result;
@@ -69,7 +69,7 @@ export const useSupplierStore = defineStore('supplier', () => {
     isLoading.value = true;
     try {
       const result = await composable.verify(id);
-      const idx = suppliers.value.findIndex((s) => s.id === id);
+      const idx = suppliers.value.findIndex((s: SupplierProfile) => s.id === id);
       if (idx !== -1) suppliers.value[idx] = result;
       if (currentSupplier.value?.id === id) currentSupplier.value = result;
       return result;
@@ -82,7 +82,7 @@ export const useSupplierStore = defineStore('supplier', () => {
     isLoading.value = true;
     try {
       const result = await composable.suspend(id);
-      const idx = suppliers.value.findIndex((s) => s.id === id);
+      const idx = suppliers.value.findIndex((s: SupplierProfile) => s.id === id);
       if (idx !== -1) suppliers.value[idx] = result;
       if (currentSupplier.value?.id === id) currentSupplier.value = result;
       return result;

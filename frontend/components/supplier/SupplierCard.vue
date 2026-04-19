@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { SupplierProfile } from '~~/types/supplier';
+  import type { SupplierProfile } from '~/types/supplier';
 
   const { supplier } = defineProps<{
     supplier: SupplierProfile;
