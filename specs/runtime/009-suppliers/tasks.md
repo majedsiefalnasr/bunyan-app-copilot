@@ -29,6 +29,22 @@
 | US7   | Contractor/Admin updates supplier profile                  |
 | US8   | Admin soft-deletes supplier profile                        |
 
+> **Cross-reference:** Tasks US-numbering is independent from spec.md US-numbering.
+> Spec US7 (View Supplier's Products — public) is covered by T017 (products route stub)
+> and T026 (detail page products stub section). No separate task US label is assigned
+> because the products feature is a read-only stub endpoint in this stage.
+>
+> | Spec     | Tasks   | Story                                        |
+> | -------- | ------- | -------------------------------------------- |
+> | Spec US1 | US3     | Browse supplier directory (public)           |
+> | Spec US2 | US4     | View supplier profile detail                 |
+> | Spec US3 | US1     | Self-register as supplier (contractor)       |
+> | Spec US4 | US7     | Update supplier profile (contractor / admin) |
+> | Spec US5 | US5     | Verify supplier (admin)                      |
+> | Spec US6 | US6     | Suspend supplier (admin)                     |
+> | Spec US7 | —       | View products stub (T017, T026)              |
+> | Spec US8 | US2+US8 | Admin create on behalf + soft-delete         |
+
 ---
 
 ## Phase 0 — Database
@@ -353,14 +369,3 @@ T001 → T002 → T003 ──→ T004
 | P4 — Tests + i18n   | T029–T036 | 8      |
 | Validation Pipeline | T037–T039 | 3      |
 | **TOTAL**           |           | **39** |
-
-## Testing
-
-- [ ] T016 [P] [Unit tests: tests/Unit/Services/XxxServiceTest.php]
-- [ ] T017 [P] [Feature tests: tests/Feature/Api/XxxControllerTest.php]
-- [ ] T018 [P] [Frontend tests: tests/components/XxxCard.test.ts]
-
-## Documentation & Cleanup
-
-- [ ] T019 [Update API documentation]
-- [ ] T020 [Update README if needed]

@@ -201,7 +201,8 @@ marked N/A with a justification.
 - [ ] `SupplierProfile` model uses `SoftDeletes` trait
 - [ ] `supplier_profiles` table has `deleted_at` TIMESTAMP NULLABLE column (via migration)
 - [ ] Soft-deleted suppliers are excluded from all public queries (Eloquent global scope handles this)
-- [ ] Admin can optionally query soft-deleted suppliers (via `withTrashed()` in repository, behind admin filter)
+- [ ] Admin uses suspend (not delete) to hide a supplier; soft-deleted records are permanently invisible via API to all actors including Admin
+- [ ] Repository `findById()` does NOT use `withTrashed()` — no endpoint exposes deleted profiles
 - [ ] Cascade or null behavior for FK `verified_by` on supplier deletion is defined
 
 ---

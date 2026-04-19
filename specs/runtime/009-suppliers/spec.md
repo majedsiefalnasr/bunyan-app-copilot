@@ -184,7 +184,7 @@ enum SupplierVerificationStatus: string {
 - Interface: `app/Repositories/Contracts/SupplierRepositoryInterface.php`
 - Implementation: `app/Repositories/SupplierRepository.php`
 - Methods:
-  - `paginate(array $filters, int $perPage): LengthAwarePaginator`
+  - `paginate(array $filters, int $perPage, ?User $actor = null): LengthAwarePaginator`
   - `findById(int $id): ?SupplierProfile`
   - `findByUserId(int $userId): ?SupplierProfile`
   - `create(array $data): SupplierProfile`
@@ -217,11 +217,12 @@ enum SupplierVerificationStatus: string {
 
 #### Form Requests
 
-| Class                   | File                                                   |
-| ----------------------- | ------------------------------------------------------ |
-| `StoreSupplierRequest`  | `app/Http/Requests/Supplier/StoreSupplierRequest.php`  |
-| `UpdateSupplierRequest` | `app/Http/Requests/Supplier/UpdateSupplierRequest.php` |
-| `VerifySupplierRequest` | `app/Http/Requests/Supplier/VerifySupplierRequest.php` |
+| Class                    | File                                                    |
+| ------------------------ | ------------------------------------------------------- |
+| `StoreSupplierRequest`   | `app/Http/Requests/Supplier/StoreSupplierRequest.php`   |
+| `UpdateSupplierRequest`  | `app/Http/Requests/Supplier/UpdateSupplierRequest.php`  |
+| `VerifySupplierRequest`  | `app/Http/Requests/Supplier/VerifySupplierRequest.php`  |
+| `SuspendSupplierRequest` | `app/Http/Requests/Supplier/SuspendSupplierRequest.php` |
 
 `StoreSupplierRequest` rules:
 
@@ -250,7 +251,7 @@ enum SupplierVerificationStatus: string {
 - Methods:
   - `viewAny(?User $user): bool` — always true (public)
   - `view(?User $user, SupplierProfile $supplier): bool` — true if verified, or own profile, or admin
-  - `create(User $user): bool` — must be contractor and have no existing profile
+  - `create(User $user): bool` — must have contractor role; duplicate detection delegated to SupplierService::create() via CONFLICT_ERROR
   - `update(User $user, SupplierProfile $supplier): bool` — own profile or admin
   - `verify(User $user): bool` — admin only
   - `suspend(User $user): bool` — admin only
@@ -657,6 +658,7 @@ return [
     'not_found'                => 'المورّد غير موجود',
     'already_exists'           => 'يمتلك هذا المقاول ملف شركة مسجّل مسبقاً',
     'role_required'            => 'يجب أن تكون مقاولاً لإنشاء ملف مورّد',
+    'unauthorized_update'      => 'ليس لديك صلاحية تعديل هذا الملف',
     'validation' => [
         'company_name_ar.required' => 'اسم الشركة بالعربية مطلوب',
         'company_name_en.required' => 'اسم الشركة بالإنجليزية مطلوب',
@@ -680,6 +682,7 @@ return [
     'not_found'                => 'Supplier not found',
     'already_exists'           => 'This contractor already has a registered supplier profile',
     'role_required'            => 'You must be a contractor to create a supplier profile',
+    'unauthorized_update'      => 'You are not authorized to update this profile',
     'validation' => [
         'company_name_ar.required' => 'Arabic company name is required',
         'company_name_en.required' => 'English company name is required',
@@ -698,7 +701,6 @@ return [
 {
   "suppliers": {
     "title": "الموردون",
-    "title_en": "Suppliers",
     "directory": "دليل الموردين",
     "profile": "ملف المورّد",
     "register": "تسجيل كمورّد",
@@ -739,20 +741,20 @@ return [
 
 **File:** `tests/Unit/Services/SupplierServiceTest.php`
 
-| Test                                            | Description                                          |
-| ----------------------------------------------- | ---------------------------------------------------- |
-| `test_list_returns_only_verified_for_public`    | Unauthenticated actor receives only verified results |
-| `test_list_returns_all_for_admin`               | Admin actor receives all verification statuses       |
-| `test_create_succeeds_for_contractor`           | Contractor can create a profile                      |
-| `test_create_fails_if_duplicate_profile`        | Second create for same user throws ConflictException |
-| `test_create_fails_for_non_contractor`          | Non-contractor actor gets authorization exception    |
-| `test_update_succeeds_for_owner`                | Contractor updates own profile                       |
-| `test_update_fails_for_non_owner_contractor`    | Contractor cannot update another's profile           |
-| `test_verify_transitions_to_verified`           | Status becomes verified, verified_at is set          |
-| `test_verify_fails_from_suspended_direct`       | Suspended→verify transition raises WorkflowException |
-| `test_suspend_transitions_to_suspended`         | Status becomes suspended                             |
-| `test_suspend_is_idempotent`                    | Calling suspend twice is safe                        |
-| `test_rating_aggregation_updates_avg_and_count` | aggregateRatings computes correctly                  |
+| Test                                         | Description                                                  |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| `test_list_returns_only_verified_for_public` | Unauthenticated actor receives only verified results         |
+| `test_list_returns_all_for_admin`            | Admin actor receives all verification statuses               |
+| `test_create_succeeds_for_contractor`        | Contractor can create a profile                              |
+| `test_create_fails_if_duplicate_profile`     | Second create for same user throws ConflictException         |
+| `test_create_fails_for_non_contractor`       | Non-contractor actor gets authorization exception            |
+| `test_update_succeeds_for_owner`             | Contractor updates own profile                               |
+| `test_update_fails_for_non_owner_contractor` | Contractor cannot update another's profile                   |
+| `test_verify_transitions_to_verified`        | Status becomes verified, verified_at is set                  |
+| `test_suspended_to_verified_is_allowed`      | Suspended→verify is allowed; service returns verified status |
+| `test_suspend_transitions_to_suspended`      | Status becomes suspended                                     |
+| `test_suspend_is_idempotent`                 | Calling suspend twice is safe                                |
+| `test_aggregate_ratings_is_noop`             | aggregateRatings returns void with no repository calls       |
 
 ### 9.2 Feature Tests (RBAC Matrix)
 
@@ -777,15 +779,15 @@ For each endpoint test the following actor × response combinations:
 
 **File:** `tests/Feature/Api/V1/SupplierVerificationWorkflowTest.php`
 
-| Test                                        | Initial State | Action     | Expected      |
-| ------------------------------------------- | ------------- | ---------- | ------------- |
-| `test_pending_to_verified`                  | pending       | verify     | 200 verified  |
-| `test_verified_to_suspended`                | verified      | suspend    | 200 suspended |
-| `test_suspended_to_verified`                | suspended     | verify     | 200 verified  |
-| `test_pending_to_suspended`                 | pending       | suspend    | 200 suspended |
-| `test_verified_to_pending_not_allowed`      | verified      | (no route) | N/A           |
-| `test_verify_already_verified_idempotent`   | verified      | verify     | 200 verified  |
-| `test_suspend_already_suspended_idempotent` | suspended     | suspend    | 200 suspended |
+| Test                         | Initial State | Action  | Expected      |
+| ---------------------------- | ------------- | ------- | ------------- |
+| `test_pending_to_verified`   | pending       | verify  | 200 verified  |
+| `test_verified_to_suspended` | verified      | suspend | 200 suspended |
+| `test_suspended_to_verified` | suspended     | verify  | 200 verified  |
+| `test_pending_to_suspended`  | pending       | suspend | 200 suspended |
+
+| `test_verify_already_verified_idempotent` | verified | verify | 200 verified |
+| `test_suspend_already_suspended_idempotent` | suspended | suspend | 200 suspended |
 
 ---
 
