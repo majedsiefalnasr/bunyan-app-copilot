@@ -1,15 +1,52 @@
 # STAGE_09 — Suppliers
 
 > **Phase:** 02_CATALOG_AND_INVENTORY
-> **Status:** NOT STARTED
+> **Status:** PRODUCTION READY
 > **Scope:** Supplier profiles, verification, product association
 > **Risk Level:** MEDIUM
 
 ## Stage Status
 
-Status: NOT STARTED
-Step: —
+Status: PRODUCTION READY
+Step: closure
 Risk Level: MEDIUM
+Closure Date: 2026-04-19T09:15:00Z
+
+Implementation: COMPLETE
+Tasks: 39 / 39 completed
+
+Scope Closed:
+
+- SupplierProfile model with full PHPDoc, enum casts, soft deletes
+- Migration: create_supplier_profiles_table (indexes + constraints)
+- Repository pattern: SupplierRepositoryInterface + SupplierRepository
+- SupplierService: create, update, verifySupplier, suspendSupplier + uniqueness guard
+- SupplierController (thin, delegates to service) + 4 Form Requests
+- SupplierPolicy (5 methods) registered via AppServiceProvider
+- SupplierResource API resource
+- Routes: suppliers.php (show uses raw /{id} per ADR-009-01)
+- i18n: lang/ar/suppliers.php, lang/en/suppliers.php
+- Frontend: types, composable, Pinia store, 3 components, 4 pages
+- Frontend i18n: locales/ar.json, locales/en.json suppliers section
+- 36 PHPUnit tests (8 unit, 28 feature) — all pass
+
+Deferred Scope:
+
+- File upload for logos (URL string in this stage)
+- Admin notifications for new submissions
+- Ratings write path (aggregation stub only)
+
+Architecture Governance Compliance:
+
+- ADR alignment verified (ADR-009-01: 404-not-403 visibility pattern)
+- RBAC enforcement confirmed across all layers
+- Service layer architecture maintained
+- Error contract compliance verified
+- i18n/RTL support verified
+
+Notes:
+Stage is PRODUCTION READY. No structural modifications allowed.
+Modifications require a new stage.
 
 ## Objective
 
