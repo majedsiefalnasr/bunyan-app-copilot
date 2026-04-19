@@ -8,16 +8,18 @@
 ## Stage Status
 
 Status: DRAFT
-Step: specify
+Step: clarify
 Risk Level: HIGH
-Last Updated: 2026-04-19T00:00:00Z
+Last Updated: 2026-04-19T00:02:00Z
 
 Scope Defined:
 
-- Project CRUD with Admin/Owner roles
+- Project CRUD with Admin/Owner roles, owner_id as required field
 - Role-scoped project listing with RBAC
 - Project status machine (6 states, validated transitions)
-- Project phases management
+- Project phases full CRUD (add, update, delete, list)
+- Phase status enum (pending, in_progress, completed)
+- Phase date containment validation
 - Timeline endpoint (read-only)
 - Frontend pages: listing, detail, creation wizard
 
@@ -30,10 +32,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Specification drafted — governance audit pending
+- Clarifications resolved — planning authorized
 
 Notes:
-Specification complete. Clarification step pending.
+All specification ambiguities resolved. Ready for technical planning.
 
 ## Objective
 

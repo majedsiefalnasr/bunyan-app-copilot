@@ -21,7 +21,7 @@ An Admin creates a new construction project by entering project details (Arabic/
 
 **Acceptance Scenarios**:
 
-1. **Given** an authenticated Admin, **When** they submit the project creation form with valid data (name_ar, name_en, description, city, type, budget_estimated, start_date, end_date), **Then** a project is created with status DRAFT, the Admin is set as owner, and the project appears in the project listing.
+1. **Given** an authenticated Admin, **When** they submit the project creation form with valid data (name_ar, name_en, description, city, type, budget_estimated, start_date, end_date, owner_id), **Then** a project is created with status DRAFT, the specified Customer is set as owner (owner_id), and the project appears in the project listing.
 2. **Given** an authenticated Admin, **When** they submit the project creation form with missing required fields (e.g., no name_ar), **Then** a 422 VALIDATION_ERROR response is returned with field-level details.
 3. **Given** an authenticated Admin, **When** they submit the project creation form with an end_date before start_date, **Then** a 422 VALIDATION_ERROR response is returned indicating invalid date range.
 4. **Given** an unauthenticated user, **When** they attempt to create a project, **Then** a 401 AUTH_TOKEN_EXPIRED or AUTH_INVALID_CREDENTIALS error is returned.
@@ -112,8 +112,10 @@ An Admin adds phases to a project. Phases represent major construction stages (e
 
 1. **Given** an authenticated Admin and an existing project, **When** they add a phase with valid data (name_ar, name_en, sort_order, start_date, end_date), **Then** the phase is created and linked to the project.
 2. **Given** an authenticated Admin, **When** they list phases for a project via GET /api/v1/projects/{id}/phases, **Then** phases are returned ordered by sort_order.
-3. **Given** a phase with start_date after the project's end_date, **When** submitted, **Then** a 422 VALIDATION_ERROR is returned.
-4. **Given** a non-Admin user, **When** they attempt to add a phase, **Then** a 403 RBAC_ROLE_DENIED error is returned.
+3. **Given** a phase with start_date before the project's start_date, or end_date after the project's end_date, **When** submitted, **Then** a 422 VALIDATION_ERROR is returned. Phase dates must be fully contained within the project's date range. If the project's start_date or end_date is NULL, the corresponding containment check is skipped.
+4. **Given** an authenticated Admin, **When** they update a phase via PUT /api/v1/projects/{id}/phases/{phaseId} with valid data, **Then** the phase is updated and the updated data is returned.
+5. **Given** an authenticated Admin, **When** they delete a phase via DELETE /api/v1/projects/{id}/phases/{phaseId}, **Then** the phase is removed and a success response is returned.
+6. **Given** a non-Admin user, **When** they attempt to add, update, or delete a phase, **Then** a 403 RBAC_ROLE_DENIED error is returned.
 
 ---
 
@@ -163,19 +165,19 @@ The frontend provides a multi-step wizard for creating projects. Steps include: 
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow Admins to create projects with Arabic/English names, description, location (city, district, lat/lng), type, estimated budget, and timeline (start_date, end_date).
+- **FR-001**: System MUST allow Admins to create projects with Arabic/English names, description, location (city, district, lat/lng), type, estimated budget, timeline (start_date, end_date), and owner_id (FK to users, must reference a Customer-role user).
 - **FR-002**: System MUST enforce role-based project visibility — Admins see all; Customers see owned; Contractors/Architects/Engineers see assigned.
 - **FR-003**: System MUST enforce the project status machine: DRAFT → PLANNING → IN_PROGRESS → ON_HOLD → COMPLETED → CLOSED with validated transitions.
 - **FR-004**: System MUST allow ON_HOLD ↔ IN_PROGRESS bidirectional transitions for project pausing and resumption.
 - **FR-005**: System MUST prevent any modifications to projects in CLOSED status.
-- **FR-006**: System MUST support project phases (project_phases) with name_ar, name_en, sort_order, status, date range, and completion_percentage.
+- **FR-006**: System MUST support full CRUD for project phases (project_phases) with name_ar, name_en, sort_order, status, date range, and completion_percentage. Phases can be created, listed, updated, and deleted by Admins.
 - **FR-007**: System MUST support filtering projects by status, type, city, and date range within role-scoped queries.
 - **FR-008**: System MUST support pagination on all list endpoints with standardized meta (current_page, per_page, total, last_page).
 - **FR-009**: System MUST use soft-deletes on projects; only Admins can view soft-deleted records.
 - **FR-010**: System MUST return project data via API Resources with support for nested includes (phases, timeline data).
-- **FR-011**: System MUST validate all inputs via Form Request classes (StoreProjectRequest, UpdateProjectRequest, StoreProjectPhaseRequest, TransitionProjectStatusRequest).
+- **FR-011**: System MUST validate all inputs via Form Request classes (StoreProjectRequest, UpdateProjectRequest, StoreProjectPhaseRequest, UpdateProjectPhaseRequest, TransitionProjectStatusRequest).
 - **FR-012**: System MUST provide a timeline endpoint returning chronologically ordered phases with date ranges and completion data.
-- **FR-013**: System MUST set the authenticated user as project owner on creation (owner_id = auth user).
+- **FR-013**: System MUST accept an explicit owner_id in the project creation payload. The owner_id MUST reference a user with the Customer role. If owner_id is not provided, the system MUST reject the request with VALIDATION_ERROR.
 - **FR-014**: Frontend MUST provide a multi-step project creation wizard with Arabic RTL support.
 - **FR-015**: Frontend MUST display project listings as cards with status badges, filterable by status/type/city.
 - **FR-016**: Frontend MUST provide a tabbed project detail page (overview, phases, tasks, team, documents, timeline).
@@ -183,7 +185,7 @@ The frontend provides a multi-step wizard for creating projects. Steps include: 
 ### Key Entities
 
 - **Project (مشروع)**: A construction job with bilingual naming, geographic location, budget tracking (estimated vs actual), timeline (start/end dates), type classification (residential/commercial/infrastructure), and lifecycle status. Owned by a Customer; managed by Admin. Soft-deletable.
-- **Project Phase (مرحلة المشروع)**: A major stage within a project (e.g., Foundation, Structure, Finishing). Has bilingual naming, sort ordering, date range, and completion percentage. Belongs to one Project.
+- **Project Phase (مرحلة المشروع)**: A major stage within a project (e.g., Foundation, Structure, Finishing). Has bilingual naming, sort ordering, date range, and completion percentage. Belongs to one Project. Status is a simple enum: pending, in_progress, completed (no validated transition machine — Admin sets directly).
 - **Project Status**: An enum representing the project lifecycle: DRAFT, PLANNING, IN_PROGRESS, ON_HOLD, COMPLETED, CLOSED. Transitions are validated server-side.
 - **Project Type**: A classification enum: residential (سكني), commercial (تجاري), infrastructure (بنية تحتية).
 
@@ -256,16 +258,18 @@ Forbidden transitions: Any not listed above (e.g., DRAFT → COMPLETED, CLOSED �
 
 ## API Contract Summary
 
-| Method | Route                          | Auth | Roles                   | Description                                      |
-| ------ | ------------------------------ | ---- | ----------------------- | ------------------------------------------------ |
-| GET    | /api/v1/projects               | Yes  | All authenticated       | List projects (role-scoped, filtered, paginated) |
-| POST   | /api/v1/projects               | Yes  | Admin                   | Create a new project                             |
-| GET    | /api/v1/projects/{id}          | Yes  | Role-scoped access      | Get project details with includes                |
-| PUT    | /api/v1/projects/{id}          | Yes  | Admin, Owner (Customer) | Update project (non-CLOSED only)                 |
-| PUT    | /api/v1/projects/{id}/status   | Yes  | Admin                   | Transition project status                        |
-| GET    | /api/v1/projects/{id}/phases   | Yes  | Role-scoped access      | List phases for a project                        |
-| POST   | /api/v1/projects/{id}/phases   | Yes  | Admin                   | Add a phase to a project                         |
-| GET    | /api/v1/projects/{id}/timeline | Yes  | Role-scoped access      | Get project timeline data                        |
+| Method | Route                                  | Auth | Roles                   | Description                                      |
+| ------ | -------------------------------------- | ---- | ----------------------- | ------------------------------------------------ |
+| GET    | /api/v1/projects                       | Yes  | All authenticated       | List projects (role-scoped, filtered, paginated) |
+| POST   | /api/v1/projects                       | Yes  | Admin                   | Create a new project                             |
+| GET    | /api/v1/projects/{id}                  | Yes  | Role-scoped access      | Get project details with includes                |
+| PUT    | /api/v1/projects/{id}                  | Yes  | Admin, Owner (Customer) | Update project (non-CLOSED only)                 |
+| PUT    | /api/v1/projects/{id}/status           | Yes  | Admin                   | Transition project status                        |
+| GET    | /api/v1/projects/{id}/phases           | Yes  | Role-scoped access      | List phases for a project                        |
+| POST   | /api/v1/projects/{id}/phases           | Yes  | Admin                   | Add a phase to a project                         |
+| PUT    | /api/v1/projects/{id}/phases/{phaseId} | Yes  | Admin                   | Update a phase                                   |
+| DELETE | /api/v1/projects/{id}/phases/{phaseId} | Yes  | Admin                   | Delete a phase                                   |
+| GET    | /api/v1/projects/{id}/timeline         | Yes  | Role-scoped access      | Get project timeline data                        |
 
 ---
 
@@ -296,19 +300,19 @@ Forbidden transitions: Any not listed above (e.g., DRAFT → COMPLETED, CLOSED �
 
 ### project_phases
 
-| Column                | Type             | Constraints                      |
-| --------------------- | ---------------- | -------------------------------- |
-| id                    | BIGINT UNSIGNED  | PK, AUTO_INCREMENT               |
-| project_id            | BIGINT UNSIGNED  | FK → projects.id, INDEX          |
-| name_ar               | VARCHAR(255)     | NOT NULL                         |
-| name_en               | VARCHAR(255)     | NOT NULL                         |
-| sort_order            | INTEGER UNSIGNED | NOT NULL, DEFAULT 0              |
-| status                | VARCHAR(50)      | NOT NULL, DEFAULT 'pending'      |
-| start_date            | DATE             | NULLABLE                         |
-| end_date              | DATE             | NULLABLE                         |
-| completion_percentage | TINYINT UNSIGNED | NOT NULL, DEFAULT 0, CHECK 0–100 |
-| created_at            | TIMESTAMP        | Laravel default                  |
-| updated_at            | TIMESTAMP        | Laravel default                  |
+| Column                | Type                                | Constraints                      |
+| --------------------- | ----------------------------------- | -------------------------------- |
+| id                    | BIGINT UNSIGNED                     | PK, AUTO_INCREMENT               |
+| project_id            | BIGINT UNSIGNED                     | FK → projects.id, INDEX          |
+| name_ar               | VARCHAR(255)                        | NOT NULL                         |
+| name_en               | VARCHAR(255)                        | NOT NULL                         |
+| sort_order            | INTEGER UNSIGNED                    | NOT NULL, DEFAULT 0              |
+| status                | ENUM(pending,in_progress,completed) | NOT NULL, DEFAULT 'pending'      |
+| start_date            | DATE                                | NULLABLE                         |
+| end_date              | DATE                                | NULLABLE                         |
+| completion_percentage | TINYINT UNSIGNED                    | NOT NULL, DEFAULT 0, CHECK 0–100 |
+| created_at            | TIMESTAMP                           | Laravel default                  |
+| updated_at            | TIMESTAMP                           | Laravel default                  |
 
 **Indexes**: projects(owner_id), projects(status), projects(type), projects(city), project_phases(project_id, sort_order).
 
