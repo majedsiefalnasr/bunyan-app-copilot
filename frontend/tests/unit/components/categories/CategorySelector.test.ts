@@ -96,7 +96,7 @@ describe('CategorySelector.vue', () => {
       },
     });
 
-    const vm = wrapper.vm as any;  
+    const vm = wrapper.vm as any;
     expect(vm.flattenedOptions).toBeDefined();
   });
 
@@ -253,7 +253,7 @@ describe('CategorySelector.vue', () => {
       },
     });
 
-    const vm = wrapper.vm as any;  
+    const vm = wrapper.vm as any;
     const options = vm.flattenedOptions as any[];
     // Cement (id:2) is child of Building Materials (id:1), should have indent level 1 (two spaces)
     const childOption = options.find((opt: any) => opt.value === 2);
