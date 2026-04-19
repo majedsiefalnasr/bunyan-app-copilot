@@ -1,4 +1,4 @@
-import { config, mount  } from '@vue/test-utils';
+import { config, mount } from '@vue/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { nextTick } from 'vue';
 import type { Category } from '~/types';
