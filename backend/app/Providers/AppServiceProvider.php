@@ -10,12 +10,16 @@ use App\Models\OtpAuditLog;
 use App\Models\PasswordHistory;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\SupplierProfile;
 use App\Models\User;
+use App\Policies\SupplierPolicy;
+use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Repositories\FailedLoginAttemptRepository;
 use App\Repositories\OtpAuditLogRepository;
 use App\Repositories\PasswordHistoryRepository;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\SupplierRepository;
 use App\Repositories\UserRepository;
 use App\Services\AvatarService;
 use App\Services\PasswordResetService;
@@ -25,6 +29,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -51,6 +56,12 @@ class AppServiceProvider extends ServiceProvider
             $app->make(OtpAuditLogRepository::class),
         ));
         $this->app->singleton(AvatarService::class);
+
+        // Supplier
+        $this->app->bind(
+            SupplierRepositoryInterface::class,
+            fn () => new SupplierRepository
+        );
     }
 
     /**
@@ -61,6 +72,12 @@ class AppServiceProvider extends ServiceProvider
         // CORS security guard: prevent wildcard origin + credentials misconfiguration
         // in non-local environments. Throws InvalidArgumentException to fail fast.
         $this->guardCorsWildcard();
+
+        // Route model binding
+        Route::model('supplier', SupplierProfile::class);
+
+        // Explicit policy registration — SupplierPolicy doesn't follow auto-discovery naming
+        Gate::policy(SupplierProfile::class, SupplierPolicy::class);
 
         // Admin superuser bypass — Admin bypasses all Gate/Policy checks
         Gate::before(function (User $user, string $ability) {
