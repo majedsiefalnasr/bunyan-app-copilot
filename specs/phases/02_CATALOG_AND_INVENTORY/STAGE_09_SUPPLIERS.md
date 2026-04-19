@@ -1,27 +1,34 @@
 # STAGE_09 — Suppliers
 
 > **Phase:** 02_CATALOG_AND_INVENTORY
-> **Status:** NOT STARTED
+> **Status:** PRODUCTION READY
 > **Scope:** Supplier profiles, verification, product association
 > **Risk Level:** MEDIUM
 
 ## Stage Status
 
-Status: BACKEND CLOSED
-Step: implement
+Status: PRODUCTION READY
+Step: closure
 Risk Level: MEDIUM
-Last Updated: 2026-04-19T08:46:59Z
+Closure Date: 2026-04-19T09:15:00Z
 
 Implementation: COMPLETE
 Tasks: 39 / 39 completed
 
-Drift Analysis: PASSED (all criteria)
-Validation: ALL CHECKS PASS
+Scope Closed:
 
-Findings:
-
-- DRIFT-001 (MEDIUM): PHPStan LSP override in SupplierRepository — mitigation: @phpstan-ignore-next-line annotations at override methods
-- DRIFT-002 (LOW): Duplicate template stubs in tasks.md — REMEDIATED pre-analysis
+- SupplierProfile model with full PHPDoc, enum casts, soft deletes
+- Migration: create_supplier_profiles_table (indexes + constraints)
+- Repository pattern: SupplierRepositoryInterface + SupplierRepository
+- SupplierService: create, update, verifySupplier, suspendSupplier + uniqueness guard
+- SupplierController (thin, delegates to service) + 4 Form Requests
+- SupplierPolicy (5 methods) registered via AppServiceProvider
+- SupplierResource API resource
+- Routes: suppliers.php (show uses raw /{id} per ADR-009-01)
+- i18n: lang/ar/suppliers.php, lang/en/suppliers.php
+- Frontend: types, composable, Pinia store, 3 components, 4 pages
+- Frontend i18n: locales/ar.json, locales/en.json suppliers section
+- 36 PHPUnit tests (8 unit, 28 feature) — all pass
 
 Deferred Scope:
 
@@ -31,23 +38,15 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Drift analysis passed — all guardian verdicts PASS
-- ADR-009-01 verified: 404-not-403 pattern for visibility enforcement
+- ADR alignment verified (ADR-009-01: 404-not-403 visibility pattern)
 - RBAC enforcement confirmed across all layers
+- Service layer architecture maintained
 - Error contract compliance verified
+- i18n/RTL support verified
 
 Notes:
-Drift analysis complete. Implementation authorized. All findings have documented mitigations.
-
-Architecture Governance Compliance:
-
-- ADR-009-01 formalized and binding on T016
-- Architecture Guardian: PASS (after 6 findings remediated)
-- API Designer: PASS (after 5 findings remediated)
-- Task set compliant — drift analysis gate required before implementation
-
-Notes:
-Atomic task set generated (39 tasks). Drift analysis gate pending.
+Stage is PRODUCTION READY. No structural modifications allowed.
+Modifications require a new stage.
 
 ## Objective
 
