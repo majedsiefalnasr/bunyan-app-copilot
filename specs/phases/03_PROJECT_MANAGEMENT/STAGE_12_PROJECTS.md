@@ -8,34 +8,30 @@
 ## Stage Status
 
 Status: DRAFT
-Step: clarify
+Step: plan
 Risk Level: HIGH
-Last Updated: 2026-04-19T00:02:00Z
+Last Updated: 2026-04-19T00:03:00Z
 
-Scope Defined:
+Scope Planned:
 
-- Project CRUD with Admin/Owner roles, owner_id as required field
-- Role-scoped project listing with RBAC
-- Project status machine (6 states, validated transitions)
-- Project phases full CRUD (add, update, delete, list)
-- Phase status enum (pending, in_progress, completed)
-- Phase date containment validation
-- Timeline endpoint (read-only)
-- Frontend pages: listing, detail, creation wizard
+- 2 database tables (projects, project_phases)
+- 10 API endpoints with RBAC
+- 2 services, 2 repositories, 3 enums
+- 4 frontend pages, 14 components
+- Status machine: DRAFT → PLANNING → IN_PROGRESS → ON_HOLD → COMPLETED → CLOSED
 
 Deferred Scope:
 
 - Team assignment (STAGE_15)
 - Tasks within phases (STAGE_13)
 - Workflow engine (STAGE_14)
-- Document uploads, budget calculations, notifications
 
 Architecture Governance Compliance:
 
-- Clarifications resolved — planning authorized
+- Technical plan compliant — task generation authorized
 
 Notes:
-All specification ambiguities resolved. Ready for technical planning.
+Technical plan complete. Task breakdown in progress.
 
 ## Objective
 
