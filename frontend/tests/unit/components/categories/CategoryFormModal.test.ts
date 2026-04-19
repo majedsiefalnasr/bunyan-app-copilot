@@ -3,455 +3,210 @@ import { describe, expect, it, vi } from 'vitest';
 import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
 import type { Category } from '~/types';
 
-// Stub Nuxt auto-imports
 vi.stubGlobal('useI18n', () => ({
-  t: (key: string, opts?: any) => {
+  t: (key: string, opts?: { count?: number }) => {
     if (key === 'validation.minChars' && opts?.count) {
       return `Minimum ${opts.count} characters`;
     }
+
     return key;
   },
   locale: 'ar',
 }));
 
-describe('CategoryFormModal.vue', () => {
-  const mockCategory: Category = {
-    id: 1,
-    name_ar: 'الأسمنت',
-    name_en: 'Cement',
+const mockCategory: Category = {
+  id: 1,
+  name_ar: 'الأسمنت',
+  name_en: 'Cement',
+  parent_id: null,
+  slug: 'cement',
+  icon: 'icon-cement',
+  sort_order: 0,
+  is_active: true,
+  version: 2,
+  children: [],
+  created_at: '2026-04-15T00:00:00Z',
+  updated_at: '2026-04-15T00:00:00Z',
+  deleted_at: null,
+};
+
+const mockParentCategories: Category[] = [
+  {
+    id: 2,
+    name_ar: 'المواد البناء',
+    name_en: 'Building Materials',
     parent_id: null,
-    slug: 'cement',
-    icon: '⚙️',
+    slug: 'building-materials',
+    icon: 'icon-materials',
     sort_order: 0,
     is_active: true,
-    version: 2,
+    version: 1,
     children: [],
     created_at: '2026-04-15T00:00:00Z',
     updated_at: '2026-04-15T00:00:00Z',
     deleted_at: null,
-  };
+  },
+];
 
-  const mockParentCategories: Category[] = [
-    {
-      id: 2,
-      name_ar: 'المواد البناء',
-      name_en: 'Building Materials',
-      parent_id: null,
-      slug: 'building-materials',
-      icon: '🏗️',
-      sort_order: 0,
-      is_active: true,
-      version: 1,
-      children: [],
-      created_at: '2026-04-15T00:00:00Z',
-      updated_at: '2026-04-15T00:00:00Z',
-      deleted_at: null,
+const createWrapper = (props: Record<string, unknown> = {}) =>
+  mount(CategoryFormModal, {
+    props: {
+      isOpen: true,
+      category: null,
+      parentCategories: mockParentCategories,
+      onClose: vi.fn(),
+      onSubmit: vi.fn().mockResolvedValue(undefined),
+      ...props,
     },
-  ];
-
-  const defaultProps = {
-    isOpen: true,
-    category: null,
-    parentCategories: [] as Category[],
-    onClose: vi.fn(),
-    onSubmit: vi.fn().mockResolvedValue(undefined),
-  };
-
-  it('renders form when isOpen is true', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
+    global: {
+      stubs: {
+        UModal: {
+          props: ['modelValue'],
+          template: '<div v-if="modelValue"><slot /></div>',
+        },
+        UCard: {
+          template: '<section><slot name="header" /><slot /></section>',
+        },
+        UForm: {
+          props: ['state'],
+          emits: ['submit'],
+          template: '<form @submit.prevent="$emit(\'submit\', { data: state })"><slot /></form>',
+        },
+        UFormGroup: {
+          props: ['label'],
+          template: '<div><span>{{ label }}</span><slot /></div>',
+        },
+        UInput: {
+          props: ['modelValue'],
+          emits: ['update:modelValue'],
+          template:
+            '<input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
+        USelectMenu: {
+          props: ['options', 'modelValue'],
+          emits: ['update:modelValue'],
+          template:
+            '<select :value="modelValue ?? \'\'" @change="$emit(\'update:modelValue\', $event.target.value ? Number($event.target.value) : null)"><option value="">none</option><option v-for="option in options" :key="option.id" :value="option.id">{{ option.name_ar }}</option></select>',
+        },
+        UCheckbox: {
+          props: ['modelValue'],
+          emits: ['update:modelValue'],
+          template:
+            '<input type="checkbox" :checked="modelValue" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
+        },
+        UButton: {
+          props: ['disabled', 'loading', 'type'],
+          emits: ['click'],
+          template:
+            '<button :type="type || \'button\'" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
         },
       },
-    });
-
-    // The component should have a form element
-    expect(wrapper.exists()).toBe(true);
+    },
   });
 
-  it('initializes form with category data in edit mode', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        isOpen: true,
-        category: mockCategory,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
+describe('CategoryFormModal.vue', () => {
+  it('starts with empty create-mode defaults', () => {
+    const wrapper = createWrapper();
+    const vm = wrapper.vm as unknown as {
+      nameAr: string;
+      nameEn: string;
+      parentId: number | null;
+      icon: string;
+      isActive: boolean;
+      version: number;
+    };
 
-    await wrapper.vm.$nextTick();
-
-    const vm = wrapper.vm as any;
-    expect(vm.nameAr).toBe(mockCategory.name_ar);
-    expect(vm.nameEn).toBe(mockCategory.name_en);
-    expect(vm.icon).toBe(mockCategory.icon);
-    expect(vm.isActive).toBe(mockCategory.is_active);
-    expect(vm.version).toBe(mockCategory.version);
-  });
-
-  it('initializes form with empty values in create mode', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        isOpen: true,
-        category: null,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    await wrapper.vm.$nextTick();
-
-    const vm = wrapper.vm as any;
     expect(vm.nameAr).toBe('');
     expect(vm.nameEn).toBe('');
+    expect(vm.parentId).toBeNull();
     expect(vm.icon).toBe('');
     expect(vm.isActive).toBe(true);
     expect(vm.version).toBe(0);
   });
 
-  it('calls onSubmit with form data on submit', async () => {
-    const onSubmit = vi.fn().mockResolvedValue(undefined);
+  it('hydrates edit-mode state from category props', () => {
+    const wrapper = createWrapper({ category: mockCategory });
+    const vm = wrapper.vm as unknown as {
+      nameAr: string;
+      nameEn: string;
+      icon: string;
+      version: number;
+    };
 
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        onSubmit,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
-    vm.nameAr = 'فئة جديدة';
-    vm.nameEn = 'New Category';
-    vm.parentId = null;
-    vm.icon = '🔨';
-    vm.isActive = true;
-
-    // Simulate form submit
-    await vm.handleSubmit({ data: {} } as any);
-
-    expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name_ar: 'فئة جديدة',
-        name_en: 'New Category',
-        parent_id: null,
-        icon: '🔨',
-        is_active: true,
-      })
-    );
+    expect(vm.nameAr).toBe(mockCategory.name_ar);
+    expect(vm.nameEn).toBe(mockCategory.name_en);
+    expect(vm.icon).toBe(mockCategory.icon ?? '');
+    expect(vm.version).toBe(mockCategory.version);
   });
 
-  it('includes id and version in submit data when editing', async () => {
+  it('exposes parent categories to the select input', () => {
+    const wrapper = createWrapper();
+    const select = wrapper.find('select');
+
+    expect(select.exists()).toBe(true);
+    expect(select.text()).toContain(mockParentCategories[0].name_ar);
+  });
+
+  it('calls onSubmit with edit payload and then closes', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const onClose = vi.fn();
+    const wrapper = createWrapper({ category: mockCategory, onSubmit, onClose });
+    const vm = wrapper.vm as unknown as {
+      handleSubmit: (event: unknown) => Promise<void>;
+    };
 
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        category: mockCategory,
-        onSubmit,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
-    await vm.handleSubmit({ data: {} } as any);
+    await vm.handleSubmit({} as never);
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         id: mockCategory.id,
         version: mockCategory.version,
+        name_ar: mockCategory.name_ar,
+        name_en: mockCategory.name_en,
       })
     );
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('uses parent categories in selector dropdown', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        parentCategories: mockParentCategories,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
+  it('keeps isSubmitting accurate across a failed submission', async () => {
+    const onSubmit = vi.fn().mockRejectedValue(new Error('submit failed'));
+    const wrapper = createWrapper({ onSubmit });
+    const vm = wrapper.vm as unknown as {
+      isSubmitting: boolean;
+      handleSubmit: (event: unknown) => Promise<void>;
+    };
 
-    const vm = wrapper.vm as any;
-    expect(vm.$props.parentCategories).toEqual(mockParentCategories);
-  });
+    await vm.handleSubmit({} as never);
 
-  it('validates required name_ar field', async () => {
-    const validationSchema = (
-      mount(CategoryFormModal, {
-        props: defaultProps,
-        global: {
-          stubs: {
-            UModal: false,
-            UForm: false,
-            UFormGroup: false,
-            UInput: false,
-            USelectMenu: false,
-            UCheckbox: false,
-            UButton: false,
-          },
-        },
-      }).vm as any
-    ).validationSchema;
-
-    // Test that name_ar is required
-    try {
-      validationSchema.parse({
-        name_ar: '',
-        name_en: 'Test',
-      });
-    } catch (error: any) {
-      expect(error.errors?.[0]?.path?.includes('name_ar')).toBe(true);
-    }
-  });
-
-  it('validates required name_en field', async () => {
-    const validationSchema = (
-      mount(CategoryFormModal, {
-        props: defaultProps,
-        global: {
-          stubs: {
-            UModal: false,
-            UForm: false,
-            UFormGroup: false,
-            UInput: false,
-            USelectMenu: false,
-            UCheckbox: false,
-            UButton: false,
-          },
-        },
-      }).vm as any
-    ).validationSchema;
-
-    // Test that name_en is required
-    try {
-      validationSchema.parse({
-        name_ar: 'اختبار',
-        name_en: '',
-      });
-    } catch (error: any) {
-      expect(error.errors?.[0]?.path?.includes('name_en')).toBe(true);
-    }
-  });
-
-  it('validates minimum character length for name_ar', async () => {
-    const validationSchema = (
-      mount(CategoryFormModal, {
-        props: defaultProps,
-        global: {
-          stubs: {
-            UModal: false,
-            UForm: false,
-            UFormGroup: false,
-            UInput: false,
-            USelectMenu: false,
-            UCheckbox: false,
-            UButton: false,
-          },
-        },
-      }).vm as any
-    ).validationSchema;
-
-    // Test minimum length
-    try {
-      validationSchema.parse({
-        name_ar: 'ا',
-        name_en: 'Test',
-      });
-    } catch (error: any) {
-      // Should fail validation
-      expect(error.errors).toBeDefined();
-    }
-  });
-
-  it('validates maximum character length for names', async () => {
-    const validationSchema = (
-      mount(CategoryFormModal, {
-        props: defaultProps,
-        global: {
-          stubs: {
-            UModal: false,
-            UForm: false,
-            UFormGroup: false,
-            UInput: false,
-            USelectMenu: false,
-            UCheckbox: false,
-            UButton: false,
-          },
-        },
-      }).vm as any
-    ).validationSchema;
-
-    // Test maximum length exceeded
-    const longName = 'a'.repeat(101);
-    try {
-      validationSchema.parse({
-        name_ar: longName,
-        name_en: 'Test',
-      });
-    } catch (error: any) {
-      expect(error.errors).toBeDefined();
-    }
-  });
-
-  it('allows optional icon field', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
-    expect(vm.icon).toBe('');
-  });
-
-  it('sets is_active default to true', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        category: null,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
-    expect(vm.isActive).toBe(true);
-  });
-
-  it('calls onClose when modal is closed', async () => {
-    const onClose = vi.fn();
-
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        onClose,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
-    expect(vm.$props.onClose).toBeDefined();
-  });
-
-  it('disables submit button while submitting', async () => {
-    const onSubmit = vi.fn(
-      () =>
-        new Promise((resolve) => {
-          setTimeout(resolve, 100);
-        })
-    );
-
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        ...defaultProps,
-        onSubmit,
-      },
-      global: {
-        stubs: {
-          UModal: false,
-          UForm: false,
-          UFormGroup: false,
-          UInput: false,
-          USelectMenu: false,
-          UCheckbox: false,
-          UButton: false,
-        },
-      },
-    });
-
-    const vm = wrapper.vm as any;
     expect(vm.isSubmitting).toBe(false);
+  });
 
-    vm.isSubmitting = true;
-    await wrapper.vm.$nextTick();
-    expect(vm.isSubmitting).toBe(true);
+  it('rejects invalid schemas through zod', () => {
+    const wrapper = createWrapper();
+    const vm = wrapper.vm as unknown as {
+      validationSchema: {
+        safeParse: (value: unknown) => { success: boolean };
+      };
+    };
+
+    expect(
+      vm.validationSchema.safeParse({
+        name_ar: 'ا',
+        name_en: 'C',
+        parent_id: null,
+        icon: '',
+        is_active: true,
+      }).success
+    ).toBe(false);
+
+    expect(
+      vm.validationSchema.safeParse({
+        name_ar: 'اسم صالح',
+        name_en: 'Valid Name',
+        parent_id: null,
+        icon: 'x'.repeat(101),
+        is_active: true,
+      }).success
+    ).toBe(false);
   });
 });

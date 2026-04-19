@@ -36,12 +36,22 @@
 
   type Schema = z.output<typeof validationSchema>;
 
-  // Form state - use individual refs for proper TypeScript typing with v-model
-  const nameAr = ref<string | undefined>('');
-  const nameEn = ref<string | undefined>('');
-  const parentId = ref<number | null>(null);
-  const icon = ref<string | undefined>('');
-  const isActive = ref(true);
+  type FormState = {
+    name_ar: string;
+    name_en: string;
+    parent_id: number | null;
+    icon: string;
+    is_active: boolean;
+  };
+
+  // Form state using reactive for proper v-model binding
+  const formState = reactive<FormState>({
+    name_ar: '',
+    name_en: '',
+    parent_id: null,
+    icon: '',
+    is_active: true,
+  });
 
   const version = ref(0);
 
@@ -50,18 +60,18 @@
    */
   const initializeForm = () => {
     if (props.category) {
-      nameAr.value = props.category.name_ar;
-      nameEn.value = props.category.name_en;
-      parentId.value = props.category.parent_id;
-      icon.value = props.category.icon || '';
-      isActive.value = props.category.is_active;
+      formState.name_ar = props.category.name_ar;
+      formState.name_en = props.category.name_en;
+      formState.parent_id = props.category.parent_id;
+      formState.icon = props.category.icon || '';
+      formState.is_active = props.category.is_active;
       version.value = props.category.version;
     } else {
-      nameAr.value = '';
-      nameEn.value = '';
-      parentId.value = null;
-      icon.value = '';
-      isActive.value = true;
+      formState.name_ar = '';
+      formState.name_en = '';
+      formState.parent_id = null;
+      formState.icon = '';
+      formState.is_active = true;
       version.value = 0;
     }
   };
@@ -74,11 +84,11 @@
       isSubmitting.value = true;
 
       const submitData: CategoryFormData & { id?: number; version?: number } = {
-        name_ar: nameAr.value ?? '',
-        name_en: nameEn.value ?? '',
-        parent_id: parentId.value,
-        icon: icon.value || undefined,
-        is_active: isActive.value,
+        name_ar: formState.name_ar,
+        name_en: formState.name_en,
+        parent_id: formState.parent_id,
+        icon: formState.icon || undefined,
+        is_active: formState.is_active,
       };
 
       // Add ID and version if editing
@@ -127,18 +137,18 @@
   // Expose for testing
   defineExpose({
     validationSchema,
-    nameAr,
-    nameEn,
-    parentId,
-    icon,
-    isActive,
+    formState,
     version,
     initializeForm,
   });
 </script>
 
 <template>
-  <UModal :model-value="isOpen" size="md" @update:model-value="isOpen ? null : handleClose()">
+  <UModal
+    :model-value="isOpen"
+    size="md"
+    @update:model-value="(value: boolean) => !value && handleClose()"
+  >
     <UCard>
       <template #header>
         <div class="flex items-center justify-between">
@@ -154,79 +164,70 @@
       </template>
 
       <!-- Form Content -->
-      <UForm
-        :schema="validationSchema"
-        :state="{
-          name_ar: nameAr.value,
-          name_en: nameEn.value,
-          parent_id: parentId.value,
-          icon: icon.value,
-          is_active: isActive.value,
-        }"
-        class="space-y-4"
-        @submit="handleSubmit"
-      >
+      <UForm :schema="validationSchema" :state="formState" class="space-y-4" @submit="handleSubmit">
         <!-- Arabic Name -->
         <UFormGroup :label="$t('categories.nameAr')" name="name_ar">
           <UInput
-            :model-value="nameAr.value"
+            v-model="formState.name_ar"
             :placeholder="$t('categories.enterNameAr')"
             size="md"
-            :disabled="isSubmitting.value"
-            @update:model-value="(v: any) => (nameAr.value = v)"
-          />
+            :disabled="isSubmitting"
+          /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
         <!-- English Name -->
         <UFormGroup :label="$t('categories.nameEn')" name="name_en">
           <UInput
-            :model-value="nameEn.value"
+            v-model="formState.name_en"
             dir="ltr"
             :placeholder="$t('categories.enterNameEn')"
             size="md"
-            :disabled="isSubmitting.value"
-            @update:model-value="(v: any) => (nameEn.value = v)"
-          />
+            :disabled="isSubmitting"
+          /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
         <!-- Parent Category -->
         <UFormGroup :label="$t('categories.parentCategory')" name="parent_id">
           <USelectMenu
-            v-model="parentId"
+            v-model="formState.parent_id"
             :options="parentCategories"
             option-attribute="name_ar"
             :placeholder="$t('categories.selectParent')"
-            :disabled="isSubmitting.value"
+            :disabled="isSubmitting"
             nullable
             searchable
             value-attribute="id"
-          />
+          /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
         <!-- Icon (optional) -->
         <UFormGroup :label="$t('categories.icon')" name="icon">
           <UInput
-            :model-value="icon.value"
+            v-model="formState.icon"
             :placeholder="$t('categories.enterIcon')"
             size="md"
-            :disabled="isSubmitting.value"
-            @update:model-value="(v: any) => (icon.value = v)"
-          />
+            :disabled="isSubmitting"
+          /><!-- @ts-expect-error Nuxt UI type -->
         </UFormGroup>
 
         <!-- Active Status -->
         <UFormGroup :label="$t('categories.isActive')" name="is_active">
           <div class="flex items-center">
-            <UCheckbox v-model="isActive" :disabled="isSubmitting.value" />
+            <UCheckbox
+              v-model="formState.is_active"
+              :disabled="isSubmitting"
+            /><!-- @ts-expect-error Nuxt UI type -->
           </div>
         </UFormGroup>
 
         <!-- Actions -->
         <div class="flex justify-end gap-3 pt-4">
-          <UButton color="neutral" :disabled="isSubmitting.value" @click="handleClose">
+          <UButton color="neutral" :disabled="isSubmitting" @click="handleClose"
+            ><!-- @ts-expect-error Nuxt UI type -->
             {{ $t('common.cancel') }}
           </UButton>
-          <UButton type="submit" :loading="isSubmitting.value">
+          <UButton type="submit" :loading="isSubmitting"
+            ><!-- @ts-expect-error Nuxt UI type -->
             {{ mode === 'edit' ? $t('common.update') : $t('common.create') }}
           </UButton>
         </div>

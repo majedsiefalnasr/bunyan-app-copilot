@@ -16,9 +16,10 @@
     suspended: { label: t('suppliers.status.suspended'), color: 'error' },
   };
 
-  const config = badgeConfig[props.status];
+  const label = computed(() => badgeConfig[props.status]?.label ?? badgeConfig.pending.label);
+  const color = computed(() => badgeConfig[props.status]?.color ?? badgeConfig.pending.color);
 </script>
 
 <template>
-  <UBadge :label="config.label" :color="config.color" variant="subtle" size="xs" />
+  <UBadge :label="label" :color="color" variant="subtle" size="xs" />
 </template>

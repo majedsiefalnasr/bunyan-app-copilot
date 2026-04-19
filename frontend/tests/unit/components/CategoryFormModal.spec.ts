@@ -1,455 +1,239 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-
 import CategoryFormModal from '../../../components/categories/CategoryFormModal.vue';
 
-// Stub useI18n BEFORE importing component
 vi.stubGlobal('useI18n', () => ({
   t: (key: string, opts?: { count?: number }) => {
     if (key === 'validation.minChars' && opts?.count) {
       return `Minimum ${opts.count} characters`;
     }
+
     return key;
   },
   locale: 'ar',
 }));
 
-describe('CategoryFormModal Component', () => {
-  const mockCategory = {
-    id: 1,
+const mockCategory = {
+  id: 1,
+  parent_id: null,
+  name_ar: 'مواد بناء',
+  name_en: 'Building Materials',
+  slug: 'building-materials',
+  icon: 'lucide-box',
+  sort_order: 1,
+  is_active: true,
+  version: 3,
+  created_at: '2026-04-15T10:00:00Z',
+  updated_at: '2026-04-15T10:00:00Z',
+  deleted_at: null,
+  children: [],
+};
+
+const mockCategories = [
+  mockCategory,
+  {
+    id: 2,
     parent_id: null,
-    name_ar: 'مواد بناء',
-    name_en: 'Building Materials',
-    slug: 'building-materials',
-    icon: 'lucide-box',
-    sort_order: 1,
+    name_ar: 'كهرباء',
+    name_en: 'Electrical',
+    slug: 'electrical',
+    icon: 'lucide-zap',
+    sort_order: 2,
     is_active: true,
-    version: 0,
-    created_at: '2026-04-15T10:00:00Z',
-    updated_at: '2026-04-15T10:00:00Z',
+    version: 1,
+    created_at: '2026-04-15T10:00:02Z',
+    updated_at: '2026-04-15T10:00:02Z',
     deleted_at: null,
-  };
+    children: [],
+  },
+];
 
-  const mockCategories = [
-    mockCategory,
-    {
-      id: 2,
-      parent_id: null,
-      name_ar: 'كهرباء',
-      name_en: 'Electrical',
-      slug: 'electrical',
-      icon: 'lucide-zap',
-      sort_order: 2,
-      is_active: true,
-      version: 0,
-      created_at: '2026-04-15T10:00:02Z',
-      updated_at: '2026-04-15T10:00:02Z',
-      deleted_at: null,
+const createWrapper = (overrides: Record<string, unknown> = {}) =>
+  mount(CategoryFormModal, {
+    props: {
+      isOpen: true,
+      category: null,
+      parentCategories: mockCategories,
+      onClose: vi.fn(),
+      onSubmit: vi.fn().mockResolvedValue(undefined),
+      ...overrides,
     },
-  ];
-
-  it('renders create form when category=null', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="form"><slot /></form>`,
-          },
-          UFormGroup: {
-            template: `<div data-testid="form-group"><slot /></div>`,
-            props: ['name', 'label'],
-          },
-          UInput: {
-            template: `<input data-testid="input" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />`,
-            props: ['modelValue', 'placeholder', 'type'],
-            emits: ['update:modelValue'],
-          },
-          UButton: {
-            template: `<button data-testid="button" @click="$emit('click')"><slot /></button>`,
-            emits: ['click'],
-          },
-          USwitch: {
-            template: `<input type="checkbox" data-testid="switch" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" />`,
-            props: ['modelValue'],
-            emits: ['update:modelValue'],
-          },
-          USelectMenu: false,
+    global: {
+      stubs: {
+        UModal: {
+          props: ['modelValue'],
+          template: '<div v-if="modelValue" data-testid="modal"><slot /></div>',
+        },
+        UCard: {
+          template: '<div data-testid="card"><slot name="header" /><slot /></div>',
+        },
+        UForm: {
+          props: ['state', 'schema'],
+          emits: ['submit'],
+          template:
+            '<form data-testid="form" @submit.prevent="$emit(\'submit\', { data: state })"><slot /></form>',
+        },
+        UFormGroup: {
+          props: ['label', 'name'],
+          template: '<label :data-name="name"><span>{{ label }}</span><slot /></label>',
+        },
+        UInput: {
+          props: ['modelValue'],
+          emits: ['update:modelValue'],
+          template:
+            '<input data-testid="input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+        },
+        UButton: {
+          props: ['type', 'loading', 'disabled'],
+          emits: ['click'],
+          template:
+            '<button :type="type || \'button\'" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+        },
+        USelectMenu: {
+          props: ['modelValue', 'options'],
+          emits: ['update:modelValue'],
+          template:
+            '<select data-testid="parent-select" :value="modelValue ?? \'\'" @change="$emit(\'update:modelValue\', $event.target.value ? Number($event.target.value) : null)"><option value="">none</option><option v-for="option in options" :key="option.id" :value="option.id">{{ option.name_ar }}</option></select>',
+        },
+        UCheckbox: {
+          props: ['modelValue', 'disabled'],
+          emits: ['update:modelValue'],
+          template:
+            '<input data-testid="active-checkbox" type="checkbox" :checked="modelValue" :disabled="disabled" @change="$emit(\'update:modelValue\', $event.target.checked)" />',
         },
       },
-    });
+    },
+  });
+
+describe('CategoryFormModal Component', () => {
+  it('renders modal and form while open', () => {
+    const wrapper = createWrapper();
 
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="form"]').exists()).toBe(true);
   });
 
-  it('renders edit form when category data is provided', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: mockCategory,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="form"><slot /></form>`,
-          },
-          UFormGroup: {
-            template: `<div data-testid="form-group"><label>{{ label }}</label><slot /></div>`,
-            props: ['name', 'label'],
-          },
-          UInput: {
-            template: `<input data-testid="input" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />`,
-            props: ['modelValue', 'placeholder', 'type'],
-            emits: ['update:modelValue'],
-          },
-          UButton: {
-            template: `<button data-testid="button" @click="$emit('click')"><slot /></button>`,
-            emits: ['click'],
-          },
-          USwitch: {
-            template: `<input type="checkbox" data-testid="switch" :checked="modelValue" @change="$emit('update:modelValue', $event.target.checked)" />`,
-            props: ['modelValue'],
-            emits: ['update:modelValue'],
-          },
-        },
-      },
-    });
-
-    await nextTick();
-
-    const form = wrapper.find('[data-testid="form"]');
-    expect(form.exists()).toBe(true);
-  });
-
-  it('hides modal when isOpen=false', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: false,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-        },
-      },
-    });
+  it('does not render the modal content while closed', () => {
+    const wrapper = createWrapper({ isOpen: false });
 
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(false);
   });
 
-  it('calls onClose when close button is clicked', async () => {
+  it('initializes edit state from the provided category', () => {
+    const wrapper = createWrapper({ category: mockCategory });
+    const vm = wrapper.vm as unknown as {
+      nameAr: string;
+      nameEn: string;
+      parentId: number | null;
+      icon: string;
+      isActive: boolean;
+      version: number;
+    };
+
+    expect(vm.nameAr).toBe(mockCategory.name_ar);
+    expect(vm.nameEn).toBe(mockCategory.name_en);
+    expect(vm.parentId).toBe(mockCategory.parent_id);
+    expect(vm.icon).toBe(mockCategory.icon);
+    expect(vm.isActive).toBe(true);
+    expect(vm.version).toBe(3);
+  });
+
+  it('submits create payload and closes the modal', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
     const onClose = vi.fn();
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose,
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div data-testid="modal"><button @click="$emit('close')">Close</button><slot /></div>`,
-            emits: ['close'],
-          },
-        },
-      },
-    });
+    const wrapper = createWrapper({ onSubmit, onClose });
+    const vm = wrapper.vm as unknown as {
+      nameAr: string;
+      nameEn: string;
+      parentId: number | null;
+      icon: string;
+      isActive: boolean;
+      handleSubmit: (event: unknown) => Promise<void>;
+    };
 
-    await wrapper.find('button').trigger('click');
-    expect(onClose).toHaveBeenCalled();
+    vm.nameAr = 'فئة جديدة';
+    vm.nameEn = 'New Category';
+    vm.parentId = 2;
+    vm.icon = 'lucide-hammer';
+    vm.isActive = false;
+
+    await vm.handleSubmit({} as never);
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      name_ar: 'فئة جديدة',
+      name_en: 'New Category',
+      parent_id: 2,
+      icon: 'lucide-hammer',
+      is_active: false,
+    });
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('validates required fields', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="form" @submit.prevent="$emit('submit')"><slot /></form>`,
-            emits: ['submit'],
-          },
-        },
-      },
-    });
+  it('submits optimistic locking fields in edit mode', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(undefined);
+    const wrapper = createWrapper({ category: mockCategory, onSubmit });
+    const vm = wrapper.vm as unknown as {
+      handleSubmit: (event: unknown) => Promise<void>;
+    };
 
-    // Submission should not proceed with empty required fields
-    const form = wrapper.find('[data-testid="form"]');
-    expect(form.exists()).toBe(true);
+    await vm.handleSubmit({} as never);
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: mockCategory.id,
+        version: mockCategory.version,
+      })
+    );
   });
 
-  it('enforces min/max length validation for name fields', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UInput: {
-            template: `
-              <input
-                data-testid="input"
-                :value="modelValue"
-                :minlength="2"
-                :maxlength="100"
-                @input="$emit('update:modelValue', $event.target.value)"
-              />
-            `,
-            props: ['modelValue', 'placeholder', 'type'],
-            emits: ['update:modelValue'],
-          },
-        },
-      },
-    });
+  it('resets form state when closed', () => {
+    const onClose = vi.fn();
+    const wrapper = createWrapper({ onClose, category: mockCategory });
+    const vm = wrapper.vm as unknown as {
+      nameAr: string;
+      nameEn: string;
+      handleClose: () => void;
+    };
 
-    expect(wrapper.find('[data-testid="input"]').exists()).toBe(true);
+    vm.nameAr = 'مؤقت';
+    vm.nameEn = 'Temporary';
+    vm.handleClose();
+
+    expect(vm.nameAr).toBe(mockCategory.name_ar);
+    expect(vm.nameEn).toBe(mockCategory.name_en);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('emits submit with correct data structure on form submission', async () => {
-    const onSubmit = vi.fn();
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit,
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="form" @submit.prevent="$emit('submit')"><slot /></form>`,
-            emits: ['submit'],
-          },
-        },
-      },
+  it('validates required and length constraints through the schema', () => {
+    const wrapper = createWrapper();
+    const vm = wrapper.vm as unknown as {
+      validationSchema: {
+        safeParse: (value: unknown) => {
+          success: boolean;
+          error?: { issues: Array<{ path: string[] }> };
+        };
+      };
+    };
+
+    const missingArabic = vm.validationSchema.safeParse({
+      name_ar: '',
+      name_en: 'Valid Name',
+      parent_id: null,
+      icon: '',
+      is_active: true,
     });
 
-    // Mock form data and trigger submit
-    // This would normally be done via the form but we're testing emit structure
-    expect(wrapper.find('[data-testid="form"]').exists()).toBe(true);
-  });
-
-  it('shows optimistic lock version field on edit', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: mockCategory,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="edit-form"><slot /></form>`,
-          },
-          UFormGroup: {
-            template: `<div data-testid="form-group" data-version="true"><slot /></div>`,
-            props: ['name', 'label'],
-          },
-          UInput: {
-            template: `<input data-testid="input" :value="modelValue" />`,
-            props: ['modelValue', 'placeholder', 'type'],
-          },
-        },
-      },
+    const shortEnglish = vm.validationSchema.safeParse({
+      name_ar: 'اسم',
+      name_en: 'A',
+      parent_id: null,
+      icon: '',
+      is_active: true,
     });
 
-    // Edit mode should show version field
-    const editForm = wrapper.find('[data-testid="edit-form"]');
-    expect(editForm.exists()).toBe(true);
-  });
-
-  it('does not show version field on create', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UModal: {
-            template: `<div v-if="open" data-testid="modal"><slot /></div>`,
-            props: ['open'],
-          },
-          UForm: {
-            template: `<form data-testid="create-form"><slot /></form>`,
-          },
-        },
-      },
-    });
-
-    // Create mode should not have version field
-    expect(wrapper.find('[data-testid="create-form"]').exists()).toBe(true);
-  });
-
-  it('handles parent_id dropdown selection', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          USelectMenu: {
-            template: `<select data-testid="parent-select"><slot /></select>`,
-            props: ['modelValue'],
-            emits: ['update:modelValue'],
-          },
-        },
-      },
-    });
-
-    expect(wrapper.find('[data-testid="parent-select"]').exists()).toBe(true);
-  });
-
-  it('renders Arabic/English labels correctly', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UFormGroup: {
-            template: `
-              <div data-testid="form-group">
-                <label>{{ label }}</label>
-                <slot />
-              </div>
-            `,
-            props: ['name', 'label'],
-          },
-        },
-      },
-    });
-
-    // Form should render labels (mocked stubs would show them)
-    expect(wrapper.find('[data-testid="form-group"]').exists()).toBe(true);
-  });
-
-  it('disables submit button until form is valid', () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-      global: {
-        stubs: {
-          UButton: {
-            template: `<button data-testid="submit-button" :disabled="!valid"><slot /></button>`,
-            props: ['disabled', 'loading'],
-          },
-        },
-      },
-    });
-
-    expect(wrapper.find('[data-testid="submit-button"]').exists()).toBe(true);
-  });
-
-  it('handles async parent_id validation', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-    });
-
-    // Parent ID validation should check if ID exists
-    expect(wrapper.props().categories).toHaveLength(2);
-  });
-
-  it('prevents circular reference selection', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: mockCategory,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-    });
-
-    // When editing, parent cannot be set to self or descendants
-    expect(wrapper.props().category).toEqual(mockCategory);
-  });
-
-  it('maintains RTL layout when language is Arabic', async () => {
-    const wrapper = mount(CategoryFormModal, {
-      props: {
-        isOpen: true,
-        category: null,
-        parentCategories: mockCategories,
-        onClose: vi.fn(),
-        onSubmit: vi.fn(),
-      },
-    });
-
-    // RTL support should be in component (checked via form rendering)
-    expect(wrapper.find('[data-testid="form"]').exists()).toBe(true);
+    expect(missingArabic.success).toBe(false);
+    expect(missingArabic.error?.issues[0]?.path).toContain('name_ar');
+    expect(shortEnglish.success).toBe(false);
+    expect(shortEnglish.error?.issues[0]?.path).toContain('name_en');
   });
 });
