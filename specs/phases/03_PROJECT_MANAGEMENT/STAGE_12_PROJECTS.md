@@ -8,20 +8,32 @@
 ## Stage Status
 
 Status: DRAFT
-Step: pre_step
+Step: specify
 Risk Level: HIGH
-Initiated: 2026-04-19T00:00:00Z
+Last Updated: 2026-04-19T00:00:00Z
 
-Scope Open:
+Scope Defined:
 
-- Specification pending
+- Project CRUD with Admin/Owner roles
+- Role-scoped project listing with RBAC
+- Project status machine (6 states, validated transitions)
+- Project phases management
+- Timeline endpoint (read-only)
+- Frontend pages: listing, detail, creation wizard
+
+Deferred Scope:
+
+- Team assignment (STAGE_15)
+- Tasks within phases (STAGE_13)
+- Workflow engine (STAGE_14)
+- Document uploads, budget calculations, notifications
 
 Architecture Governance Compliance:
 
-- Pending governance audit
+- Specification drafted — governance audit pending
 
 Notes:
-Stage initialized. Specification in progress.
+Specification complete. Clarification step pending.
 
 ## Objective
 
