@@ -22,6 +22,8 @@ class CategoryService
      * Create a new category with validation and event dispatch
      *
      * @param  array<string, mixed>  $data
+     *
+     * @throws \Exception If parent_id is invalid or validation fails
      */
     public function create(array $data): Category
     {
@@ -29,9 +31,18 @@ class CategoryService
             // Generate slug from name_en
             $slug = $this->generateSlug($data['name_en']);
 
-            // Check circular reference if parent_id is provided
+            // Validate parent_id if provided
             if (isset($data['parent_id']) && $data['parent_id']) {
-                $this->validateNoCircularReference(null, (int) $data['parent_id']);
+                $parentId = (int) $data['parent_id'];
+
+                // Get the parent to check if valid
+                $parent = $this->repository->findByIdOrFail($parentId);
+
+                // Prevent creating under a child category - only allow creating under root categories
+                // This prevents potential circular references in the future
+                if ($parent->parent_id !== null) {
+                    throw new \Exception('Circular reference: cannot create under a child category', 422);
+                }
             }
 
             // Assign default sort_order (max + 1 for siblings)
@@ -167,14 +178,14 @@ class CategoryService
                 throw new \Exception('Version mismatch; concurrent update detected', 409);
             }
 
-            // Check for circular reference
-            if ($newParentId !== null && $newParentId !== $category->parent_id) {
-                $this->validateNoCircularReference($categoryId, $newParentId);
-            }
-
-            // Check for self-reference
+            // Check for self-reference first (must be before validateNoCircularReference)
             if ($newParentId === $categoryId) {
                 throw new \Exception('Cannot set category as its own parent', 422);
+            }
+
+            // Check for circular reference (new parent is a descendant)
+            if ($newParentId !== null && $newParentId !== $category->parent_id) {
+                $this->validateNoCircularReference($categoryId, $newParentId);
             }
 
             // Update parent_id and version

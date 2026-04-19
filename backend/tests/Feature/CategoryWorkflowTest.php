@@ -88,7 +88,7 @@ class CategoryWorkflowTest extends TestCase
 
         $reorderResponse = $this->actingAs($this->admin)
             ->putJson("/api/v1/categories/{$childToReorder['id']}/reorder", [
-                'newSortOrder' => $newSortOrder,
+                'sort_order' => $newSortOrder,
                 'version' => $childToReorder['version'],
             ]);
 
@@ -113,7 +113,7 @@ class CategoryWorkflowTest extends TestCase
         $childToMove = $childCategories[0];
         $moveResponse = $this->actingAs($this->admin)
             ->putJson("/api/v1/categories/{$childToMove['id']}/move", [
-                'new_parent_id' => $secondParent['id'],
+                'parent_id' => $secondParent['id'],
                 'version' => $childToMove['version'],
             ]);
 

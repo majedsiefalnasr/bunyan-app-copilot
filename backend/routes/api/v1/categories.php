@@ -21,15 +21,14 @@ use Illuminate\Support\Facades\Route;
  * - DELETE /api/v1/categories/{id} — Soft-delete category
  */
 Route::prefix('categories')->group(function () {
-    // Public routes (no auth required)
-    Route::get('/', [CategoryController::class, 'index'])
-        ->name('api.v1.categories.index');
-
-    Route::get('{category}', [CategoryController::class, 'show'])
-        ->name('api.v1.categories.show');
-
-    // Protected routes (admin only, via FormRequest authorization)
+    // All category routes require authentication per API contract
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])
+            ->name('api.v1.categories.index');
+
+        Route::get('{category}', [CategoryController::class, 'show'])
+            ->name('api.v1.categories.show');
+
         Route::post('/', [CategoryController::class, 'store'])
             ->name('api.v1.categories.store');
 

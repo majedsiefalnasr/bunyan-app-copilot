@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\ReorderCategoryRequest;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
@@ -120,6 +121,19 @@ class CategoryController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
+            // Authorize admin only
+            $user = request()->user();
+            if (! $user || $user->role !== UserRole::ADMIN) {
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'error' => [
+                        'code' => 'RBAC_ROLE_DENIED',
+                        'message' => 'Your current role does not allow this action',
+                    ],
+                ], 403);
+            }
+
             $this->categoryService->delete($id);
 
             return response()->json([

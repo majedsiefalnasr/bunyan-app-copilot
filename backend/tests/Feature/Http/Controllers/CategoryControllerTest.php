@@ -28,7 +28,7 @@ class CategoryControllerTest extends TestCase
     {
         Category::factory()->create(['name_en' => 'Building Materials', 'is_active' => true]);
 
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/categories');
 
         $response->assertOk()
             ->assertJsonStructure([
@@ -44,7 +44,7 @@ class CategoryControllerTest extends TestCase
     {
         $category = Category::factory()->create(['name_en' => 'Electrical']);
 
-        $response = $this->getJson("/api/v1/categories/{$category->id}");
+        $response = $this->actingAs($this->admin)->getJson("/api/v1/categories/{$category->id}");
 
         $response->assertOk()
             ->assertJsonPath('success', true)
@@ -151,7 +151,7 @@ class CategoryControllerTest extends TestCase
         Category::factory()->create(['is_active' => true]);
         Category::factory()->create(['is_active' => false]);
 
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/categories');
 
         $this->assertEquals(1, count($response->json('data')));
     }
@@ -196,7 +196,7 @@ class CategoryControllerTest extends TestCase
         $parent = Category::factory()->create(['name_en' => 'Parent']);
         $child = Category::factory()->for($parent, 'parent')->create(['name_en' => 'Child']);
 
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/categories');
 
         $this->assertEquals('Parent', $response->json('data.0.name_en'));
         $this->assertEquals('Child', $response->json('data.0.children.0.name_en'));
@@ -207,7 +207,7 @@ class CategoryControllerTest extends TestCase
         $active = Category::factory()->create(['is_active' => true]);
         $deleted = Category::factory()->create(['deleted_at' => now()]);
 
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/categories');
 
         $this->assertEquals(1, count($response->json('data')));
         $this->assertNull(collect($response->json('data'))->firstWhere('id', $deleted->id));
@@ -215,12 +215,22 @@ class CategoryControllerTest extends TestCase
 
     public function test_api_response_follows_standard_contract()
     {
-        $response = $this->getJson('/api/v1/categories');
+        $response = $this->actingAs($this->admin)->getJson('/api/v1/categories');
 
+        // Check response follows standard contract: success, data, error keys present
         $response->assertJsonStructure([
-            'success' => 'boolean',
-            'data' => 'array',
-            'error' => 'nullable',
+            'success',
+            'data',
+            'error',
         ]);
+
+        // Verify success is boolean
+        $this->assertIsBool($response->json('success'));
+
+        // Verify data is array (or null)
+        $this->assertTrue(
+            is_array($response->json('data')) || $response->json('data') === null,
+            'data should be array or null'
+        );
     }
 }
