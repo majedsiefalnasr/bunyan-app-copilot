@@ -322,7 +322,25 @@
     "sortOrder": "Sort Order",
     "created": "Created",
     "updated": "Updated",
-    "slug": "Slug"
+    "slug": "Slug",
+    "feedback": {
+      "success": {
+        "created": "Category created successfully",
+        "updated": "Category updated successfully",
+        "deleted": "Category deleted successfully",
+        "reordered": "Category reordered successfully",
+        "moved": "Category moved successfully",
+        "refreshed": "Refreshed successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load categories",
+        "submitFailed": "Failed to submit form",
+        "deleteFailed": "Failed to delete category",
+        "reorderFailed": "Failed to reorder category",
+        "moveFailed": "Failed to move category",
+        "refreshFailed": "Failed to refresh"
+      }
+    }
   },
   "validation": {
     "required": "This field is required",
@@ -339,21 +357,6 @@
     "update": "Update",
     "refresh": "Refresh"
   },
-  "success": {
-    "categoryCreated": "Category created successfully",
-    "categoryUpdated": "Category updated successfully",
-    "categoryDeleted": "Category deleted successfully",
-    "categoryReordered": "Category reordered successfully",
-    "categoryMoved": "Category moved successfully",
-    "refreshed": "Refreshed successfully"
-  },
-  "errors": {
-    "loadCategoriesFailed": "Failed to load categories",
-    "submitFailed": "Failed to submit form",
-    "deleteFailed": "Failed to delete category",
-    "reorderFailed": "Failed to reorder category",
-    "moveFailed": "Failed to move category",
-    "refreshFailed": "Failed to refresh"
   "suppliers": {
     "not_found": "Supplier profile not found.",
     "already_exists": "A supplier profile already exists for this user.",

@@ -29,7 +29,7 @@
     try {
       await categoryStore.loadCategories({ includeInactive: true });
     } catch {
-      notifyError(t('errors.loadCategoriesFailed'));
+      notifyError(t('categories.feedback.errors.loadFailed'));
     }
   });
 
@@ -68,15 +68,15 @@
           ...data,
           version: data.version || 0,
         });
-        notifySuccess(t('success.categoryUpdated'));
+        notifySuccess(t('categories.feedback.success.updated'));
       } else {
         // Create new
         await categoryStore.createCategory(data);
-        notifySuccess(t('success.categoryCreated'));
+        notifySuccess(t('categories.feedback.success.created'));
       }
       closeFormModal();
     } catch {
-      notifyError(t('errors.submitFailed'));
+      notifyError(t('categories.feedback.errors.submitFailed'));
     }
   };
 
@@ -86,10 +86,10 @@
   const handleDeleteConfirm = async (id: number) => {
     try {
       await categoryStore.deleteCategory(id);
-      notifySuccess(t('success.categoryDeleted'));
+      notifySuccess(t('categories.feedback.success.deleted'));
       deleteConfirmId.value = null;
     } catch {
-      notifyError(t('errors.deleteFailed'));
+      notifyError(t('categories.feedback.errors.deleteFailed'));
     }
   };
 
@@ -123,10 +123,10 @@
       const category = categoryStore.getCategoryById(categoryId);
       if (category) {
         await categoryStore.reorderCategory(categoryId, newSortOrder, category.version);
-        notifySuccess(t('success.categoryReordered'));
+        notifySuccess(t('categories.feedback.success.reordered'));
       }
     } catch {
-      notifyError(t('errors.reorderFailed'));
+      notifyError(t('categories.feedback.errors.reorderFailed'));
     }
   };
 
@@ -138,10 +138,10 @@
       const category = categoryStore.getCategoryById(categoryId);
       if (category) {
         await categoryStore.moveCategory(categoryId, newParentId, category.version);
-        notifySuccess(t('success.categoryMoved'));
+        notifySuccess(t('categories.feedback.success.moved'));
       }
     } catch {
-      notifyError(t('errors.moveFailed'));
+      notifyError(t('categories.feedback.errors.moveFailed'));
     }
   };
 
@@ -151,9 +151,9 @@
   const handleRefresh = async () => {
     try {
       await categoryStore.loadCategories({ includeInactive: true });
-      notifySuccess(t('success.refreshed'));
+      notifySuccess(t('categories.feedback.success.refreshed'));
     } catch {
-      notifyError(t('errors.refreshFailed'));
+      notifyError(t('categories.feedback.errors.refreshFailed'));
     }
   };
 

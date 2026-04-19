@@ -322,7 +322,25 @@
     "sortOrder": "ترتيب الفئة",
     "created": "تم الإنشاء",
     "updated": "تم التحديث",
-    "slug": "الرابط الودي"
+    "slug": "الرابط الودي",
+    "feedback": {
+      "success": {
+        "created": "تم إنشاء الفئة بنجاح",
+        "updated": "تم تحديث الفئة بنجاح",
+        "deleted": "تم حذف الفئة بنجاح",
+        "reordered": "تم إعادة ترتيب الفئة بنجاح",
+        "moved": "تم نقل الفئة بنجاح",
+        "refreshed": "تم التحديث بنجاح"
+      },
+      "errors": {
+        "loadFailed": "فشل تحميل الفئات",
+        "submitFailed": "فشل تقديم النموذج",
+        "deleteFailed": "فشل حذف الفئة",
+        "reorderFailed": "فشل إعادة ترتيب الفئة",
+        "moveFailed": "فشل نقل الفئة",
+        "refreshFailed": "فشل التحديث"
+      }
+    }
   },
   "validation": {
     "required": "هذا الحقل مطلوب",
@@ -339,21 +357,6 @@
     "update": "تحديث",
     "refresh": "تحديث"
   },
-  "success": {
-    "categoryCreated": "تم إنشاء الفئة بنجاح",
-    "categoryUpdated": "تم تحديث الفئة بنجاح",
-    "categoryDeleted": "تم حذف الفئة بنجاح",
-    "categoryReordered": "تم إعادة ترتيب الفئة بنجاح",
-    "categoryMoved": "تم نقل الفئة بنجاح",
-    "refreshed": "تم التحديث بنجاح"
-  },
-  "errors": {
-    "loadCategoriesFailed": "فشل تحميل الفئات",
-    "submitFailed": "فشل تقديم النموذج",
-    "deleteFailed": "فشل حذف الفئة",
-    "reorderFailed": "فشل إعادة ترتيب الفئة",
-    "moveFailed": "فشل نقل الفئة",
-    "refreshFailed": "فشل التحديث"
   "suppliers": {
     "not_found": "المورد غير موجود.",
     "already_exists": "يوجد ملف تعريف مورد لهذا المستخدم مسبقاً.",
