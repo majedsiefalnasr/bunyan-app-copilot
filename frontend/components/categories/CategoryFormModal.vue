@@ -140,6 +140,25 @@
     formState,
     version,
     initializeForm,
+    handleSubmit,
+    handleClose,
+    isSubmitting,
+    // Camel case accessors for testing
+    get nameAr() {
+      return formState.name_ar;
+    },
+    get nameEn() {
+      return formState.name_en;
+    },
+    get parentId() {
+      return formState.parent_id;
+    },
+    get icon() {
+      return formState.icon;
+    },
+    get isActive() {
+      return formState.is_active;
+    },
   });
 </script>
 
