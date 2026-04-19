@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Category, CategoryFormData } from '~/types/categories';
+  import type { Category, CategoryFormData } from '~/types';
   import CategoryTree from '~/components/categories/CategoryTree.vue';
   import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
   import CategoryBreadcrumb from '~/components/categories/CategoryBreadcrumb.vue';

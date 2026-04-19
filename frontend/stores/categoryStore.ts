@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Category, CategoryFormData } from '~/types/categories';
+import type { Category, CategoryFormData } from '~/types';
 
 export const useCategoryStore = defineStore('category', () => {
   // State

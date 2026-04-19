@@ -1,4 +1,4 @@
-import type { Category, CategoryFormData } from '~/types/categories';
+import type { Category, CategoryFormData } from '~/types';
 
 export function useCategories() {
   const { apiFetch } = useApi();

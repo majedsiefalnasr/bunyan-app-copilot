@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { FormSubmitEvent } from '#ui/types';
   import { z } from 'zod';
-  import type { Category, CategoryFormData } from '~/types/categories';
+  import type { Category, CategoryFormData } from '~/types';
 
   interface Props {
     isOpen: boolean;

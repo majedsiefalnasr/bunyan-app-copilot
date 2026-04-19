@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection as BaseCollection;
 
 class CategoryRepository
 {
@@ -58,9 +59,9 @@ class CategoryRepository
     /**
      * Get all ancestors (parents, grandparents, etc.)
      *
-     * @return Collection<int, Category>
+     * @return BaseCollection<int, Category>
      */
-    public function getAncestors(int $categoryId): Collection
+    public function getAncestors(int $categoryId): BaseCollection
     {
         $category = $this->findByIdOrFail($categoryId);
 
@@ -70,9 +71,9 @@ class CategoryRepository
     /**
      * Get all descendants (children, grandchildren, etc.)
      *
-     * @return Collection<int, Category>
+     * @return BaseCollection<int, Category>
      */
-    public function getDescendants(int $categoryId): Collection
+    public function getDescendants(int $categoryId): BaseCollection
     {
         $category = $this->findByIdOrFail($categoryId);
 

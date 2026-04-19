@@ -3,12 +3,15 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CategoryMigrationTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * T070: Backend Migration Validation
      * Verify migrations run without errors and are reversible

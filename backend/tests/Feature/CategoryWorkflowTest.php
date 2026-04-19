@@ -4,10 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CategoryWorkflowTest extends TestCase
 {
+    use RefreshDatabase;
+
     private User $admin;
 
     protected function setUp(): void

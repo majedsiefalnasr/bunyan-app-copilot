@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Category } from '~/types/categories';
+  import type { Category } from '~/types';
 
   interface Props {
     modelValue?: number | null;

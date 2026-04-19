@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import CategoryFormModal from '~/components/categories/CategoryFormModal.vue';
-import type { Category } from '~/types/categories';
+import type { Category } from '~/types';
 
 // Stub Nuxt auto-imports
 vi.stubGlobal('useI18n', () => ({
