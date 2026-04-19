@@ -6,22 +6,17 @@ use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class CategoryMigrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * T070: Backend Migration Validation
-     * Verify migrations run without errors and are reversible
-     */
     public function test_migration_creates_categories_table_with_correct_schema(): void
     {
-        // Check table exists
         $this->assertTrue(DB::getSchemaBuilder()->hasTable('categories'));
 
-        // Check required columns exist
         $columns = DB::getSchemaBuilder()->getColumnListing('categories');
 
         $requiredColumns = [
@@ -46,42 +41,45 @@ class CategoryMigrationTest extends TestCase
 
     public function test_migration_creates_correct_column_types(): void
     {
-        $columns = DB::getSchemaBuilder()->getColumns('categories');
-        $columnTypes = [];
+        $columns = collect(Schema::getColumns('categories'))->keyBy('name');
 
-        foreach ($columns as $column) {
-            $columnTypes[$column['name']] = $column['type'];
-        }
+        $idColumn = $columns->get('id');
+        $slugColumn = $columns->get('slug');
+        $isActiveColumn = $columns->get('is_active');
 
-        // Verify critical column types
-        $this->assertStringContainsString('bigint', strtolower($columnTypes['id'] ?? ''));
-        $this->assertStringContainsString('varchar', strtolower($columnTypes['slug'] ?? ''));
-        $this->assertTrue(in_array(strtolower($columnTypes['is_active'] ?? ''), ['boolean', 'tinyint']));
+        $this->assertNotNull($idColumn);
+        $this->assertNotNull($slugColumn);
+        $this->assertNotNull($isActiveColumn);
+
+        $this->assertContains(strtolower($idColumn['type_name'] ?? ''), ['bigint', 'integer']);
+        $this->assertTrue((bool) ($idColumn['auto_increment'] ?? false));
+        $this->assertContains(strtolower($slugColumn['type_name'] ?? ''), ['varchar', 'text']);
+        $this->assertContains(strtolower($isActiveColumn['type_name'] ?? ''), ['boolean', 'tinyint', 'integer']);
     }
 
     public function test_migration_creates_indexes(): void
     {
-        // Get indexes
-        $indexes = DB::connection()
-            ->getDoctrineSchemaManager()
-            ->listTableIndexes('categories');
+        $indexes = Schema::getIndexes('categories');
 
-        // Should have indexes on commonly queried columns
-        $indexNames = array_keys($indexes);
-
-        // At minimum should have primary key
-        $this->assertTrue(count($indexNames) > 0);
+        $this->assertNotEmpty($indexes);
+        $this->assertTrue(
+            collect($indexes)->contains(fn (array $index) => $index['columns'] === ['parent_id']),
+            'Expected index on parent_id to exist.',
+        );
+        $this->assertTrue(
+            collect($indexes)->contains(
+                fn (array $index) => $index['columns'] === ['parent_id', 'sort_order', 'is_active']
+            ),
+            'Expected composite index on parent_id, sort_order, is_active to exist.',
+        );
     }
 
     public function test_seeder_runs_without_errors(): void
     {
-        // Clear existing data
         Category::truncate();
 
-        // Run seeder
         Artisan::call('db:seed', ['--class' => 'CategorySeeder']);
 
-        // Verify data created
         $count = Category::count();
         $this->assertGreaterThan(10, $count, 'Seeder should create at least 10 categories');
     }
@@ -92,11 +90,9 @@ class CategoryMigrationTest extends TestCase
 
         Artisan::call('db:seed', ['--class' => 'CategorySeeder']);
 
-        // Verify tree structure is valid
         $roots = Category::whereNull('parent_id')->count();
         $this->assertGreaterThan(0, $roots, 'Should have at least one root category');
 
-        // All children should have valid parents
         $orphans = Category::query()
             ->whereNotNull('parent_id')
             ->whereDoesntHave('parent')
@@ -112,11 +108,9 @@ class CategoryMigrationTest extends TestCase
         $category = Category::factory()->create(['name_ar' => 'Test', 'name_en' => 'Test']);
         $category->delete();
 
-        // Should not appear in normal queries
         $found = Category::where('id', $category->id)->first();
         $this->assertNull($found);
 
-        // Should appear with withTrashed
         $found = Category::withTrashed()->where('id', $category->id)->first();
         $this->assertNotNull($found);
         $this->assertNotNull($found->deleted_at);
@@ -124,31 +118,24 @@ class CategoryMigrationTest extends TestCase
 
     public function test_foreign_key_constraint_on_parent_id(): void
     {
-        $category = Category::factory()->create();
+        Category::factory()->create();
 
-        // Verify parent_id foreign key exists
-        $foreignKeys = DB::connection()
-            ->getDoctrineSchemaManager()
-            ->listTableForeignKeys('categories');
+        $foreignKeys = Schema::getForeignKeys('categories');
 
-        $parentIdFkExists = false;
-        foreach ($foreignKeys as $fk) {
-            if (in_array('parent_id', $fk->getColumns())) {
-                $parentIdFkExists = true;
-                break;
-            }
-        }
+        $parentIdForeignKey = collect($foreignKeys)->first(
+            fn (array $foreignKey) => $foreignKey['columns'] === ['parent_id']
+        );
 
-        $this->assertTrue($parentIdFkExists, 'Parent ID should have foreign key');
+        $this->assertNotNull($parentIdForeignKey, 'Parent ID should have foreign key');
+        $this->assertSame('categories', $parentIdForeignKey['foreign_table']);
+        $this->assertSame(['id'], $parentIdForeignKey['foreign_columns']);
+        $this->assertSame('set null', $parentIdForeignKey['on_delete']);
     }
 
     public function test_migration_is_reversible(): void
     {
-        // Get current migration status
         $beforeMigrations = DB::table('migrations')->count();
 
-        // We can't truly rollback without running all migrations,
-        // but we can verify migration was registered
         $this->assertGreaterThan(0, $beforeMigrations);
     }
 
@@ -158,7 +145,6 @@ class CategoryMigrationTest extends TestCase
 
         Artisan::call('db:seed', ['--class' => 'CategorySeeder']);
 
-        // Verify no null required fields
         $nullNames = Category::whereNull('name_ar')
             ->orWhereNull('name_en')
             ->orWhereNull('slug')
@@ -166,7 +152,6 @@ class CategoryMigrationTest extends TestCase
 
         $this->assertEquals(0, $nullNames, 'All categories should have name_ar, name_en, and slug');
 
-        // Verify sort_order is reasonable
         $invalid = Category::whereBetween('sort_order', [-1, -999])->count();
         $this->assertEquals(0, $invalid, 'Sort order should be non-negative');
     }
@@ -175,12 +160,10 @@ class CategoryMigrationTest extends TestCase
     {
         Category::truncate();
 
-        // Create 1000 categories
         Category::factory(1000)->create();
 
         $startTime = microtime(true);
 
-        // Query should use indexes
         $categories = Category::where('is_active', true)
             ->whereNull('parent_id')
             ->orderBy('sort_order')

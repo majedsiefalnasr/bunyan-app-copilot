@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\ApiErrorCode;
 use App\Enums\UserRole;
+use App\Exceptions\ApiException;
 use App\Exceptions\RoleNotAllowedException;
 use Closure;
 use Illuminate\Auth\AuthenticationException;
@@ -36,7 +38,10 @@ class RoleMiddleware
 
         // Check if user is active - this is an auth issue, not RBAC
         if (! $user->is_active) {
-            throw new AuthenticationException('Your account is not active');
+            throw ApiException::make(
+                ApiErrorCode::AUTH_UNAUTHORIZED,
+                'Your account is not active',
+            );
         }
 
         // Map role slugs to UserRole enum
