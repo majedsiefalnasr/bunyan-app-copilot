@@ -1,7 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+
 import CategoryFormModal from '../../../components/categories/CategoryFormModal.vue';
+
+// Stub useI18n BEFORE importing component
+vi.stubGlobal('useI18n', () => ({
+  t: (key: string, opts?: { count?: number }) => {
+    if (key === 'validation.minChars' && opts?.count) {
+      return `Minimum ${opts.count} characters`;
+    }
+    return key;
+  },
+  locale: 'ar',
+}));
 
 describe('CategoryFormModal Component', () => {
   const mockCategory = {
@@ -42,7 +54,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -73,6 +85,7 @@ describe('CategoryFormModal Component', () => {
             props: ['modelValue'],
             emits: ['update:modelValue'],
           },
+          USelectMenu: false,
         },
       },
     });
@@ -86,7 +99,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: mockCategory,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -132,7 +145,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: false,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -155,7 +168,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose,
         onSubmit: vi.fn(),
       },
@@ -178,7 +191,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -206,7 +219,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -238,7 +251,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit,
       },
@@ -266,7 +279,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: mockCategory,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -301,7 +314,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -327,13 +340,13 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
       global: {
         stubs: {
-          USelect: {
+          USelectMenu: {
             template: `<select data-testid="parent-select"><slot /></select>`,
             props: ['modelValue'],
             emits: ['update:modelValue'],
@@ -350,7 +363,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -378,7 +391,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -400,7 +413,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -415,7 +428,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: mockCategory,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },
@@ -430,7 +443,7 @@ describe('CategoryFormModal Component', () => {
       props: {
         isOpen: true,
         category: null,
-        categories: mockCategories,
+        parentCategories: mockCategories,
         onClose: vi.fn(),
         onSubmit: vi.fn(),
       },

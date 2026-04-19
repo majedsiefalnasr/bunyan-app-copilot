@@ -59,6 +59,7 @@
     <template v-for="(ancestor, index) in breadcrumbPath" :key="ancestor.id">
       <span class="text-gray-400 dark:text-gray-600">/</span>
       <button
+        data-testid="breadcrumb-item"
         class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors truncate"
         :class="{
           'font-semibold text-gray-900 dark:text-gray-100 pointer-events-none':

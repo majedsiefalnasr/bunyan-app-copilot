@@ -44,7 +44,15 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci --no-audit
+        run: |
+          # Use `npm ci` when a lockfile exists for reproducible installs,
+          # otherwise fall back to `npm install` so CI doesn't fail on repos
+          # that don't commit a lockfile.
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit
+          else
+            npm install --no-audit --no-fund
+          fi
 
       - name: Run ESLint
         env:
@@ -56,6 +64,9 @@ jobs:
 
       - name: Run TypeScript type check
         run: npm run typecheck
+
+      - name: Prepare Nuxt (pretest)
+        run: npm run pretest
 
       - name: Run unit and component tests
         run: npm run test

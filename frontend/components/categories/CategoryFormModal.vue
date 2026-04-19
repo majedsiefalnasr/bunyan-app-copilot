@@ -116,13 +116,25 @@
     () => {
       initializeForm();
     },
-    { deep: true }
+    { deep: true, immediate: true }
   );
 
   const mode = computed(() => (props.category ? 'edit' : 'create'));
   const title = computed(() =>
     mode.value === 'edit' ? t('categories.editCategory') : t('categories.addCategory')
   );
+
+  // Expose for testing
+  defineExpose({
+    validationSchema,
+    nameAr,
+    nameEn,
+    parentId,
+    icon,
+    isActive,
+    version,
+    initializeForm,
+  });
 </script>
 
 <template>
