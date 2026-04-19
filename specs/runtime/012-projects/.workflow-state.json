@@ -1,0 +1,33 @@
+{
+  "stage": "Projects",
+  "phase": "03_PROJECT_MANAGEMENT",
+  "stage_dir": "specs/runtime/012-projects",
+  "stage_file": "specs/phases/03_PROJECT_MANAGEMENT/STAGE_12_PROJECTS.md",
+  "branch": "spec/012-projects",
+  "base_branch": "develop",
+  "pkg_manager": "composer",
+  "pkg_manager_frontend": "npm",
+  "current_step": "pre_step",
+  "stage_status": "DRAFT",
+  "auto_advance": true,
+  "clarifications_resolved": false,
+  "drift_passed": false,
+  "implementation_allowed": false,
+  "plan_completed": false,
+  "tasks_total": null,
+  "tasks_completed": null,
+  "deferred_tasks": [],
+  "guardian_verdicts": {},
+  "parallel_task_groups": [],
+  "current_parallel_group": null,
+  "session_started_at": "2026-04-19T00:00:00Z",
+  "last_updated": "2026-04-19T00:00:00Z",
+  "step_timings": {},
+  "history": [
+    {
+      "event": "branch_created",
+      "branch": "spec/012-projects",
+      "timestamp": "2026-04-19T00:00:00Z"
+    }
+  ]
+}
