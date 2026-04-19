@@ -355,7 +355,13 @@
     "home": "الرئيسية",
     "create": "إنشاء",
     "update": "تحديث",
-    "refresh": "تحديث"
+    "refresh": "تحديث",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "clear": "مسح",
+    "sar": "ر.س"
   },
   "suppliers": {
     "not_found": "المورد غير موجود.",
@@ -401,6 +407,55 @@
     "validation": {
       "phone_format": "يجب أن يبدأ رقم الهاتف بـ 05 ويتكون من 10 أرقام.",
       "user_id_required_for_admin": "يجب تحديد معرف المستخدم (مقاول) عند الإنشاء من قِبَل الإدارة."
+    }
+  },
+  "projects": {
+    "title": "المشاريع",
+    "create": "إنشاء مشروع",
+    "edit": "تعديل المشروع",
+    "empty": "لا توجد مشاريع",
+    "created_success": "تم إنشاء المشروع بنجاح",
+    "updated_success": "تم تحديث المشروع بنجاح",
+    "deleted_success": "تم حذف المشروع بنجاح",
+    "name_ar": "اسم المشروع (عربي)",
+    "name_en": "اسم المشروع (إنجليزي)",
+    "description": "الوصف",
+    "city": "المدينة",
+    "district": "الحي",
+    "budget_estimated": "الميزانية التقديرية",
+    "start_date": "تاريخ البدء",
+    "end_date": "تاريخ الانتهاء",
+    "type_label": "نوع المشروع",
+    "details": "التفاصيل",
+    "phases": "المراحل",
+    "add_phase": "إضافة مرحلة",
+    "no_phases": "لا توجد مراحل",
+    "phase_name_ar": "اسم المرحلة (عربي)",
+    "phase_name_en": "اسم المرحلة (إنجليزي)",
+    "sort_order": "الترتيب",
+    "phase_created": "تم إنشاء المرحلة بنجاح",
+    "phase_deleted": "تم حذف المرحلة بنجاح",
+    "phases_count": "{count} مراحل",
+    "filter_status": "الحالة",
+    "filter_type": "النوع",
+    "filter_city": "المدينة",
+    "status": {
+      "draft": "مسودة",
+      "planning": "تخطيط",
+      "in_progress": "قيد التنفيذ",
+      "on_hold": "متوقف",
+      "completed": "مكتمل",
+      "closed": "مغلق"
+    },
+    "type": {
+      "residential": "سكني",
+      "commercial": "تجاري",
+      "infrastructure": "بنية تحتية"
+    },
+    "phase_status": {
+      "pending": "معلق",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل"
     }
   }
 }

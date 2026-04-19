@@ -9,20 +9,27 @@ use App\Models\FailedLoginAttempt;
 use App\Models\OtpAuditLog;
 use App\Models\PasswordHistory;
 use App\Models\Permission;
+use App\Models\Project;
+use App\Models\ProjectPhase;
 use App\Models\Role;
 use App\Models\SupplierProfile;
 use App\Models\User;
+use App\Policies\ProjectPolicy;
 use App\Policies\SupplierPolicy;
 use App\Repositories\Contracts\SupplierRepositoryInterface;
 use App\Repositories\FailedLoginAttemptRepository;
 use App\Repositories\OtpAuditLogRepository;
 use App\Repositories\PasswordHistoryRepository;
 use App\Repositories\PermissionRepository;
+use App\Repositories\ProjectPhaseRepository;
+use App\Repositories\ProjectRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\SupplierRepository;
 use App\Repositories\UserRepository;
 use App\Services\AvatarService;
 use App\Services\PasswordResetService;
+use App\Services\ProjectPhaseService;
+use App\Services\ProjectService;
 use App\Services\VerificationService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -62,6 +69,17 @@ class AppServiceProvider extends ServiceProvider
             SupplierRepositoryInterface::class,
             fn () => new SupplierRepository
         );
+
+        // Project repository & service bindings
+        $this->app->bind(ProjectRepository::class, fn () => new ProjectRepository(new Project));
+        $this->app->bind(ProjectPhaseRepository::class, fn () => new ProjectPhaseRepository(new ProjectPhase));
+        $this->app->bind(ProjectService::class, fn ($app) => new ProjectService(
+            $app->make(ProjectRepository::class),
+        ));
+        $this->app->bind(ProjectPhaseService::class, fn ($app) => new ProjectPhaseService(
+            $app->make(ProjectPhaseRepository::class),
+            $app->make(ProjectRepository::class),
+        ));
     }
 
     /**
@@ -76,8 +94,9 @@ class AppServiceProvider extends ServiceProvider
         // Route model binding
         Route::model('supplier', SupplierProfile::class);
 
-        // Explicit policy registration — SupplierPolicy doesn't follow auto-discovery naming
+        // Explicit policy registration
         Gate::policy(SupplierProfile::class, SupplierPolicy::class);
+        Gate::policy(Project::class, ProjectPolicy::class);
 
         // Admin superuser bypass — Admin bypasses all Gate/Policy checks
         Gate::before(function (User $user, string $ability) {

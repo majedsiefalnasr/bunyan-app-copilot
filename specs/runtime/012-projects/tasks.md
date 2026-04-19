@@ -22,8 +22,8 @@
 
 **Purpose**: Create database tables required by all downstream code
 
-- [ ] T001 [US-ALL] Create migration `backend/database/migrations/xxxx_xx_xx_xxxxxx_create_projects_table.php` — 17 columns (owner_id FK→users, name_ar, name_en, description, city, district, location_lat DECIMAL(10,7), location_lng DECIMAL(10,7), status ENUM, type ENUM, budget_estimated DECIMAL(15,2), budget_actual DECIMAL(15,2), start_date, end_date, timestamps, soft_delete), 5 indexes (owner_id, status, type, city, deleted_at), 1 FK (owner_id→users CASCADE)
-- [ ] T002 [US-ALL] Create migration `backend/database/migrations/xxxx_xx_xx_xxxxxx_create_project_phases_table.php` — 11 columns (project_id FK→projects, name_ar, name_en, sort_order, status ENUM, start_date, end_date, completion_percentage TINYINT CHECK 0–100, timestamps), 2 indexes (project_id, project_id+sort_order composite), 1 FK (project_id→projects CASCADE). Depends on T001.
+- [x] T001 [US-ALL] Create migration `backend/database/migrations/xxxx_xx_xx_xxxxxx_create_projects_table.php` — 17 columns (owner_id FK→users, name_ar, name_en, description, city, district, location_lat DECIMAL(10,7), location_lng DECIMAL(10,7), status ENUM, type ENUM, budget_estimated DECIMAL(15,2), budget_actual DECIMAL(15,2), start_date, end_date, timestamps, soft_delete), 5 indexes (owner_id, status, type, city, deleted_at), 1 FK (owner_id→users CASCADE)
+- [x] T002 [US-ALL] Create migration `backend/database/migrations/xxxx_xx_xx_xxxxxx_create_project_phases_table.php` — 11 columns (project_id FK→projects, name_ar, name_en, sort_order, status ENUM, start_date, end_date, completion_percentage TINYINT CHECK 0–100, timestamps), 2 indexes (project_id, project_id+sort_order composite), 1 FK (project_id→projects CASCADE). Depends on T001.
 
 **Checkpoint**: Run `php artisan migrate` — both tables exist with correct schema
 
@@ -37,65 +37,65 @@
 
 ### Enums
 
-- [ ] T003 [P] [US-ALL] Create `ProjectStatus` enum at `backend/app/Enums/ProjectStatus.php` — backed string enum with values: draft, planning, in_progress, on_hold, completed, closed; methods: `label()` (Arabic labels), `allowedTransitions()` (returns array of valid next states per R1), `canTransitionTo(self $target): bool`
-- [ ] T004 [P] [US-ALL] Create `ProjectType` enum at `backend/app/Enums/ProjectType.php` — backed string enum with values: residential, commercial, infrastructure; method: `label()` (Arabic labels: سكني, تجاري, بنية تحتية)
-- [ ] T005 [P] [US6] Create `PhaseStatus` enum at `backend/app/Enums/PhaseStatus.php` — backed string enum with values: pending, in_progress, completed; method: `label()` (Arabic labels)
+- [x] T003 [P] [US-ALL] Create `ProjectStatus` enum at `backend/app/Enums/ProjectStatus.php` — backed string enum with values: draft, planning, in_progress, on_hold, completed, closed; methods: `label()` (Arabic labels), `allowedTransitions()` (returns array of valid next states per R1), `canTransitionTo(self $target): bool`
+- [x] T004 [P] [US-ALL] Create `ProjectType` enum at `backend/app/Enums/ProjectType.php` — backed string enum with values: residential, commercial, infrastructure; method: `label()` (Arabic labels: سكني, تجاري, بنية تحتية)
+- [x] T005 [P] [US6] Create `PhaseStatus` enum at `backend/app/Enums/PhaseStatus.php` — backed string enum with values: pending, in_progress, completed; method: `label()` (Arabic labels)
 
 ### Models
 
-- [ ] T006 [P] [US-ALL] Create `Project` model at `backend/app/Models/Project.php` — extends BaseModel (SoftDeletes, HasFactory); casts: status→ProjectStatus, type→ProjectType, budget_estimated→decimal:2, budget_actual→decimal:2, start_date→date, end_date→date; relationships: `owner()` BelongsTo User, `phases()` HasMany ProjectPhase ordered by sort_order; scopes: `scopeForUser(Builder, User)` (Admin→all, Customer→owner_id, others→empty stub per R2), `scopeStatus()`, `scopeType()`, `scopeCity()`; helper: `isEditable(): bool` (false when CLOSED)
-- [ ] T007 [P] [US6] Create `ProjectPhase` model at `backend/app/Models/ProjectPhase.php` — extends Model directly (NOT BaseModel — no SoftDeletes, hard-delete per spec); uses HasFactory; $guarded=[]; casts: status→PhaseStatus, sort_order→integer, completion_percentage→integer, start_date→date, end_date→date; relationship: `project()` BelongsTo Project
+- [x] T006 [P] [US-ALL] Create `Project` model at `backend/app/Models/Project.php` — extends BaseModel (SoftDeletes, HasFactory); casts: status→ProjectStatus, type→ProjectType, budget_estimated→decimal:2, budget_actual→decimal:2, start_date→date, end_date→date; relationships: `owner()` BelongsTo User, `phases()` HasMany ProjectPhase ordered by sort_order; scopes: `scopeForUser(Builder, User)` (Admin→all, Customer→owner_id, others→empty stub per R2), `scopeStatus()`, `scopeType()`, `scopeCity()`; helper: `isEditable(): bool` (false when CLOSED)
+- [x] T007 [P] [US6] Create `ProjectPhase` model at `backend/app/Models/ProjectPhase.php` — extends Model directly (NOT BaseModel — no SoftDeletes, hard-delete per spec); uses HasFactory; $guarded=[]; casts: status→PhaseStatus, sort_order→integer, completion_percentage→integer, start_date→date, end_date→date; relationship: `project()` BelongsTo Project
 
 ### Factories
 
-- [ ] T006b [P] [US-ALL] Create `ProjectFactory` at `backend/database/factories/ProjectFactory.php` — default: owner_id→User::factory()->customer(), name_ar, name_en, city, district, type→residential, status→draft, budget_estimated; states: `planning()`, `inProgress()`, `onHold()`, `completed()`, `closed()` for each status; `commercial()`, `infrastructure()` for types. Depends on T006.
-- [ ] T007b [P] [US6] Create `ProjectPhaseFactory` at `backend/database/factories/ProjectPhaseFactory.php` — default: project_id→Project::factory(), name_ar, name_en, sort_order, status→pending, start_date, end_date within project range, completion_percentage→0; states: `inProgress()`, `completed()` for status. Depends on T007.
+- [x] T006b [P] [US-ALL] Create `ProjectFactory` at `backend/database/factories/ProjectFactory.php` — default: owner_id→User::factory()->customer(), name_ar, name_en, city, district, type→residential, status→draft, budget_estimated; states: `planning()`, `inProgress()`, `onHold()`, `completed()`, `closed()` for each status; `commercial()`, `infrastructure()` for types. Depends on T006.
+- [x] T007b [P] [US6] Create `ProjectPhaseFactory` at `backend/database/factories/ProjectPhaseFactory.php` — default: project_id→Project::factory(), name_ar, name_en, sort_order, status→pending, start_date, end_date within project range, completion_percentage→0; states: `inProgress()`, `completed()` for status. Depends on T007.
 
 ### Repositories
 
-- [ ] T008 [P] [US-ALL] Create `ProjectRepository` at `backend/app/Repositories/ProjectRepository.php` — extends BaseRepository; methods: `paginateForUser(User $user, array $filters, int $perPage = 15)` (applies scopeForUser + filter scopes + withTrashed for Admin when with_trashed param), `findWithPhases(int $id)` (eager loads phases + owner). Depends on T006.
-- [ ] T009 [P] [US6] Create `ProjectPhaseRepository` at `backend/app/Repositories/ProjectPhaseRepository.php` — extends BaseRepository; methods: `findForProject(int $projectId, int $phaseId)`, `listForProject(int $projectId)` (ordered by sort_order). Depends on T007.
+- [x] T008 [P] [US-ALL] Create `ProjectRepository` at `backend/app/Repositories/ProjectRepository.php` — extends BaseRepository; methods: `paginateForUser(User $user, array $filters, int $perPage = 15)` (applies scopeForUser + filter scopes + withTrashed for Admin when with_trashed param), `findWithPhases(int $id)` (eager loads phases + owner). Depends on T006.
+- [x] T009 [P] [US6] Create `ProjectPhaseRepository` at `backend/app/Repositories/ProjectPhaseRepository.php` — extends BaseRepository; methods: `findForProject(int $projectId, int $phaseId)`, `listForProject(int $projectId)` (ordered by sort_order). Depends on T007.
 
 ### Form Requests
 
-- [ ] T010 [P] [US1] Create `StoreProjectRequest` at `backend/app/Http/Requests/StoreProjectRequest.php` — validates: owner_id (required, exists:users, Customer role check via after()), name_ar (required, string, min:2, max:255), name_en (required, string, min:2, max:255), city (required, string, max:100), type (required, Rule::in ProjectType), description (nullable, string), district (nullable, string, max:100), location_lat (nullable, numeric, between:-90,90), location_lng (nullable, numeric, between:-180,180), budget_estimated (nullable, numeric, min:0.01 per R8), start_date (nullable, date), end_date (nullable, date, after_or_equal:start_date)
-- [ ] T011 [P] [US5] Create `UpdateProjectRequest` at `backend/app/Http/Requests/UpdateProjectRequest.php` — same fields as StoreProjectRequest but all optional (sometimes rules); after() rejects if project status is CLOSED with WORKFLOW_INVALID_TRANSITION
-- [ ] T012 [P] [US4] Create `TransitionProjectStatusRequest` at `backend/app/Http/Requests/TransitionProjectStatusRequest.php` — validates: status (required, Rule::in ProjectStatus), expected_updated_at (required, date) for optimistic locking per R5
-- [ ] T013 [P] [US6] Create `StoreProjectPhaseRequest` at `backend/app/Http/Requests/StoreProjectPhaseRequest.php` — validates: name_ar (required), name_en (required), sort_order (required, integer, min:0); optional: status (PhaseStatus), start_date (date), end_date (date, after_or_equal:start_date), completion_percentage (integer, between:0,100); after() validates date containment within project range per R4
-- [ ] T014 [P] [US6] Create `UpdateProjectPhaseRequest` at `backend/app/Http/Requests/UpdateProjectPhaseRequest.php` — all fields optional (sometimes rules); after() validates date containment per R4
+- [x] T010 [P] [US1] Create `StoreProjectRequest` at `backend/app/Http/Requests/StoreProjectRequest.php` — validates: owner_id (required, exists:users, Customer role check via after()), name_ar (required, string, min:2, max:255), name_en (required, string, min:2, max:255), city (required, string, max:100), type (required, Rule::in ProjectType), description (nullable, string), district (nullable, string, max:100), location_lat (nullable, numeric, between:-90,90), location_lng (nullable, numeric, between:-180,180), budget_estimated (nullable, numeric, min:0.01 per R8), start_date (nullable, date), end_date (nullable, date, after_or_equal:start_date)
+- [x] T011 [P] [US5] Create `UpdateProjectRequest` at `backend/app/Http/Requests/UpdateProjectRequest.php` — same fields as StoreProjectRequest but all optional (sometimes rules); after() rejects if project status is CLOSED with WORKFLOW_INVALID_TRANSITION
+- [x] T012 [P] [US4] Create `TransitionProjectStatusRequest` at `backend/app/Http/Requests/TransitionProjectStatusRequest.php` — validates: status (required, Rule::in ProjectStatus), expected_updated_at (required, date) for optimistic locking per R5
+- [x] T013 [P] [US6] Create `StoreProjectPhaseRequest` at `backend/app/Http/Requests/StoreProjectPhaseRequest.php` — validates: name_ar (required), name_en (required), sort_order (required, integer, min:0); optional: status (PhaseStatus), start_date (date), end_date (date, after_or_equal:start_date), completion_percentage (integer, between:0,100); after() validates date containment within project range per R4
+- [x] T014 [P] [US6] Create `UpdateProjectPhaseRequest` at `backend/app/Http/Requests/UpdateProjectPhaseRequest.php` — all fields optional (sometimes rules); after() validates date containment per R4
 
 ### API Resources
 
-- [ ] T015 [P] [US-ALL] Create `ProjectResource` at `backend/app/Http/Resources/ProjectResource.php` — extends BaseApiResource; outputs: id, owner_id, owner (whenLoaded UserSummaryResource), name_ar, name_en, description, city, district, location_lat, location_lng, status (->value), type (->value), budget_estimated, budget_actual, start_date, end_date, phases_count (whenCounted), phases (whenLoaded collection), created_at, updated_at
-- [ ] T016 [P] [US6] Create `ProjectPhaseResource` at `backend/app/Http/Resources/ProjectPhaseResource.php` — extends BaseApiResource; outputs: id, project_id, name_ar, name_en, sort_order, status (->value), start_date, end_date, completion_percentage, created_at, updated_at
+- [x] T015 [P] [US-ALL] Create `ProjectResource` at `backend/app/Http/Resources/ProjectResource.php` — extends BaseApiResource; outputs: id, owner_id, owner (whenLoaded UserSummaryResource), name_ar, name_en, description, city, district, location_lat, location_lng, status (->value), type (->value), budget_estimated, budget_actual, start_date, end_date, phases_count (whenCounted), phases (whenLoaded collection), created_at, updated_at
+- [x] T016 [P] [US6] Create `ProjectPhaseResource` at `backend/app/Http/Resources/ProjectPhaseResource.php` — extends BaseApiResource; outputs: id, project_id, name_ar, name_en, sort_order, status (->value), start_date, end_date, completion_percentage, created_at, updated_at
 
 ### Policy
 
-- [ ] T017 [P] [US-ALL] Create `ProjectPolicy` at `backend/app/Policies/ProjectPolicy.php` — methods: viewAny (all authenticated), view (Customer: own project; Contractor/Architect/Engineer: stub false until STAGE_15), create (Admin only via Gate::before), update (Customer: own + not CLOSED), transitionStatus (Admin only), delete (Admin only), addPhase (Admin only). Admin bypasses via Gate::before() in AppServiceProvider.
+- [x] T017 [P] [US-ALL] Create `ProjectPolicy` at `backend/app/Policies/ProjectPolicy.php` — methods: viewAny (all authenticated), view (Customer: own project; Contractor/Architect/Engineer: stub false until STAGE_15), create (Admin only via Gate::before), update (Customer: own + not CLOSED), transitionStatus (Admin only), delete (Admin only), addPhase (Admin only). Admin bypasses via Gate::before() in AppServiceProvider.
 
 ### Services
 
-- [ ] T018 [US-ALL] Create `ProjectService` at `backend/app/Services/ProjectService.php` — constructor injects ProjectRepository; methods: `list(User, filters)` (delegates to paginateForUser), `find(int)` (findWithPhases or throw RESOURCE_NOT_FOUND), `create(array)` (create project with default DRAFT status), `update(int, array)` (reject CLOSED per FR-005), `transitionStatus(int, ProjectStatus, string)` (optimistic locking via updated_at check per R5, validate canTransitionTo, throw WORKFLOW_INVALID_TRANSITION or CONFLICT_ERROR), `timeline(int)` (return project + ordered phases), `delete(int)` (soft-delete). Depends on T008.
-- [ ] T019 [US6] Create `ProjectPhaseService` at `backend/app/Services/ProjectPhaseService.php` — constructor injects ProjectPhaseRepository + ProjectRepository; methods: `listForProject(int)`, `create(int, array)` (validates project exists, creates phase), `update(int, int, array)`, `delete(int, int)` (hard-delete). Depends on T008, T009.
+- [x] T018 [US-ALL] Create `ProjectService` at `backend/app/Services/ProjectService.php` — constructor injects ProjectRepository; methods: `list(User, filters)` (delegates to paginateForUser), `find(int)` (findWithPhases or throw RESOURCE_NOT_FOUND), `create(array)` (create project with default DRAFT status), `update(int, array)` (reject CLOSED per FR-005), `transitionStatus(int, ProjectStatus, string)` (optimistic locking via updated_at check per R5, validate canTransitionTo, throw WORKFLOW_INVALID_TRANSITION or CONFLICT_ERROR), `timeline(int)` (return project + ordered phases), `delete(int)` (soft-delete). Depends on T008.
+- [x] T019 [US6] Create `ProjectPhaseService` at `backend/app/Services/ProjectPhaseService.php` — constructor injects ProjectPhaseRepository + ProjectRepository; methods: `listForProject(int)`, `create(int, array)` (validates project exists, creates phase), `update(int, int, array)`, `delete(int, int)` (hard-delete). Depends on T008, T009.
 
 ### Controllers
 
-- [ ] T020 [US-ALL] Create `ProjectController` at `backend/app/Http/Controllers/Api/ProjectController.php` — uses ApiResponseTrait; constructor injects ProjectService; methods: index (authorize viewAny→service->list→paginated ProjectResource), store (StoreProjectRequest→service->create→ProjectResource 201), show (authorize view→service->find→ProjectResource), update (authorize update→UpdateProjectRequest→service->update→ProjectResource), destroy (authorize delete→service->delete→success response 200), transitionStatus (authorize transitionStatus→TransitionProjectStatusRequest→service->transitionStatus→ProjectResource), timeline (authorize view→service->timeline→custom response per R12). Depends on T018, T010–T012, T015, T017.
-- [ ] T021 [US6] Create `ProjectPhaseController` at `backend/app/Http/Controllers/Api/ProjectPhaseController.php` — uses ApiResponseTrait; constructor injects ProjectPhaseService; methods: index (authorize view project→service->listForProject→ProjectPhaseResource collection), store (authorize addPhase→StoreProjectPhaseRequest→service->create→ProjectPhaseResource 201), update (authorize addPhase→UpdateProjectPhaseRequest→service->update→ProjectPhaseResource), destroy (authorize addPhase→service->delete→success response). Depends on T019, T013–T014, T016, T017.
+- [x] T020 [US-ALL] Create `ProjectController` at `backend/app/Http/Controllers/Api/ProjectController.php` — uses ApiResponseTrait; constructor injects ProjectService; methods: index (authorize viewAny→service->list→paginated ProjectResource), store (StoreProjectRequest→service->create→ProjectResource 201), show (authorize view→service->find→ProjectResource), update (authorize update→UpdateProjectRequest→service->update→ProjectResource), destroy (authorize delete→service->delete→success response 200), transitionStatus (authorize transitionStatus→TransitionProjectStatusRequest→service->transitionStatus→ProjectResource), timeline (authorize view→service->timeline→custom response per R12). Depends on T018, T010–T012, T015, T017.
+- [x] T021 [US6] Create `ProjectPhaseController` at `backend/app/Http/Controllers/Api/ProjectPhaseController.php` — uses ApiResponseTrait; constructor injects ProjectPhaseService; methods: index (authorize view project→service->listForProject→ProjectPhaseResource collection), store (authorize addPhase→StoreProjectPhaseRequest→service->create→ProjectPhaseResource 201), update (authorize addPhase→UpdateProjectPhaseRequest→service->update→ProjectPhaseResource), destroy (authorize addPhase→service->delete→success response). Depends on T019, T013–T014, T016, T017.
 
 ### Routes & Registration
 
-- [ ] T022 [US-ALL] Create route file at `backend/routes/api/v1/projects.php` — defines all 11 endpoints: GET/POST /projects, GET/PUT/DELETE /projects/{project}, PUT /projects/{project}/status, GET /projects/{project}/timeline, GET/POST /projects/{project}/phases, PUT/DELETE /projects/{project}/phases/{phase}; middleware: auth:sanctum on all, role:admin on store/transitionStatus/delete/phase mutations. Depends on T020, T021.
-- [ ] T023 [US-ALL] Register project routes in `backend/routes/api.php` — add `require __DIR__.'/api/v1/projects.php';` statement. Depends on T022.
+- [x] T022 [US-ALL] Create route file at `backend/routes/api/v1/projects.php` — defines all 11 endpoints: GET/POST /projects, GET/PUT/DELETE /projects/{project}, PUT /projects/{project}/status, GET /projects/{project}/timeline, GET/POST /projects/{project}/phases, PUT/DELETE /projects/{project}/phases/{phase}; middleware: auth:sanctum on all, role:admin on store/transitionStatus/delete/phase mutations. Depends on T020, T021.
+- [x] T023 [US-ALL] Register project routes in `backend/routes/api.php` — add `require __DIR__.'/api/v1/projects.php';` statement. Depends on T022.
 
 ### Translations
 
-- [ ] T024 [P] [US-ALL] Create `backend/lang/ar/projects.php` — Arabic translations for project/phase labels, status names (مسودة, تخطيط, قيد التنفيذ, متوقف, مكتمل, مغلق), type names (سكني, تجاري, بنية تحتية), phase status names, validation messages, error messages
-- [ ] T025 [P] [US-ALL] Create `backend/lang/en/projects.php` — English translations matching Arabic keys
+- [x] T024 [P] [US-ALL] Create `backend/lang/ar/projects.php` — Arabic translations for project/phase labels, status names (مسودة, تخطيط, قيد التنفيذ, متوقف, مكتمل, مغلق), type names (سكني, تجاري, بنية تحتية), phase status names, validation messages, error messages
+- [x] T025 [P] [US-ALL] Create `backend/lang/en/projects.php` — English translations matching Arabic keys
 
 ### Service Provider
 
-- [ ] T026 [US-ALL] Update `backend/app/Providers/AppServiceProvider.php` — register() bindings: ProjectRepository, ProjectPhaseRepository, ProjectService, ProjectPhaseService; boot(): Gate::policy(Project::class, ProjectPolicy::class), Route::model('project', Project::class). Depends on T006–T009, T017–T019.
+- [x] T026 [US-ALL] Update `backend/app/Providers/AppServiceProvider.php` — register() bindings: ProjectRepository, ProjectPhaseRepository, ProjectService, ProjectPhaseService; boot(): Gate::policy(Project::class, ProjectPolicy::class), Route::model('project', Project::class). Depends on T006–T009, T017–T019.
 
 **Checkpoint**: All backend endpoints respond correctly via `php artisan route:list | grep projects` — 10 routes registered. Run `php artisan test --filter=Project` for smoke test.
 
@@ -109,28 +109,28 @@
 
 ### Frontend Foundation (shared across all stories)
 
-- [ ] T027 [P] [US-ALL] Create `frontend/types/project.ts` — TypeScript interfaces: Project, ProjectPhase, ProjectFormData, ProjectFilters, ProjectStatus (enum), ProjectType (enum), PhaseStatus (enum), PhaseFormData, TimelineData, ProjectListResponse (paginated)
-- [ ] T028 [P] [US-ALL] Create `frontend/composables/useProjects.ts` — API client composable with methods: fetchProjects(filters, page), fetchProject(id), createProject(data), updateProject(id, data), transitionStatus(id, status, expectedUpdatedAt), deleteProject(id); uses Laravel API client composable. Depends on T027.
-- [ ] T029 [US-ALL] Create `frontend/stores/projectStore.ts` — Pinia store; state: projects[], selectedProject, isLoading, error, filters; actions: loadProjects(), loadProject(id), createProject(data), updateProject(id, data), transitionStatus(id, status), deleteProject(id); getters: filteredProjects, projectById(id). Depends on T028.
-- [ ] T030 [P] [US-ALL] Create `frontend/components/projects/ProjectStatusBadge.vue` — Nuxt UI UBadge with color mapping per status (draft→gray, planning→blue, in_progress→yellow, on_hold→orange, completed→green, closed→red); accepts status prop; Arabic label display
+- [x] T027 [P] [US-ALL] Create `frontend/types/project.ts` — TypeScript interfaces: Project, ProjectPhase, ProjectFormData, ProjectFilters, ProjectStatus (enum), ProjectType (enum), PhaseStatus (enum), PhaseFormData, TimelineData, ProjectListResponse (paginated)
+- [x] T028 [P] [US-ALL] Create `frontend/composables/useProjects.ts` — API client composable with methods: fetchProjects(filters, page), fetchProject(id), createProject(data), updateProject(id, data), transitionStatus(id, status, expectedUpdatedAt), deleteProject(id); uses Laravel API client composable. Depends on T027.
+- [x] T029 [US-ALL] Create `frontend/stores/projectStore.ts` — Pinia store; state: projects[], selectedProject, isLoading, error, filters; actions: loadProjects(), loadProject(id), createProject(data), updateProject(id, data), transitionStatus(id, status), deleteProject(id); getters: filteredProjects, projectById(id). Depends on T028.
+- [x] T030 [P] [US-ALL] Create `frontend/components/projects/ProjectStatusBadge.vue` — Nuxt UI UBadge with color mapping per status (draft→gray, planning→blue, in_progress→yellow, on_hold→orange, completed→green, closed→red); accepts status prop; Arabic label display
 
 ### US1 — Admin Creates a New Construction Project
 
-- [ ] T031 [US1] Create `frontend/pages/projects/create.vue` — project creation page; simple form layout using Nuxt UI UForm with fields: owner_id, name_ar, name_en, description, city, district, location_lat, location_lng, type (USelect), budget_estimated, start_date, end_date; VeeValidate + Zod validation; on submit calls createProject composable; redirects to project detail on success; Admin-only middleware. Depends on T028, T029.
+- [x] T031 [US1] Create `frontend/pages/projects/create.vue` — project creation page; simple form layout using Nuxt UI UForm with fields: owner_id, name_ar, name_en, description, city, district, location_lat, location_lng, type (USelect), budget_estimated, start_date, end_date; VeeValidate + Zod validation; on submit calls createProject composable; redirects to project detail on success; Admin-only middleware. Depends on T028, T029.
 
 ### US2 — Role-Scoped Project Listing
 
-- [ ] T032 [P] [US2] Create `frontend/components/projects/ProjectCard.vue` — project summary card using Nuxt UI UCard; displays: name (locale-aware ar/en), ProjectStatusBadge, type badge, city, budget_estimated formatted, start_date–end_date range; click navigates to project detail. Depends on T030.
-- [ ] T033 [P] [US2] Create `frontend/components/projects/ProjectFilters.vue` — filter bar with Nuxt UI USelect for status (all + ProjectStatus values), type (all + ProjectType values), city (text input); emits filter-change event with ProjectFilters object
-- [ ] T034 [US2] Create `frontend/pages/projects/index.vue` — project listing page; uses projectStore.loadProjects(); renders ProjectFilters + grid of ProjectCards + Nuxt UI pagination; responsive RTL layout; Admin sees "Create Project" button. Depends on T029, T032, T033.
+- [x] T032 [P] [US2] Create `frontend/components/projects/ProjectCard.vue` — project summary card using Nuxt UI UCard; displays: name (locale-aware ar/en), ProjectStatusBadge, type badge, city, budget_estimated formatted, start_date–end_date range; click navigates to project detail. Depends on T030.
+- [x] T033 [P] [US2] Create `frontend/components/projects/ProjectFilters.vue` — filter bar with Nuxt UI USelect for status (all + ProjectStatus values), type (all + ProjectType values), city (text input); emits filter-change event with ProjectFilters object
+- [x] T034 [US2] Create `frontend/pages/projects/index.vue` — project listing page; uses projectStore.loadProjects(); renders ProjectFilters + grid of ProjectCards + Nuxt UI pagination; responsive RTL layout; Admin sees "Create Project" button. Depends on T029, T032, T033.
 
 ### US3 — Project Detail View
 
-- [ ] T035 [P] [US3] Create `frontend/components/projects/tabs/PlaceholderTab.vue` — placeholder component for unimplemented tabs (tasks, team, documents); displays i18n message "قريبًا في تحديث مستقبلي" / "Coming soon in a future update" with icon
-- [ ] T036 [P] [US3] Create `frontend/components/projects/tabs/OverviewTab.vue` — project overview displaying: name, description, status with badge, type, city/district, location coordinates, budget (estimated vs actual), date range, owner info; uses Nuxt UI UCard sections
-- [ ] T036b [P] [US4] Create `frontend/components/projects/StatusTransitionControl.vue` — Admin-only status transition dropdown; shows current status badge + allowed transitions as UDropdown items; on select opens UModal confirmation with optimistic locking (expected_updated_at); calls projectStore.transitionStatus(); displays success/error feedback; hidden for non-Admin users. Depends on T029, T030.
-- [ ] T037 [US3] Create `frontend/components/projects/ProjectDetailTabs.vue` — tabbed container using Nuxt UI UTabs with 6 tabs: Overview (OverviewTab), Phases (PhasesTab→placeholder initially, replaced in US6), Tasks (PlaceholderTab), Team (PlaceholderTab), Documents (PlaceholderTab), Timeline (TimelineTab→placeholder initially, replaced in US7); accepts project prop. Depends on T035, T036.
-- [ ] T038 [US3] Create `frontend/pages/projects/[id].vue` — project detail page; loads project via projectStore.loadProject(id); renders ProjectDetailTabs; shows loading/error states; role-scoped access (redirects if unauthorized). Depends on T029, T037.
+- [x] T035 [P] [US3] Create `frontend/components/projects/tabs/PlaceholderTab.vue` — placeholder component for unimplemented tabs (tasks, team, documents); displays i18n message "قريبًا في تحديث مستقبلي" / "Coming soon in a future update" with icon
+- [x] T036 [P] [US3] Create `frontend/components/projects/tabs/OverviewTab.vue` — project overview displaying: name, description, status with badge, type, city/district, location coordinates, budget (estimated vs actual), date range, owner info; uses Nuxt UI UCard sections
+- [x] T036b [P] [US4] Create `frontend/components/projects/StatusTransitionControl.vue` — Admin-only status transition dropdown; shows current status badge + allowed transitions as UDropdown items; on select opens UModal confirmation with optimistic locking (expected_updated_at); calls projectStore.transitionStatus(); displays success/error feedback; hidden for non-Admin users. Depends on T029, T030.
+- [x] T037 [US3] Create `frontend/components/projects/ProjectDetailTabs.vue` — tabbed container using Nuxt UI UTabs with 6 tabs: Overview (OverviewTab), Phases (PhasesTab→placeholder initially, replaced in US6), Tasks (PlaceholderTab), Team (PlaceholderTab), Documents (PlaceholderTab), Timeline (TimelineTab→placeholder initially, replaced in US7); accepts project prop. Depends on T035, T036.
+- [x] T038 [US3] Create `frontend/pages/projects/[id].vue` — project detail page; loads project via projectStore.loadProject(id); renders ProjectDetailTabs; shows loading/error states; role-scoped access (redirects if unauthorized). Depends on T029, T037.
 
 **Checkpoint**: Admin can create a project → listing shows all projects → clicking a project shows tabbed detail view with overview data. Customer sees only owned projects. Non-assigned roles see empty listing.
 
@@ -144,7 +144,7 @@
 
 ### US5 — Project Update
 
-- [ ] T039 [US5] Create `frontend/pages/projects/[id]/edit.vue` — project edit form page; loads current project data into form; uses Nuxt UI UForm with same fields as create; disables form for CLOSED projects with warning message; submits via updateProject composable; Admin or owner-only middleware. Depends on T028, T029.
+- [x] T039 [US5] Create `frontend/pages/projects/[id]/edit.vue` — project edit form page; loads current project data into form; uses Nuxt UI UForm with same fields as create; disables form for CLOSED projects with warning message; submits via updateProject composable; Admin or owner-only middleware. Depends on T028, T029.
 
 **Checkpoint**: Admin can update project fields. CLOSED projects show immutable warning. Non-authorized users are redirected.
 
@@ -156,10 +156,10 @@
 
 **Independent Test**: Admin adds 3 phases to a project → phases appear ordered by sort_order → update a phase → delete a phase
 
-- [ ] T040 [P] [US6] Create `frontend/composables/useProjectPhases.ts` — API client composable with methods: fetchPhases(projectId), createPhase(projectId, data), updatePhase(projectId, phaseId, data), deletePhase(projectId, phaseId), fetchTimeline(projectId); uses Laravel API client composable. Depends on T027.
-- [ ] T041 [P] [US6] Create `frontend/components/projects/PhaseForm.vue` — phase create/edit form using Nuxt UI UForm; fields: name_ar, name_en, sort_order (UInput number), status (USelect PhaseStatus), start_date, end_date (date inputs), completion_percentage (URange or UInput 0–100); VeeValidate + Zod validation; emits submit event
-- [ ] T042 [P] [US6] Create `frontend/components/projects/PhaseListItem.vue` — phase row component; displays: name (locale-aware), status badge, completion percentage bar (UProgress), sort_order, date range; action buttons: edit, delete (with confirmation modal); emits edit/delete events
-- [ ] T043 [US6] Create `frontend/components/projects/tabs/PhasesTab.vue` — phases management tab; lists phases via PhaseListItem; "Add Phase" button opens PhaseForm in UModal; edit action opens PhaseForm pre-filled; delete action shows UModal confirmation; uses useProjectPhases composable; Admin-only mutations (other roles see read-only list). Depends on T040, T041, T042.
+- [x] T040 [P] [US6] Create `frontend/composables/useProjectPhases.ts` — API client composable with methods: fetchPhases(projectId), createPhase(projectId, data), updatePhase(projectId, phaseId, data), deletePhase(projectId, phaseId), fetchTimeline(projectId); uses Laravel API client composable. Depends on T027.
+- [x] T041 [P] [US6] Create `frontend/components/projects/PhaseForm.vue` — phase create/edit form using Nuxt UI UForm; fields: name_ar, name_en, sort_order (UInput number), status (USelect PhaseStatus), start_date, end_date (date inputs), completion_percentage (URange or UInput 0–100); VeeValidate + Zod validation; emits submit event
+- [x] T042 [P] [US6] Create `frontend/components/projects/PhaseListItem.vue` — phase row component; displays: name (locale-aware), status badge, completion percentage bar (UProgress), sort_order, date range; action buttons: edit, delete (with confirmation modal); emits edit/delete events
+- [x] T043 [US6] Create `frontend/components/projects/tabs/PhasesTab.vue` — phases management tab; lists phases via PhaseListItem; "Add Phase" button opens PhaseForm in UModal; edit action opens PhaseForm pre-filled; delete action shows UModal confirmation; uses useProjectPhases composable; Admin-only mutations (other roles see read-only list). Depends on T040, T041, T042.
 
 **Checkpoint**: Admin adds phases to a project → phases render in sorted order → edit/delete work correctly → date containment validation triggers on invalid dates.
 
@@ -173,16 +173,16 @@
 
 ### US7 — Project Timeline View
 
-- [ ] T044 [US7] Create `frontend/components/projects/tabs/TimelineTab.vue` — timeline/Gantt-style visualization; calls fetchTimeline(projectId) via useProjectPhases composable; renders phases as horizontal bars with start/end dates, completion percentage overlay, status color coding; handles empty phases gracefully; read-only view. Depends on T040.
+- [x] T044 [US7] Create `frontend/components/projects/tabs/TimelineTab.vue` — timeline/Gantt-style visualization; calls fetchTimeline(projectId) via useProjectPhases composable; renders phases as horizontal bars with start/end dates, completion percentage overlay, status color coding; handles empty phases gracefully; read-only view. Depends on T040.
 
 ### US8 — Project Creation Wizard (Frontend)
 
-- [ ] T045 [P] [US8] Create `frontend/components/projects/wizard/StepBasicInfo.vue` — Wizard Step 1: owner_id (USelect for Customer users), name_ar, name_en, description (UTextarea), type (USelect ProjectType); VeeValidate validation; emits step-complete with partial form data
-- [ ] T046 [P] [US8] Create `frontend/components/projects/wizard/StepLocation.vue` — Wizard Step 2: city (UInput), district (UInput), location_lat (UInput number), location_lng (UInput number); coordinate validation (lat -90 to 90, lng -180 to 180); emits step-complete
-- [ ] T047 [P] [US8] Create `frontend/components/projects/wizard/StepBudget.vue` — Wizard Step 3: budget_estimated (UInput currency formatted), start_date (date input), end_date (date input, after_or_equal:start_date); emits step-complete
-- [ ] T048 [P] [US8] Create `frontend/components/projects/wizard/StepReview.vue` — Wizard Step 4: read-only summary of all entered data across steps; "Submit" button triggers project creation; "Back" button returns to previous steps; displays validation errors from API inline
-- [ ] T049 [US8] Create `frontend/components/projects/ProjectWizard.vue` — multi-step wizard container; manages step navigation (1→2→3→4), preserves data across steps in reactive state, validates per step before advancing, handles back navigation without data loss; on final submit calls createProject composable; redirects to project detail on success. Depends on T045–T048.
-- [ ] T050 [US8] Update `frontend/pages/projects/create.vue` — replace simple form with ProjectWizard component; maintain Admin-only middleware. Depends on T049. **Note**: This modifies T031's output.
+- [x] T045 [P] [US8] Create `frontend/components/projects/wizard/StepBasicInfo.vue` — Wizard Step 1: owner_id (USelect for Customer users), name_ar, name_en, description (UTextarea), type (USelect ProjectType); VeeValidate validation; emits step-complete with partial form data
+- [x] T046 [P] [US8] Create `frontend/components/projects/wizard/StepLocation.vue` — Wizard Step 2: city (UInput), district (UInput), location_lat (UInput number), location_lng (UInput number); coordinate validation (lat -90 to 90, lng -180 to 180); emits step-complete
+- [x] T047 [P] [US8] Create `frontend/components/projects/wizard/StepBudget.vue` — Wizard Step 3: budget_estimated (UInput currency formatted), start_date (date input), end_date (date input, after_or_equal:start_date); emits step-complete
+- [x] T048 [P] [US8] Create `frontend/components/projects/wizard/StepReview.vue` — Wizard Step 4: read-only summary of all entered data across steps; "Submit" button triggers project creation; "Back" button returns to previous steps; displays validation errors from API inline
+- [x] T049 [US8] Create `frontend/components/projects/ProjectWizard.vue` — multi-step wizard container; manages step navigation (1→2→3→4), preserves data across steps in reactive state, validates per step before advancing, handles back navigation without data loss; on final submit calls createProject composable; redirects to project detail on success. Depends on T045–T048.
+- [x] T050 [US8] Update `frontend/pages/projects/create.vue` — replace simple form with ProjectWizard component; maintain Admin-only middleware. Depends on T049. **Note**: This modifies T031's output.
 
 **Checkpoint**: Wizard navigates all 4 steps → back navigation preserves data → submit creates project → timeline tab renders phase bars correctly for a project with phases.
 
@@ -194,26 +194,26 @@
 
 ### Backend Unit Tests
 
-- [ ] T051 [P] [US4] Create `backend/tests/Unit/Enums/ProjectStatusTest.php` — test: all 6 values exist, label() returns Arabic strings, allowedTransitions() returns correct arrays per transition map (DRAFT→[PLANNING], PLANNING→[IN_PROGRESS], IN_PROGRESS→[ON_HOLD,COMPLETED], ON_HOLD→[IN_PROGRESS], COMPLETED→[CLOSED], CLOSED→[]), canTransitionTo() returns true/false correctly, forbidden transitions rejected (e.g., DRAFT→COMPLETED)
-- [ ] T052 [P] [US-ALL] Create `backend/tests/Unit/Models/ProjectTest.php` — test: scopeForUser returns all for Admin, owner-only for Customer, empty for Contractor/Architect/Engineer (stub); scopeStatus/scopeType/scopeCity filter correctly; isEditable() returns false for CLOSED, true otherwise; casts work correctly; relationships (owner, phases) resolve; soft-delete behavior
+- [x] T051 [P] [US4] Create `backend/tests/Unit/Enums/ProjectStatusTest.php` — test: all 6 values exist, label() returns Arabic strings, allowedTransitions() returns correct arrays per transition map (DRAFT→[PLANNING], PLANNING→[IN_PROGRESS], IN_PROGRESS→[ON_HOLD,COMPLETED], ON_HOLD→[IN_PROGRESS], COMPLETED→[CLOSED], CLOSED→[]), canTransitionTo() returns true/false correctly, forbidden transitions rejected (e.g., DRAFT→COMPLETED)
+- [x] T052 [P] [US-ALL] Create `backend/tests/Unit/Models/ProjectTest.php` — test: scopeForUser returns all for Admin, owner-only for Customer, empty for Contractor/Architect/Engineer (stub); scopeStatus/scopeType/scopeCity filter correctly; isEditable() returns false for CLOSED, true otherwise; casts work correctly; relationships (owner, phases) resolve; soft-delete behavior
 
 ### Backend Feature Tests
 
-- [ ] T053 [US-ALL] Create `backend/tests/Feature/Api/V1/ProjectControllerTest.php` — RBAC matrix: test ALL 5 roles (Admin, Customer, Contractor, Supervising Architect, Field Engineer) on ALL endpoints. POST create (Admin→201, Customer→403, Contractor→403, Architect→403, Engineer→403, unauthenticated→401; validation errors→422, non-Customer owner→422); GET index (Admin sees all, Customer sees owned only, Contractor/Architect/Engineer see empty; filter by status/type/city; pagination); GET show (Admin→200, Customer-owner→200, Customer-non-owner→403, Contractor→403, Architect→403, Engineer→403, not found→404, soft-deleted→404 for non-Admin); PUT update (Admin→200, Customer-owner→200, Customer-non-owner→403, Contractor→403, CLOSED project→422); DELETE destroy (Admin→200 soft-delete, Customer→403, non-Admin→403); PUT status (Admin valid→200, Admin invalid transition→422, Admin optimistic lock conflict→409, Customer→403, Contractor→403, Architect→403, Engineer→403); GET timeline (Admin→200, Customer-owner→200, empty phases→200). All responses match error contract. Depends on T006b.
-- [ ] T054 [US6] Create `backend/tests/Feature/Api/V1/ProjectPhaseControllerTest.php` — RBAC matrix: test ALL 5 roles on ALL phase endpoints. POST create (Admin→201, Customer→403, Contractor→403; date outside project range→422; NULL project dates→201 containment skipped); GET index (Admin→200 ordered by sort_order, Customer-owner→200, non-assigned→403); PUT update (Admin→200, date containment→422, NULL project dates→201); DELETE destroy (Admin→200 hard-delete, Customer→403). Depends on T007b.
+- [x] T053 [US-ALL] Create `backend/tests/Feature/Api/V1/ProjectControllerTest.php` — RBAC matrix: test ALL 5 roles (Admin, Customer, Contractor, Supervising Architect, Field Engineer) on ALL endpoints. POST create (Admin→201, Customer→403, Contractor→403, Architect→403, Engineer→403, unauthenticated→401; validation errors→422, non-Customer owner→422); GET index (Admin sees all, Customer sees owned only, Contractor/Architect/Engineer see empty; filter by status/type/city; pagination); GET show (Admin→200, Customer-owner→200, Customer-non-owner→403, Contractor→403, Architect→403, Engineer→403, not found→404, soft-deleted→404 for non-Admin); PUT update (Admin→200, Customer-owner→200, Customer-non-owner→403, Contractor→403, CLOSED project→422); DELETE destroy (Admin→200 soft-delete, Customer→403, non-Admin→403); PUT status (Admin valid→200, Admin invalid transition→422, Admin optimistic lock conflict→409, Customer→403, Contractor→403, Architect→403, Engineer→403); GET timeline (Admin→200, Customer-owner→200, empty phases→200). All responses match error contract. Depends on T006b.
+- [x] T054 [US6] Create `backend/tests/Feature/Api/V1/ProjectPhaseControllerTest.php` — RBAC matrix: test ALL 5 roles on ALL phase endpoints. POST create (Admin→201, Customer→403, Contractor→403; date outside project range→422; NULL project dates→201 containment skipped); GET index (Admin→200 ordered by sort_order, Customer-owner→200, non-assigned→403); PUT update (Admin→200, date containment→422, NULL project dates→201); DELETE destroy (Admin→200 hard-delete, Customer→403). Depends on T007b.
 
 ### Frontend Unit Tests
 
-- [ ] T055 [P] [US-ALL] Create `frontend/tests/unit/composables/useProjects.test.ts` — test: fetchProjects calls correct API endpoint with filters, fetchProject calls /projects/{id}, createProject sends POST, updateProject sends PUT, transitionStatus sends PUT /projects/{id}/status, deleteProject sends DELETE; error handling for API failures
-- [ ] T056 [P] [US-ALL] Create `frontend/tests/unit/stores/projectStore.test.ts` — test: loadProjects populates state, loadProject sets selectedProject, createProject adds to list, updateProject updates in list, transitionStatus updates status, deleteProject removes from list; isLoading/error state management; getters filteredProjects and projectById
-- [ ] T057 [P] [US2] Create `frontend/tests/unit/components/projects/ProjectCard.test.ts` — test: renders project name (Arabic/English based on locale), displays correct status badge color, shows budget formatted, shows date range, click emits navigation event
-- [ ] T057b [P] [US4] Create `frontend/tests/unit/components/projects/StatusTransitionControl.test.ts` — test: renders allowed transitions dropdown for Admin, hidden for non-Admin, confirm modal appears on selection, calls transitionStatus on confirm
-- [ ] T057c [P] [US-ALL] Create `frontend/tests/unit/components/projects/ProjectStatusBadge.test.ts` — test: renders correct color per status, displays Arabic label, handles all 6 status values
-- [ ] T057d [P] [US6] Create `frontend/tests/unit/composables/useProjectPhases.test.ts` — test: fetchPhases calls correct endpoint, createPhase sends POST, updatePhase sends PUT, deletePhase sends DELETE, error handling
+- [x] T055 [P] [US-ALL] Create `frontend/tests/unit/composables/useProjects.test.ts` — test: fetchProjects calls correct API endpoint with filters, fetchProject calls /projects/{id}, createProject sends POST, updateProject sends PUT, transitionStatus sends PUT /projects/{id}/status, deleteProject sends DELETE; error handling for API failures
+- [x] T056 [P] [US-ALL] Create `frontend/tests/unit/stores/projectStore.test.ts` — test: loadProjects populates state, loadProject sets selectedProject, createProject adds to list, updateProject updates in list, transitionStatus updates status, deleteProject removes from list; isLoading/error state management; getters filteredProjects and projectById
+- [x] T057 [P] [US2] Create `frontend/tests/unit/components/projects/ProjectCard.test.ts` — test: renders project name (Arabic/English based on locale), displays correct status badge color, shows budget formatted, shows date range, click emits navigation event
+- [x] T057b [P] [US4] Create `frontend/tests/unit/components/projects/StatusTransitionControl.test.ts` — test: renders allowed transitions dropdown for Admin, hidden for non-Admin, confirm modal appears on selection, calls transitionStatus on confirm
+- [x] T057c [P] [US-ALL] Create `frontend/tests/unit/components/projects/ProjectStatusBadge.test.ts` — test: renders correct color per status, displays Arabic label, handles all 6 status values
+- [x] T057d [P] [US6] Create `frontend/tests/unit/composables/useProjectPhases.test.ts` — test: fetchPhases calls correct endpoint, createPhase sends POST, updatePhase sends PUT, deletePhase sends DELETE, error handling
 
 ### Frontend E2E Test
 
-- [ ] T058 [US-ALL] Create `frontend/tests/e2e/projects.spec.ts` — Playwright E2E tests: Admin creates project via wizard (all 4 steps), project appears in listing, project detail shows correct data in tabs, Admin transitions status DRAFT→PLANNING→IN_PROGRESS, Customer sees only owned projects, edit page updates project fields, phase CRUD within detail page
+- [x] T058 [US-ALL] Create `frontend/tests/e2e/projects.spec.ts` — Playwright E2E tests: Admin creates project via wizard (all 4 steps), project appears in listing, project detail shows correct data in tabs, Admin transitions status DRAFT→PLANNING→IN_PROGRESS, Customer sees only owned projects, edit page updates project fields, phase CRUD within detail page
 
 **Checkpoint**: All backend tests pass via `php artisan test --filter=Project`. All frontend tests pass via `npm run test`. E2E tests pass via `npx playwright test projects`.
 
@@ -225,12 +225,12 @@
 
 ### Frontend i18n
 
-- [ ] T059 [P] [US-ALL] Create `frontend/locales/ar/projects.json` — Arabic translations: page titles (المشاريع, مشروع جديد, تفاصيل المشروع, تعديل المشروع), form labels (اسم المشروع بالعربية, اسم المشروع بالإنجليزية, الوصف, المدينة, الحي, خط العرض, خط الطول, النوع, الميزانية المقدرة, تاريخ البدء, تاريخ الانتهاء), status labels, type labels, phase labels, tab names, button labels, error/success messages, wizard step titles, placeholder text
-- [ ] T060 [P] [US-ALL] Create `frontend/locales/en/projects.json` — English translations matching all Arabic keys
+- [x] T059 [P] [US-ALL] Create `frontend/locales/ar/projects.json` — Arabic translations: page titles (المشاريع, مشروع جديد, تفاصيل المشروع, تعديل المشروع), form labels (اسم المشروع بالعربية, اسم المشروع بالإنجليزية, الوصف, المدينة, الحي, خط العرض, خط الطول, النوع, الميزانية المقدرة, تاريخ البدء, تاريخ الانتهاء), status labels, type labels, phase labels, tab names, button labels, error/success messages, wizard step titles, placeholder text
+- [x] T060 [P] [US-ALL] Create `frontend/locales/en/projects.json` — English translations matching all Arabic keys
 
 ### Final Validation
 
-- [ ] T061 [US-ALL] Run full validation pipeline: `composer run lint && composer run test && npm run lint && npm run typecheck && npm run test` — all checks must pass with zero errors
+- [x] T061 [US-ALL] Run full validation pipeline: `composer run lint && composer run test && npm run lint && npm run typecheck && npm run test` — all checks must pass with zero errors
 
 ---
 

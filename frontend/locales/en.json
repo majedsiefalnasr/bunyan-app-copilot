@@ -355,7 +355,13 @@
     "home": "Home",
     "create": "Create",
     "update": "Update",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "clear": "Clear",
+    "sar": "SAR"
   },
   "suppliers": {
     "not_found": "Supplier profile not found.",
@@ -401,6 +407,55 @@
     "validation": {
       "phone_format": "Phone must start with 05 and be exactly 10 digits.",
       "user_id_required_for_admin": "A user_id (contractor) must be specified when creating as admin."
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "create": "Create Project",
+    "edit": "Edit Project",
+    "empty": "No projects found",
+    "created_success": "Project created successfully",
+    "updated_success": "Project updated successfully",
+    "deleted_success": "Project deleted successfully",
+    "name_ar": "Project Name (Arabic)",
+    "name_en": "Project Name (English)",
+    "description": "Description",
+    "city": "City",
+    "district": "District",
+    "budget_estimated": "Estimated Budget",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "type_label": "Project Type",
+    "details": "Details",
+    "phases": "Phases",
+    "add_phase": "Add Phase",
+    "no_phases": "No phases yet",
+    "phase_name_ar": "Phase Name (Arabic)",
+    "phase_name_en": "Phase Name (English)",
+    "sort_order": "Sort Order",
+    "phase_created": "Phase created successfully",
+    "phase_deleted": "Phase deleted successfully",
+    "phases_count": "{count} phases",
+    "filter_status": "Status",
+    "filter_type": "Type",
+    "filter_city": "City",
+    "status": {
+      "draft": "Draft",
+      "planning": "Planning",
+      "in_progress": "In Progress",
+      "on_hold": "On Hold",
+      "completed": "Completed",
+      "closed": "Closed"
+    },
+    "type": {
+      "residential": "Residential",
+      "commercial": "Commercial",
+      "infrastructure": "Infrastructure"
+    },
+    "phase_status": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed"
     }
   }
 }
