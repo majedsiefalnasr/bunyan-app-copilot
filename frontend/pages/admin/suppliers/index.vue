@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { ColumnDef } from '@tanstack/vue-table';
-  import type { SupplierProfile, SupplierVerificationStatus } from '~~/types/supplier';
+  import type { SupplierProfile, SupplierVerificationStatus } from '~/types/supplier';
 
   definePageMeta({ middleware: ['auth'] });
 

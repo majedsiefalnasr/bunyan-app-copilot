@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { SupplierVerificationStatus } from '~~/types/supplier';
+  import type { SupplierVerificationStatus } from '~/types/supplier';
 
   const props = defineProps<{
     status: SupplierVerificationStatus;
@@ -16,7 +16,7 @@
     suspended: { label: t('suppliers.status.suspended'), color: 'error' },
   };
 
-  const config = computed(() => badgeConfig[props.status] ?? badgeConfig.pending);
+  const config = badgeConfig[props.status];
 </script>
 
 <template>
