@@ -57,3 +57,19 @@ declare module '#imports' {
   export function useAuthStore(...args: any[]): any;
   export function useRoute(...args: any[]): any;
 }
+
+// Minimal type declarations for Nuxt UI types (used by UForm/UInput/USelectMenu)
+declare module '#ui/types' {
+  // Value type acceptable by UI inputs (also accept a Ref-like object)
+  export type AcceptableValue = string | number | boolean | null | undefined | { value: any };
+
+  // Generic form submit event used by UForm
+  export interface FormSubmitEvent<T = any> extends Event {
+    detail?: T;
+    preventDefault(): void;
+  }
+
+  // Select menu and input related quick types
+  export type SelectMenuItem = any;
+  export type SelectMenuSlots = any;
+}

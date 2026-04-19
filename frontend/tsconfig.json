@@ -7,5 +7,6 @@
       "~/types": ["types/index.ts"]
     }
   },
-  "include": [".nuxt/**/*", "types/**/*", "**/*.ts", "**/*.vue"]
+  "include": [".nuxt/**/*", "types/**/*", "**/*.ts", "**/*.vue"],
+  "exclude": ["tests", "tests/**/*", "**/*.spec.ts", "**/*.test.ts", "test-results", "node_modules"]
 }

@@ -37,10 +37,10 @@
   type Schema = z.output<typeof validationSchema>;
 
   // Form state - use individual refs for proper TypeScript typing with v-model
-  const nameAr = ref('');
-  const nameEn = ref('');
+  const nameAr = ref<string | undefined>('');
+  const nameEn = ref<string | undefined>('');
   const parentId = ref<number | null>(null);
-  const icon = ref('');
+  const icon = ref<string | undefined>('');
   const isActive = ref(true);
 
   const version = ref(0);
@@ -74,8 +74,8 @@
       isSubmitting.value = true;
 
       const submitData: CategoryFormData & { id?: number; version?: number } = {
-        name_ar: nameAr.value,
-        name_en: nameEn.value,
+        name_ar: nameAr.value ?? '',
+        name_en: nameEn.value ?? '',
         parent_id: parentId.value,
         icon: icon.value || undefined,
         is_active: isActive.value,
@@ -157,21 +157,23 @@
         <!-- Arabic Name -->
         <UFormGroup :label="$t('categories.nameAr')" name="name_ar">
           <UInput
-            v-model="nameAr"
+            :model-value="nameAr.value"
             :placeholder="$t('categories.enterNameAr')"
             size="md"
             :disabled="isSubmitting.value"
+            @update:model-value="(v: any) => (nameAr.value = v)"
           />
         </UFormGroup>
 
         <!-- English Name -->
         <UFormGroup :label="$t('categories.nameEn')" name="name_en">
           <UInput
-            v-model="nameEn"
+            :model-value="nameEn.value"
             dir="ltr"
             :placeholder="$t('categories.enterNameEn')"
             size="md"
             :disabled="isSubmitting.value"
+            @update:model-value="(v: any) => (nameEn.value = v)"
           />
         </UFormGroup>
 
@@ -192,10 +194,11 @@
         <!-- Icon (optional) -->
         <UFormGroup :label="$t('categories.icon')" name="icon">
           <UInput
-            v-model="icon"
+            :model-value="icon.value"
             :placeholder="$t('categories.enterIcon')"
             size="md"
             :disabled="isSubmitting.value"
+            @update:model-value="(v: any) => (icon.value = v)"
           />
         </UFormGroup>
 

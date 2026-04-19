@@ -58,8 +58,11 @@
   });
 
   // Add null option for "no parent"
+  const { t } = useI18n();
+
+  // Add null option for "no parent" (label translated)
   const selectOptions = computed(() => [
-    { value: null, label: 'categories.noParent' } as { value: null | number; label: string },
+    { value: null, label: t('categories.noParent') } as { value: null | number; label: string },
     ...flattenedOptions.value,
   ]);
 </script>
@@ -74,19 +77,6 @@
     :disabled="disabled"
     searchable
     nullable
-    @update:model-value="$emit('update:modelValue', $event)"
-  >
-    <template #label="{ option }">
-      <span v-if="option.value === null" class="text-gray-500 italic">
-        {{ $t('categories.noParent') }}
-      </span>
-      <span v-else>{{ option.label }}</span>
-    </template>
-    <template #default="{ option }">
-      <span v-if="option.value === null" class="text-gray-500 italic">
-        {{ $t('categories.noParent') }}
-      </span>
-      <span v-else>{{ option.label }}</span>
-    </template>
-  </USelectMenu>
+    @update:model-value="$emit('update:modelValue', ($event as any)?.value ?? null)"
+  />
 </template>

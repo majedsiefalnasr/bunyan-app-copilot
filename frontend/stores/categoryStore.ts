@@ -188,7 +188,7 @@ export const useCategoryStore = defineStore('category', () => {
     return getCategoryPath(selectedCategory.value.id);
   });
 
-  const isReady = computed(() => !isLoading.value && categories.value.length > 0);
+  const isReady = computed(() => !isLoading.value && (categories.value?.length ?? 0) > 0);
 
   return {
     // State
