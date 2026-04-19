@@ -8,17 +8,18 @@
 ## Stage Status
 
 Status: DRAFT
-Step: plan
+Step: tasks
 Risk Level: HIGH
-Last Updated: 2026-04-19T00:03:00Z
+Last Updated: 2026-04-19T00:04:00Z
 
-Scope Planned:
+Tasks Generated:
 
-- 2 database tables (projects, project_phases)
-- 10 API endpoints with RBAC
-- 2 services, 2 repositories, 3 enums
-- 4 frontend pages, 14 components
-- Status machine: DRAFT → PLANNING → IN_PROGRESS → ON_HOLD → COMPLETED → CLOSED
+- Total: 61 atomic tasks
+- Phase 1: 2 migrations
+- Phase 2: 24 backend domain tasks
+- Phase 3-6: 25 frontend tasks
+- Phase 7: 8 test tasks
+- Phase 8: 3 i18n/validation tasks
 
 Deferred Scope:
 
@@ -28,10 +29,10 @@ Deferred Scope:
 
 Architecture Governance Compliance:
 
-- Technical plan compliant — task generation authorized
+- Task set compliant — drift analysis required before implementation
 
 Notes:
-Technical plan complete. Task breakdown in progress.
+Atomic task set generated. Drift analysis gate pending.
 
 ## Objective
 
