@@ -147,17 +147,32 @@
     get nameAr() {
       return formState.name_ar;
     },
+    set nameAr(value: string) {
+      formState.name_ar = value;
+    },
     get nameEn() {
       return formState.name_en;
+    },
+    set nameEn(value: string) {
+      formState.name_en = value;
     },
     get parentId() {
       return formState.parent_id;
     },
+    set parentId(value: number | null) {
+      formState.parent_id = value;
+    },
     get icon() {
       return formState.icon;
     },
+    set icon(value: string) {
+      formState.icon = value;
+    },
     get isActive() {
       return formState.is_active;
+    },
+    set isActive(value: boolean) {
+      formState.is_active = value;
     },
   });
 </script>
